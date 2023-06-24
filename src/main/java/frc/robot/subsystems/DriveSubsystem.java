@@ -25,6 +25,8 @@ public class DriveSubsystem extends SubsystemBase {
         leftBack = new SwerveModule<>(new CANSparkMax(CANIds.leftBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftBack.encoder), swervePIDGains);
         rightBack = new SwerveModule<>(new CANSparkMax(CANIds.rightBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightBack.encoder), swervePIDGains);
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
+        chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
+        chassis.setRotationLimit(SwerveChassis.DriveLimits.NONE);
     }
 
     public void drive(double x, double y, double rot) {

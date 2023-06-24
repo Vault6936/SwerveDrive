@@ -10,6 +10,8 @@ public class SwerveModule<T extends MotorController> {
     T steeringMotor;
     PIDController controller;
     CANCoder encoder;
+    private double lastTargetAngle;
+    private double angleOffset;
 
     public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains) {
         this.driveMotor = driveMotor;
@@ -18,15 +20,19 @@ public class SwerveModule<T extends MotorController> {
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
     }
 
-    //TODO: What happens to the PID controller when the angle crosses from -15 degrees to +27 degrees?  Find a workaround.
-    public void drive(double speed, double targetAngle) { //If the allowed angle range is -360 to 360 degrees, then 1 angle could be expressed in 2 ways (e.g. -90 and 270).  This function finds the correct way to express the angle such that the wheel won't have to turn more than it has to.
-        double currentAngle = encoder.getAbsolutePosition();
-        targetAngle = targetAngle % (2 * Math.PI);
-        double alternateTargetAngle = targetAngle < 0 ? targetAngle + 2 * Math.PI : targetAngle - 2 * Math.PI;
-        double distance = Math.abs(targetAngle - currentAngle);
-        double alternateDistance = Math.abs(alternateTargetAngle - currentAngle);
-        targetAngle = distance < alternateDistance ? targetAngle : alternateTargetAngle;
-        steeringMotor.set(MathUtil.clamp(controller.calculate(currentAngle, targetAngle), -1.0, 1.0));
+    public void drive(double speed, double targetAngle) {
+        double currentAngle = encoder.getAbsolutePosition(); //TODO: update this to process the encoder value and read the actual angle of the wheel
+        double desirableSetpoint = lastTargetAngle;
+        if (lastTargetAngle != targetAngle) { //If the target angle has been changed since the last loop, recalculate the setpoint.
+            targetAngle = targetAngle % (2 * Math.PI);
+            double alternateTargetAngle = targetAngle < 0 ? targetAngle + 2 * Math.PI : targetAngle - 2 * Math.PI;
+            double setpoint = targetAngle - currentAngle;
+            double alternateSetpoint = alternateTargetAngle - currentAngle;
+            desirableSetpoint = Math.abs(setpoint) < Math.abs(alternateSetpoint) ? setpoint : alternateSetpoint; //Finding which one would result in shorter distance travel (we don't want the wheel to go from -30 degrees to 270 degrees when it could go from -30 degrees to -90 degrees)
+            angleOffset = currentAngle;
+        }
         driveMotor.set(speed);
+        steeringMotor.set(MathUtil.clamp(controller.calculate(currentAngle - angleOffset, desirableSetpoint), -1.0, 1.0));
+        lastTargetAngle = targetAngle;
     }
 }
