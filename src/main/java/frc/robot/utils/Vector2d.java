@@ -37,25 +37,30 @@ public class Vector2d {
     }
 
     public Vector2d rotate(double angle) {
-        return new Vector2d(new PolarPoint(magnitude, this.angle + angle));
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        return new Vector2d(new CartesianPoint(x * cos - y * sin, x * sin + y * cos));
     }
 
     private abstract static class Point {
-        public double var1;
-        public double var2;
+        public final double var1;
+        public final double var2;
+
+        public Point(double var1, double var2) {
+            this.var1 = var1;
+            this.var2 = var2;
+        }
     }
 
     public static class CartesianPoint extends Point {
         public CartesianPoint(double x, double y) {
-            var1 = x;
-            var2 = y;
+            super(x, y);
         }
     }
 
     public static class PolarPoint extends Point {
         public PolarPoint(double r, double theta) {
-            var1 = r;
-            var2 = theta;
+            super(r, theta);
         }
     }
 }

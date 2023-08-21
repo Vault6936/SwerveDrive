@@ -29,6 +29,10 @@ public class DriveSubsystem extends SubsystemBase {
         chassis.setRotationLimit(SwerveChassis.DriveLimits.NONE);
     }
 
+    public SwerveModule[] getModules() {
+        return new SwerveModule[]{leftFront, rightFront, leftBack, rightBack};
+    }
+
     public void drive(double x, double y, double rot) {
         chassis.drive(x, y, rot);
     }
