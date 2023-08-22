@@ -12,17 +12,15 @@ public class SwerveModule<T extends MotorController> {
     private final T steeringMotor;
     private final PIDController controller;
     private final CANCoder encoder;
-    private final double encoderOffset;
-    private double lastTargetAngle;
-    private double angleOffset;
+    private final double encoderOffsetAngle;
     private boolean isCalibrating;
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, double encoderOffset) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, double encoderOffsetAngle) {
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
-        this.encoderOffset = encoderOffset;
+        this.encoderOffsetAngle = encoderOffsetAngle;
         boot();
     }
 
@@ -44,19 +42,10 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public double drive(double speed, double targetAngle) {
-        double currentAngle = encoder.getAbsolutePosition() * Math.PI / 180 - encoderOffset;
-        double desirableSetpoint = lastTargetAngle;
-        if (lastTargetAngle != targetAngle) { //If the target angle has been changed since the last loop, recalculate the setpoint.
-            targetAngle = targetAngle % (2 * Math.PI);
-            double alternateTargetAngle = targetAngle < 0 ? targetAngle + 2 * Math.PI : targetAngle - 2 * Math.PI;
-            double setpoint = targetAngle - currentAngle;
-            double alternateSetpoint = alternateTargetAngle - currentAngle;
-            desirableSetpoint = Math.abs(setpoint) < Math.abs(alternateSetpoint) ? setpoint : alternateSetpoint; //Finding which one would result in shorter distance travel (we don't want the wheel to go from -30 degrees to 270 degrees when it could go from -30 degrees to -90 degrees)
-            angleOffset = currentAngle; //This is done to avoid problems when the angle crosses from, say, -179 degrees to 181 degrees or vice versa.  I suppose if I set the absolute encoder range from 0 to 360 then this would be unnecessary, but it's here anyway.
-        }
+        double currentAngle = encoder.getAbsolutePosition() * Math.PI / 180 - encoderOffsetAngle;
+        double err = Math.min(Math.min(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle), targetAngle - 2 * Math.PI - currentAngle);
         driveMotor.set(speed);
-        steeringMotor.set(MathUtil.clamp(controller.calculate(currentAngle - angleOffset, desirableSetpoint), -1.0, 1.0));
-        lastTargetAngle = targetAngle;
+        steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0));
         return currentAngle;
     }
 }
