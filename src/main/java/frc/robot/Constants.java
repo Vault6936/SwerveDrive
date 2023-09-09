@@ -14,25 +14,29 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static class OperatorConstants    {
+    public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
     }
+
     public static class CANIds {
-        public static final SwerveCANId leftFront = new SwerveCANId(2, 3, 4);
-        public static final SwerveCANId rightFront = new SwerveCANId(5, 6, 7);
-        public static final SwerveCANId leftBack = new SwerveCANId(7, 8, 9);
-        public static final SwerveCANId rightBack = new SwerveCANId(10, 11, 12);
+        public static final SwerveCANId leftFront = new SwerveCANId(2, 3, 21); //module 1
+        public static final SwerveCANId rightFront = new SwerveCANId(5, 4, 22); //module 2
+        public static final SwerveCANId leftBack = new SwerveCANId(7, 5, 23); //module 3
+        public static final SwerveCANId rightBack = new SwerveCANId(10, 6, 24); //module 4
     }
+
     public static class SwerveCANId {
         public final int driveMotor;
         public final int steeringMotor;
         public final int encoder;
+
         public SwerveCANId(int driveMotor, int steeringMotor, int encoder) {
             this.driveMotor = driveMotor;
             this.steeringMotor = steeringMotor;
             this.encoder = encoder;
         }
     }
+
     public static class Swerve {
         public static final double driveMultiplier = 0.5; //Random constant.  Will it work?
         public static final double rotMultiplier = 0.5;
