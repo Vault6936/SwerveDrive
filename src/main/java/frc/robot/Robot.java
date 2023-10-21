@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
+import frc.robot.webdashboard.SocketServer;
+
+import java.net.UnknownHostException;
 
 
 /**
@@ -21,6 +24,16 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
 
     public static RobotContainer robotContainer;
+
+    public static SocketServer socketServer;
+
+    static {
+        try {
+            socketServer = new SocketServer(5800);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final Command[] initializationCommands = {new SwerveCalibrateCommand()};
 
