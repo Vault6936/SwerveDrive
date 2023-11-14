@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
-import frc.robot.webdashboard.SocketServer;
-
-import java.net.UnknownHostException;
+import frc.robot.webdashboard.WebdashboardServer;
 
 
 /**
@@ -25,18 +23,9 @@ public class Robot extends TimedRobot {
 
     public static RobotContainer robotContainer;
 
-    public static SocketServer socketServer;
+    public static WebdashboardServer socket = WebdashboardServer.getInstance(5800);
 
-    static {
-        try {
-            socketServer = new SocketServer(5800);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private final Command[] initializationCommands = {new SwerveCalibrateCommand()};
-
+    private Command[] initializationCommands;
 
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -48,6 +37,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
 
+        initializationCommands = new Command[] {new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
             CommandScheduler.getInstance().schedule(command);
         }

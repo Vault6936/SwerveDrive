@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.swerve;
 
 public class Vector2d {
     public final double x;
@@ -16,7 +16,7 @@ public class Vector2d {
             this.x = point.var1 * Math.cos(point.var2);
             this.y = point.var1 * Math.sin(point.var2);
             this.magnitude = point.var1;
-            this.angle = point.var2;
+            this.angle = point.var2 % (2 * Math.PI);
         }
     }
 

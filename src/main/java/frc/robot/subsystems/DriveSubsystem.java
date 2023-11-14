@@ -4,9 +4,10 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.PIDGains;
-import frc.robot.utils.SwerveChassis;
-import frc.robot.utils.SwerveModule;
+import frc.robot.swerve.PIDGains;
+import frc.robot.swerve.SwerveChassis;
+import frc.robot.swerve.SwerveModule;
+import frc.robot.webdashboard.DashboardLayout;
 
 import static frc.robot.Constants.CANIds;
 
@@ -18,7 +19,9 @@ public class DriveSubsystem extends SubsystemBase {
     SwerveChassis<CANSparkMax> chassis;
     PIDGains swervePIDGains;
 
-    public DriveSubsystem() {
+    private static DriveSubsystem instance;
+
+    private DriveSubsystem() {
         swervePIDGains = new PIDGains(0.1, 0, 0);
         leftFront = new SwerveModule<>(new CANSparkMax(CANIds.leftFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftFront.encoder), swervePIDGains);
         rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains);
@@ -34,6 +37,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double x, double y, double rot) {
-        chassis.drive(x, y, rot);
+        //chassis.drive(x, y, rot);
+    }
+
+    @Override
+    public void periodic() {
+        DashboardLayout.setNodeValue("encoder1", leftFront.encoder.getAbsolutePosition());
+        DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
+        DashboardLayout.setNodeValue("encoder3", leftBack.encoder.getAbsolutePosition());
+        DashboardLayout.setNodeValue("encoder4", rightBack.encoder.getAbsolutePosition());
+    }
+
+    public static DriveSubsystem getInstance() {
+        if (instance == null) instance = new DriveSubsystem();
+        return instance;
     }
 }
