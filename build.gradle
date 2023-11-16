@@ -48,7 +48,8 @@ wpi.java.debugJni = false
 def includeDesktopSupport = false
 
 dependencies {
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation("javax.json:javax.json-api:1.1.4")
+    implementation("org.glassfish:javax.json:1.1.4")
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()

@@ -14,7 +14,7 @@ public class DriveDefaultCommand extends CommandBase {
     private final DoubleSupplier rot;
 
     public DriveDefaultCommand(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
-        subsystem = Robot.robotContainer.driveSubsystem;
+        subsystem = DriveSubsystem.getInstance();
         this.x = x;
         this.y = y;
         this.rot = rot;

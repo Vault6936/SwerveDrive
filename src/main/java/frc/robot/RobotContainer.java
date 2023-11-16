@@ -10,11 +10,13 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
 
     private final CommandPS4Controller baseController = new CommandPS4Controller(OperatorConstants.DRIVER_CONTROLLER_PORT);
-    public final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    public final DriveSubsystem driveSubsystem;
 
-    private final DriveDefaultCommand driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> baseController.getLeftY(), () -> baseController.getRightX());
+    private final DriveDefaultCommand driveDefaultCommand;
 
     public RobotContainer() {
+        driveSubsystem = DriveSubsystem.getInstance();
+        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> baseController.getLeftY(), () -> baseController.getRightX());
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
         configureBindings();
     }

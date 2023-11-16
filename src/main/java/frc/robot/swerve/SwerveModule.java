@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.swerve;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -11,7 +11,7 @@ public class SwerveModule<T extends MotorController> {
     private final T driveMotor;
     private final T steeringMotor;
     private final PIDController controller;
-    private final CANCoder encoder;
+    public final CANCoder encoder;
     private final double encoderOffsetAngle;
     private boolean isCalibrating;
 
@@ -19,6 +19,7 @@ public class SwerveModule<T extends MotorController> {
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
+        encoder.configMagnetOffset(encoderOffsetAngle);
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         this.encoderOffsetAngle = encoderOffsetAngle;
         boot();
@@ -30,15 +31,20 @@ public class SwerveModule<T extends MotorController> {
 
     public void boot() {
         encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360); //Must only be set to this value!
-        encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     }
 
     public void calibrateWheels() {
         isCalibrating = Math.abs(drive(0, 0)) < 0.0087; //Half of a degree
     }
 
+
     public boolean doneCalibrating() {
         return isCalibrating;
+    }
+
+    public double getAngleRadians() {
+        return encoder.getAbsolutePosition() / 180 * Math.PI;
     }
 
     private double minimumMagnitude(double... values) {
@@ -49,6 +55,11 @@ public class SwerveModule<T extends MotorController> {
         return min;
     }
 
+    //By always finding the minimum error, this line of code will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
+    private double getError(double targetAngle, double currentAngle) {
+        return minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle);
+    }
+
     /***
      *
      * @param speed The speed to set the drive motor to.
@@ -56,11 +67,20 @@ public class SwerveModule<T extends MotorController> {
      * @return The angle of the wheel in radians.
      */
     public double drive(double speed, double targetAngle) {
-        targetAngle = targetAngle % (2 * Math.PI);
+        targetAngle = targetAngle % (2 * Math.PI); // The absolute value of the angle should never exceed 360 degrees
         if (targetAngle < 0) targetAngle += 2 * Math.PI;
-        double currentAngle = encoder.getAbsolutePosition() * Math.PI / 180 - encoderOffsetAngle;
-        double err = minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle); //By always finding the minimum error, this line of code will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
-        driveMotor.set(speed);
+        double currentAngle = getAngleRadians();
+
+        // err is how many radians the robot is off from its target angle
+        double err = getError(targetAngle, currentAngle);
+
+        double polarity = 1;
+        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
+            err = getError((2 * Math.PI + targetAngle) % (2 * Math.PI), currentAngle);
+            polarity = -1;
+        }
+
+        driveMotor.set(speed * polarity);
         steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0));
         return currentAngle;
     }

@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.utils.SwerveModule;
+import frc.robot.swerve.SwerveModule;
 
 public class SwerveCalibrateCommand extends CommandBase {
     boolean isFinished = false;

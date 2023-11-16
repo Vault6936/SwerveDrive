@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.swerve;
 
 public interface DriveLimit {
     double getLimitedDriveValue(double currentValue, double... inputs);
