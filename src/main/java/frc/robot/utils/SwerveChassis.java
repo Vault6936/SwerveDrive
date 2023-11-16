@@ -64,15 +64,20 @@ public class SwerveChassis<T extends MotorController> {
 
         Vector2d limitedVector = new Vector2d(new Vector2d.PolarPoint(limitedDrive, inputVector.angle)); //making another vector with the limited magnitude and the same angle
 
-        double rotationOffset = limitedRot / (inputVector.magnitude + Math.abs(limitedRot)); //Provides a value for how much each wheel's angle should be offset from the target angle.  The offset range is -1 to 1.  With no drive input and any rotation input, the value will be 1, and with no rotation input and any drive input the value will be 0.
-        if (rotationOffset == Double.POSITIVE_INFINITY)
-            rotationOffset = 0; //so Java doesn't throw up at me eventually after NOT THROWING AN ARITHMETIC EXCEPTION
+        double rotationOffset = getRotationOffset(limitedRot, inputVector);
         limitedVector = limitedVector.rotate(-pose.getRotation().getRadians());
         leftFront.drive(limitedVector.magnitude - rotationOffset, limitedVector.angle + rotationOffset * -Math.PI / 4);
         rightFront.drive(limitedVector.magnitude + rotationOffset, limitedVector.angle + rotationOffset * Math.PI / 4);
         leftBack.drive(limitedVector.magnitude - rotationOffset, limitedVector.angle + rotationOffset * Math.PI / 4);
         rightBack.drive(limitedVector.magnitude + rotationOffset, limitedVector.angle + rotationOffset * -Math.PI / 4);
         lastInput = new DriveInput(new Vector2d(new Vector2d.CartesianPoint(x, y)), limitedRot);
+    }
+
+    private static double getRotationOffset(double limitedRot, Vector2d inputVector) {
+        double rotationOffset = limitedRot / (inputVector.magnitude + Math.abs(limitedRot)); //Provides a value for how much each wheel's angle should be offset from the target angle.  The offset range is -1 to 1.  With no drive input and any rotation input, the value will be 1, and with no rotation input and any drive input the value will be 0.
+        if (rotationOffset == Double.POSITIVE_INFINITY)
+            rotationOffset = 0; //so Java doesn't throw up at me eventually after NOT THROWING AN ARITHMETIC EXCEPTION
+        return rotationOffset;
     }
 
     public void drive(double x, double y, double rot) {
