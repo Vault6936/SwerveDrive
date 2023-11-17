@@ -6,22 +6,29 @@ public class Vector2d {
     public final double magnitude;
     public final double angle;
 
-    public Vector2d(Point point) {
-        if (point instanceof CartesianPoint) {
-            this.x = point.var1;
-            this.y = point.var2;
-            this.magnitude = calculateMagnitude(x, y);
-            this.angle = calculateAngle(x, y);
+    /**
+     * If isCartesian is set to false, var1 and var2 will be interpreted respectively as r and theta.
+     **/
+    public Vector2d(double var1, double var2, boolean isCartesian) {
+        if (isCartesian) {
+            x = var1;
+            y = var2;
+            magnitude = calculateMagnitude(var1, var2);
+            angle = calculateAngle(var1, var2);
         } else {
-            this.x = point.var1 * Math.cos(point.var2);
-            this.y = point.var1 * Math.sin(point.var2);
-            this.magnitude = point.var1;
-            this.angle = point.var2 % (2 * Math.PI);
+            x = var1 * Math.cos(var2);
+            y = var1 * Math.sin(var2);
+            magnitude = var1;
+            angle = var2 % (2 * Math.PI);
         }
     }
 
+    public Vector2d(double x, double y) {
+        this(x, y, true);
+    }
+
     public Vector2d() {
-        this(new Vector2d.CartesianPoint(0, 0));
+        this(0, 0);
     }
 
     private double calculateMagnitude(double x, double y) {
@@ -37,30 +44,9 @@ public class Vector2d {
     }
 
     public Vector2d rotate(double angle) {
-        double cos = Math.cos(angle);
+        double cos = Math.cos(angle); // Doing the trig calculation once and assigning the output to a variable is the most computationally efficient solution
         double sin = Math.sin(angle);
-        return new Vector2d(new CartesianPoint(x * cos - y * sin, x * sin + y * cos));
+        return new Vector2d(x * cos - y * sin, x * sin + y * cos);
     }
 
-    private abstract static class Point {
-        public final double var1;
-        public final double var2;
-
-        public Point(double var1, double var2) {
-            this.var1 = var1;
-            this.var2 = var2;
-        }
-    }
-
-    public static class CartesianPoint extends Point {
-        public CartesianPoint(double x, double y) {
-            super(x, y);
-        }
-    }
-
-    public static class PolarPoint extends Point {
-        public PolarPoint(double r, double theta) {
-            super(r, theta);
-        }
-    }
 }

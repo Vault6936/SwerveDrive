@@ -19,6 +19,10 @@ public class WebdashboardServer extends WebSocketServer {
 
     ArrayList<DashboardLayout> layouts = new ArrayList<>();
 
+    public DashboardLayout getFirstConnectedLayout() {
+        return layouts.get(0);
+    }
+
     private static WebdashboardServer instance = null;
 
     private WebdashboardServer(int port) throws UnknownHostException {
@@ -34,12 +38,12 @@ public class WebdashboardServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        layouts.removeIf(layout -> Objects.equals(conn, layout.socket));
+        layouts.removeIf(layout -> Objects.equals(conn, layout.connection));
     }
 
     private DashboardLayout getLayout(WebSocket conn) {
         for (DashboardLayout layout : layouts) {
-            if (layout.socket == conn) { // In this case the Objects.equals() method is not ideal.  What's important is that the references are the same, not the values of the variables
+            if (layout.connection == conn) { // In this case the Objects.equals() method is not ideal.  What's important is that the references are the same, not the values of the variables
                 return layout;
             }
         }
@@ -63,26 +67,19 @@ public class WebdashboardServer extends WebSocketServer {
                 }
             } else if (Objects.equals(object.getString("messageType"), "node update")) {
                 layout.updateNode(object);
-                System.out.println("boolean value: " + layout.getBooleanValue("violet"));
-                System.out.println("selected value: " + layout.getSelectedValue("indigo"));
             } else if (Objects.equals(object.getString("messageType"), "click")) {
-                layout.addCallback("green", () -> {System.out.println("I've been clicked!");});
                 layout.buttonClicked(object.getString("nodeID"));
             }
         }
     }
 
     @Override
-    public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
-        if (conn != null) {
-            // some errors like port binding failed may not be assignable to a specific websocket
-        }
+    public void onError(WebSocket conn, Exception e) {
+        e.printStackTrace();
     }
 
     @Override
     public void onStart() {
-        System.out.println("Server started");
         setConnectionLostTimeout(3);
     }
 

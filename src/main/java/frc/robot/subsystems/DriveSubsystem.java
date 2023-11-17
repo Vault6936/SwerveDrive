@@ -7,9 +7,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.swerve.PIDGains;
 import frc.robot.swerve.SwerveChassis;
 import frc.robot.swerve.SwerveModule;
+import frc.robot.swerve.Vector2d;
 import frc.robot.webdashboard.DashboardLayout;
+import frc.robot.webdashboard.WebdashboardServer;
 
 import static frc.robot.Constants.CANIds;
+import static frc.robot.Constants.SwerveModuleTest.testMode;
+import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
 
 public class DriveSubsystem extends SubsystemBase {
     SwerveModule<CANSparkMax> leftFront;
@@ -33,11 +37,20 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public SwerveModule[] getModules() {
-        return new SwerveModule[]{leftFront, rightFront, leftBack, rightBack};
+        return chassis.modules;
     }
 
     public void drive(double x, double y, double rot) {
-        //chassis.drive(x, y, rot);
+        if (testMode) {
+            try {
+                double angle = Double.parseDouble(WebdashboardServer.getInstance(5800).getFirstConnectedLayout().getInputValue("angle")) / 180 * Math.PI;
+                chassis.modules[testModuleIndex].drive((new Vector2d(x, y)).magnitude, angle);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else {
+            chassis.drive(x, y, rot);
+        }
     }
 
     @Override
@@ -46,6 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
         DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder3", leftBack.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder4", rightBack.encoder.getAbsolutePosition());
+        DashboardLayout.setNodeValue("test mode", testMode);
     }
 
     public static DriveSubsystem getInstance() {

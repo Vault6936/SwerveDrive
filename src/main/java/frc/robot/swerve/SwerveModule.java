@@ -12,21 +12,21 @@ public class SwerveModule<T extends MotorController> {
     private final T steeringMotor;
     private final PIDController controller;
     public final CANCoder encoder;
-    private final double encoderOffsetAngle;
+    public final double fullRotAngle;
     private boolean isCalibrating;
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, double encoderOffsetAngle) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, Vector2d position, double encoderOffsetAngle) {
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
         encoder.configMagnetOffset(encoderOffsetAngle);
+        fullRotAngle = Math.atan(position.y / position.x); // Using atan instead of position.angle is intentional.  The calculated angle should be the same for the left front and right back wheels, and for the right front and left back wheels
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
-        this.encoderOffsetAngle = encoderOffsetAngle;
         boot();
     }
 
     public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains) {
-        this(driveMotor, steeringMotor, encoder, pidGains, 0);
+        this(driveMotor, steeringMotor, encoder, pidGains, new Vector2d(1, 1), 0);
     }
 
     public void boot() {
@@ -47,7 +47,13 @@ public class SwerveModule<T extends MotorController> {
         return encoder.getAbsolutePosition() / 180 * Math.PI;
     }
 
-    private double minimumMagnitude(double... values) {
+    private static double unsigned_0_to_2PI(double angle) {
+        angle = angle % (2 * Math.PI); // The absolute value of the angle should never exceed 360 degrees
+        if (angle < 0) angle += 2 * Math.PI;
+        return angle;
+    }
+
+    private static double minimumMagnitude(double... values) {
         double min = Double.POSITIVE_INFINITY;
         for (double value : values) {
             if (Math.abs(value) < Math.abs(min)) min = value;
@@ -56,7 +62,7 @@ public class SwerveModule<T extends MotorController> {
     }
 
     //By always finding the minimum error, this line of code will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
-    private double getError(double targetAngle, double currentAngle) {
+    private static double getError(double targetAngle, double currentAngle) {
         return minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle);
     }
 
@@ -67,16 +73,14 @@ public class SwerveModule<T extends MotorController> {
      * @return The angle of the wheel in radians.
      */
     public double drive(double speed, double targetAngle) {
-        targetAngle = targetAngle % (2 * Math.PI); // The absolute value of the angle should never exceed 360 degrees
-        if (targetAngle < 0) targetAngle += 2 * Math.PI;
+        targetAngle = unsigned_0_to_2PI(targetAngle);
         double currentAngle = getAngleRadians();
 
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
-
         double polarity = 1;
         if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
-            err = getError((2 * Math.PI + targetAngle) % (2 * Math.PI), currentAngle);
+            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
             polarity = -1;
         }
 
