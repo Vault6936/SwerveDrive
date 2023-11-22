@@ -13,12 +13,12 @@ import java.util.Objects;
 public class DashboardLayout {
 
     public ArrayList<DashboardNode> nodes;
-    public final WebSocket socket;
+    public final WebSocket connection;
 
     private final HashMap<String, Runnable> callbacks = new HashMap<>();
 
-    public DashboardLayout(WebSocket socket) {
-        this.socket = socket;
+    public DashboardLayout(WebSocket connection) {
+        this.connection = connection;
     }
 
     public void update(JsonObject object) {
@@ -54,7 +54,7 @@ public class DashboardLayout {
     }
 
     public boolean getBooleanValue(String id) {
-        for (DashboardNode node: nodes) {
+        for (DashboardNode node : nodes) {
             if (Objects.equals(node.id, id)) {
                 if (!(node.type == DashboardNode.Type.BOOLEAN_TELEMETRY || node.type == DashboardNode.Type.TOGGLE)) {
                     throw new IllegalArgumentException("Requested node does not use boolean states");
@@ -65,8 +65,20 @@ public class DashboardLayout {
         throw new IllegalArgumentException("Requested node does not exist");
     }
 
+    public String getInputValue(String id) {
+        for (DashboardNode node : nodes) {
+            if (Objects.equals(node.id, id)) {
+                if (node.type != DashboardNode.Type.TEXT_INPUT) {
+                    throw new IllegalArgumentException("Requested node is not an input node");
+                }
+                return node.state;
+            }
+        }
+        throw new IllegalArgumentException("Requested node does not exist");
+    }
+
     public String getSelectedValue(String id) {
-        for (DashboardNode node: nodes) {
+        for (DashboardNode node : nodes) {
             if (Objects.equals(node.id, id)) {
                 if (node.type != DashboardNode.Type.SELECTOR) {
                     throw new IllegalArgumentException("Requested node is not a selector");
@@ -121,6 +133,7 @@ public class DashboardLayout {
             SELECTOR("selector"),
             BOOLEAN_TELEMETRY("boolean telemetry"),
             TEXT_TELEMETRY("text telemetry"),
+            TEXT_INPUT("text input"),
             CAMERA_STREAM("camera steam");
 
             private final String name;
