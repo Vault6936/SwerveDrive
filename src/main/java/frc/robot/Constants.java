@@ -16,7 +16,7 @@ public final class Constants {
     public static final class SwerveModuleTest {
         public static final boolean testMode = true;
 
-        public static final int testModuleIndex = 0;
+        public static final int testModuleIndex = 1;
     }
 
     public static class CANIds {

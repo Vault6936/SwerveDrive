@@ -36,7 +36,9 @@ public class Vector2d {
     }
 
     private double calculateAngle(double x, double y) {
-        if (x >= 0.0) {
+        if (x == 0.0) {
+            return 0;
+        } else if (x >= 0.0) {
             return Math.atan(y / x);
         } else {
             return Math.atan(y / x) + Math.PI;

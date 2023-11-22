@@ -16,20 +16,22 @@ import static frc.robot.Constants.SwerveModuleTest.testMode;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
 
 public class DriveSubsystem extends SubsystemBase {
-    SwerveModule<CANSparkMax> leftFront;
-    SwerveModule<CANSparkMax> rightFront;
-    SwerveModule<CANSparkMax> leftBack;
-    SwerveModule<CANSparkMax> rightBack;
+    final SwerveModule<CANSparkMax> leftFront;
+    final SwerveModule<CANSparkMax> rightFront;
+    final SwerveModule<CANSparkMax> leftBack;
+    final SwerveModule<CANSparkMax> rightBack;
     SwerveChassis<CANSparkMax> chassis;
     PIDGains swervePIDGains;
 
     private static DriveSubsystem instance;
 
     private DriveSubsystem() {
-        swervePIDGains = new PIDGains(0.1, 0, 0);
+        swervePIDGains = new PIDGains(0.2, 0, 0);
         leftFront = new SwerveModule<>(new CANSparkMax(CANIds.leftFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftFront.encoder), swervePIDGains);
-        rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains);
+        rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(0, 0), 135.4);
+        rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftBack = new SwerveModule<>(new CANSparkMax(CANIds.leftBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftBack.encoder), swervePIDGains);
+        leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightBack = new SwerveModule<>(new CANSparkMax(CANIds.rightBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightBack.encoder), swervePIDGains);
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
         chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
@@ -41,13 +43,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double x, double y, double rot) {
+        DashboardLayout.setNodeValue("joystick", "x: " + x + "\ny: " + y + "\nmagnitude: " + (new Vector2d(x, y)).magnitude);
         if (testMode) {
-            try {
-                double angle = Double.parseDouble(WebdashboardServer.getInstance(5800).getFirstConnectedLayout().getInputValue("angle")) / 180 * Math.PI;
-                chassis.modules[testModuleIndex].drive((new Vector2d(x, y)).magnitude, angle);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+            Vector2d vector = new Vector2d(x, y);
+            chassis.modules[testModuleIndex].drive(vector.magnitude, vector.angle);
         } else {
             chassis.drive(x, y, rot);
         }

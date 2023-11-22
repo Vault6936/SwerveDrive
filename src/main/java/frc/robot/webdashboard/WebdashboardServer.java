@@ -20,7 +20,8 @@ public class WebdashboardServer extends WebSocketServer {
     ArrayList<DashboardLayout> layouts = new ArrayList<>();
 
     public DashboardLayout getFirstConnectedLayout() {
-        return layouts.get(0);
+        if (layouts.size() > 0) return layouts.get(0);
+        else return null;
     }
 
     private static WebdashboardServer instance = null;
@@ -38,7 +39,7 @@ public class WebdashboardServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        layouts.removeIf(layout -> Objects.equals(conn, layout.connection));
+        layouts.removeIf(layout -> conn == layout.connection);
     }
 
     private DashboardLayout getLayout(WebSocket conn) {
