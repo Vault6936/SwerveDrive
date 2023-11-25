@@ -1,21 +1,24 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.swerve.PIDGains;
 import frc.robot.swerve.SwerveChassis;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.Vector2d;
 import frc.robot.webdashboard.DashboardLayout;
-import frc.robot.webdashboard.WebdashboardServer;
 
 import static frc.robot.Constants.CANIds;
 import static frc.robot.Constants.SwerveModuleTest.testMode;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
+import static frc.robot.GlobalVariables.pose;
 
 public class DriveSubsystem extends SubsystemBase {
+    AHRS gyro;
     final SwerveModule<CANSparkMax> leftFront;
     final SwerveModule<CANSparkMax> rightFront;
     final SwerveModule<CANSparkMax> leftBack;
@@ -54,6 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        pose = new Pose2d(0, 0, gyro.getRotation2d());
         DashboardLayout.setNodeValue("encoder1", leftFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder3", leftBack.encoder.getAbsolutePosition());

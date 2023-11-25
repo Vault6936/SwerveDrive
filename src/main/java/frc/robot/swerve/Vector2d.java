@@ -37,7 +37,11 @@ public class Vector2d {
 
     private double calculateAngle(double x, double y) {
         if (x == 0.0) {
-            return 0;
+            if (y < 0) {
+                return -Math.PI / 2;
+            } else {
+                return Math.PI / 2;
+            }
         } else if (x >= 0.0) {
             return Math.atan(y / x);
         } else {
