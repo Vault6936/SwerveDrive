@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.webdashboard.WebdashboardServer;
 
 
@@ -37,7 +38,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
 
-        initializationCommands = new Command[] {new SwerveCalibrateCommand()};
+        initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
             CommandScheduler.getInstance().schedule(command);
         }
@@ -101,6 +102,7 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        DriveSubsystem.getInstance().zeroNavX();
     }
 
 

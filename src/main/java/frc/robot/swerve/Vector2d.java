@@ -50,9 +50,10 @@ public class Vector2d {
     }
 
     public Vector2d rotate(double angle) {
-        double cos = Math.cos(angle); // Doing the trig calculation once and assigning the output to a variable is the most computationally efficient solution
+        return new Vector2d(this.magnitude, this.angle + angle, false);
+        /*double cos = Math.cos(angle); // Doing the trig calculation once and assigning the output to a variable is the most computationally efficient solution
         double sin = Math.sin(angle);
-        return new Vector2d(x * cos - y * sin, x * sin + y * cos);
+        return new Vector2d(x * cos - y * sin, x * sin + y * cos);*/ // Returns a vector with an angle of 180 degrees for some odd reason if x and y are 0.  Why?
     }
 
 }

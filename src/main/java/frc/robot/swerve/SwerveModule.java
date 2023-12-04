@@ -3,17 +3,23 @@ package frc.robot.swerve;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import frc.robot.Constants;
 import frc.robot.webdashboard.DashboardLayout;
 import frc.robot.webdashboard.WebdashboardServer;
+
+import java.lang.invoke.ConstantBootstraps;
 
 public class SwerveModule<T extends MotorController> {
     private final T driveMotor;
     private final T steeringMotor;
     private final PIDController controller;
     public final CANCoder encoder;
+
+    public final Vector2d position;
     public final double fullRotAngle;
     private boolean isCalibrating;
 
@@ -32,9 +38,15 @@ public class SwerveModule<T extends MotorController> {
 
     public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, Vector2d position, double encoderOffsetAngle) {
         this.driveMotor = driveMotor;
+        if (driveMotor instanceof CANSparkMax) {
+            ((CANSparkMax) driveMotor).setSmartCurrentLimit(80, 40);
+            ((CANSparkMax) driveMotor).setOpenLoopRampRate(Constants.Swerve.driveRampRate);
+            ((CANSparkMax) steeringMotor).setOpenLoopRampRate(Constants.Swerve.rotRampRate);
+        }
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
         encoder.configMagnetOffset(encoderOffsetAngle);
+        this.position = position;
         fullRotAngle = Math.atan(position.y / position.x); // Using atan instead of position.angle is intentional.  The calculated angle should be the same for the left front and right back wheels, and for the right front and left back wheels
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
@@ -107,11 +119,9 @@ public class SwerveModule<T extends MotorController> {
             polarity = -1;
         }
 
-        DashboardLayout.setNodeValue("module error", err * 180 / Math.PI);
-
-        speed = MathUtil.clamp(speed, -1.0, 1.0);
-        driveMotor.set(speed * polarity * driveDirection.direction);
+        driveMotor.set(MathUtil.clamp(speed * polarity * driveDirection.direction, -1.0, 1.0));
         steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
+
         return currentAngle;
     }
 }
