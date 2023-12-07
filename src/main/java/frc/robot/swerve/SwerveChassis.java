@@ -98,9 +98,9 @@ public class SwerveChassis<T extends MotorController> {
             leftBack.drive(limitedVector.magnitude - limitedRot, limitedVector.angle);
             rightBack.drive(limitedVector.magnitude + limitedRot, limitedVector.angle);
 
-        } else if (rotPercent < 1.0) {
+        } else if (rotPercent <= 1.0) {
             for (SwerveModule module : modules) {
-                rotateWhileDriving(module, limitedVector, limitedRot);
+                rotateWhileDriving(module, limitedVector.rotate(Math.PI / 2), limitedRot);
             }
         } else {
             leftFront.drive(limitedVector.magnitude - limitedRot, leftFront.fullRotAngle);
@@ -115,11 +115,10 @@ public class SwerveChassis<T extends MotorController> {
     private static void rotateWhileDriving(SwerveModule module, Vector2d driveVector, double rotSpeed) {
         double a = driveVector.magnitude;
         double b = rotSpeed;
-        double c = a / b;
         double r = module.position.magnitude;
         double theta = module.position.angle - driveVector.angle;
-        Vector2d velocityVector = new Vector2d(b * (c - r * Math.sin(theta)), b * r * Math.cos(theta));
-        module.drive(velocityVector.magnitude / 1.414, velocityVector.angle);
+        Vector2d velocityVector = new Vector2d(a - r * b * Math.sin(theta), b * r * Math.cos(theta));
+        module.drive(velocityVector.magnitude / 1.414, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
 
     public void drive(double x, double y, double rot) {
