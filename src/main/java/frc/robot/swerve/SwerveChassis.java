@@ -16,6 +16,8 @@ public class SwerveChassis<T extends MotorController> {
 
     public final ArrayList<SwerveModule<T>> modules;
 
+    protected static double rotationConstant;
+
     public static final class DriveLimits {
         public static final InputLimit NONE = new InputLimit() {
             @Override
@@ -45,6 +47,12 @@ public class SwerveChassis<T extends MotorController> {
         modules.add(rightFront);
         modules.add(leftBack);
         modules.add(rightBack);
+        for (SwerveModule<T> module : modules) {
+            double max = 1 + module.position.magnitude;
+            if (max > rotationConstant) {
+                rotationConstant = max;
+            }
+        }
     }
 
     public void setDriveLimit(InputLimit inputLimit) {
@@ -87,18 +95,21 @@ public class SwerveChassis<T extends MotorController> {
         limitedDrive = driveLimit.getLimitedAccelerationValue(lastInput.vector.magnitude, limitedDrive);
         double limitedRot = rotationLimit.getLimitedInputValue(rot);
         limitedRot = rotationLimit.getLimitedAccelerationValue(lastInput.rot, limitedRot);
-        Vector2d limitedVector = new Vector2d(limitedDrive, inputVector.angle - Math.PI / 2, false); // Making another vector with the limited magnitude and the same angle
+        Vector2d limitedVector = new Vector2d(limitedDrive, inputVector.angle, false); // Making another vector with the limited magnitude and the same angle
         limitedVector = limitedVector.rotate(-pose.getRotation().getRadians()); // This is necessary for field centric drive
 
-        if (limitedRot == 0.0) {
-            for (SwerveModule<T> module : modules) {
-                module.drive(limitedVector.magnitude, limitedVector.angle);
-            }
-        } else {
-            for (SwerveModule<T> module : modules) {
-                module.rotateAndDrive(limitedVector.rotate(Math.PI / 2), limitedRot);
+        double speedDivisor = 1.0;
+        double moduleDriveValues[][] = new double[][]{{}, {}, {}, {}};
+        for (int i = 0; i < modules.size(); i++) {
+            moduleDriveValues[i] = modules.get(i).calculateMixedDrive(limitedVector, limitedRot);
+            if (moduleDriveValues[i][0] > speedDivisor) {
+                speedDivisor = moduleDriveValues[i][0];
             }
         }
+        for (int i = 0; i < modules.size(); i++) {
+            modules.get(i).drive(moduleDriveValues[i][0] / speedDivisor, moduleDriveValues[i][1]);
+        }
+
         lastInput = new DriveInput(limitedVector, limitedRot);
     }
 
