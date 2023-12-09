@@ -8,10 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.Constants;
-import frc.robot.webdashboard.DashboardLayout;
-import frc.robot.webdashboard.WebdashboardServer;
-
-import java.lang.invoke.ConstantBootstraps;
 
 public class SwerveModule<T extends MotorController> {
     private final T driveMotor;
@@ -20,7 +16,6 @@ public class SwerveModule<T extends MotorController> {
     public final CANCoder encoder;
 
     public final Vector2d position;
-    public final double fullRotAngle;
     private boolean isCalibrating;
 
     private MotorDirection driveDirection = MotorDirection.FORWARD;
@@ -47,7 +42,6 @@ public class SwerveModule<T extends MotorController> {
         this.encoder = encoder;
         encoder.configMagnetOffset(encoderOffsetAngle);
         this.position = position;
-        fullRotAngle = Math.atan(position.y / position.x); // Using atan instead of position.angle is intentional.  The calculated angle should be the same for the left front and right back wheels, and for the right front and left back wheels
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
     }
@@ -96,16 +90,15 @@ public class SwerveModule<T extends MotorController> {
         return min;
     }
 
-    //By always finding the minimum error, this line of code will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
+    // By always finding the minimum error, this function will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
     private static double getError(double targetAngle, double currentAngle) {
         return minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle);
     }
 
     /***
      *
-     * @param speed The speed to set the drive motor to.
+     * @param speed The speed to set the drive motor to.  It should be between -1.0 and 1.0.
      * @param targetAngle The desired angle, in radians, of the module.
-     * @return The angle of the wheel in radians.
      */
     public double drive(double speed, double targetAngle) {
         targetAngle = unsigned_0_to_2PI(targetAngle);
@@ -123,5 +116,11 @@ public class SwerveModule<T extends MotorController> {
         steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
 
         return currentAngle;
+    }
+
+    public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
+        double theta = position.angle - driveVector.angle;
+        Vector2d velocityVector = new Vector2d(driveVector.magnitude - position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
+        drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
 }

@@ -4,11 +4,15 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.swerve.*;
+import frc.robot.swerve.PIDGains;
+import frc.robot.swerve.SwerveChassis;
+import frc.robot.swerve.SwerveModule;
+import frc.robot.swerve.Vector2d;
 import frc.robot.webdashboard.DashboardLayout;
+
+import java.util.ArrayList;
 
 import static frc.robot.Constants.CANIds;
 import static frc.robot.Constants.SwerveModuleTest.testMode;
@@ -43,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
         gyro = new AHRS();
     }
 
-    public SwerveModule[] getModules() {
+    public ArrayList<SwerveModule<CANSparkMax>> getModules() {
         return chassis.modules;
     }
 
@@ -51,7 +55,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         if (testMode) {
             Vector2d vector = new Vector2d(x, y);
-            chassis.modules[testModuleIndex].drive(vector.magnitude, vector.angle);
+            chassis.modules.get(testModuleIndex).drive(vector.magnitude, vector.angle);
         } else {
             //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
             chassis.drive(x, -y, rot);
@@ -61,6 +65,12 @@ public class DriveSubsystem extends SubsystemBase {
     public void zeroNavX() {
         gyro.zeroYaw();
         gyro.calibrate();
+    }
+
+    public void calibrateGyro() {
+        gyro.calibrate();
+        gyro.resetDisplacement();
+        gyro.zeroYaw();
     }
 
     @Override
