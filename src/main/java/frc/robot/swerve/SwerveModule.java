@@ -15,7 +15,7 @@ public class SwerveModule<T extends MotorController> {
     private final PIDController controller;
     public final CANCoder encoder;
 
-    public final Vector2d position;
+    public Vector2d position;
     private boolean isCalibrating;
 
     private MotorDirection driveDirection = MotorDirection.FORWARD;
@@ -118,9 +118,9 @@ public class SwerveModule<T extends MotorController> {
         return currentAngle;
     }
 
-    public double[] calculateMixedDrive(Vector2d driveVector, double rotSpeed) {
+    public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
         double theta = position.angle - driveVector.angle;
         Vector2d velocityVector = new Vector2d(driveVector.magnitude - position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
-        return new double[]{velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2};
+        drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
 }
