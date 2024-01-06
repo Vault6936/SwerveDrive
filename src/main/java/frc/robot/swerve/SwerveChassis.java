@@ -76,15 +76,11 @@ public class SwerveChassis<T extends MotorController> {
         }
     }
 
-    private static int polarity(double num) {
-        return num < 0 ? -1 : 1;
-    }
-
     public void drive(double x, double y, double rot, boolean squareInputs) {
         if (squareInputs) {
-            x = Math.pow(x, 2) * polarity(x);
-            y = Math.pow(y, 2) * polarity(y);
-            rot = Math.pow(rot, 2) * polarity(rot) * -1;
+            x = Math.copySign(Math.pow(x, 2), x);
+            y = Math.copySign(Math.pow(y, 2), y);
+            rot = Math.copySign(Math.pow(rot, 2), rot) * -1;
         }
         double circularDivisor = getCircularDivisor(x, y); // In the joystick API, x and y can be 1 simultaneously - the inputs are bounded by driveVector.magnitude square, not a circle, so the radius can be as high as 1.41.  This converts to circular bounds.
         x /= circularDivisor;
@@ -93,7 +89,7 @@ public class SwerveChassis<T extends MotorController> {
         y *= MathUtil.clamp(Swerve.driveMultiplier, -1.0, 1.0);
         rot *= MathUtil.clamp(Swerve.rotMultiplier, -1.0, 1.0);
         Vector2d inputVector = new Vector2d(x, y);
-        
+
         double divisor = Math.abs(inputVector.magnitude) + Math.abs(rot);
         if (divisor > 1.0) {
             inputVector = new Vector2d(inputVector.magnitude / divisor, inputVector.angle);
