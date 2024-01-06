@@ -1,7 +1,7 @@
 package frc.robot.swerve;
 
-public interface DriveLimit {
-    double getLimitedDriveValue(double currentValue, double... inputs);
+public interface InputLimit {
+    double getLimitedInputValue(double currentValue, double... inputs);
 
     double getLimitedAccelerationValue(double lastValue, double currentValue);
 }

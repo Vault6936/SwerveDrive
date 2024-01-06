@@ -12,6 +12,8 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.Vector2d;
 import frc.robot.webdashboard.DashboardLayout;
 
+import java.util.ArrayList;
+
 import static frc.robot.Constants.CANIds;
 import static frc.robot.Constants.SwerveModuleTest.testMode;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
@@ -29,30 +31,46 @@ public class DriveSubsystem extends SubsystemBase {
     private static DriveSubsystem instance;
 
     private DriveSubsystem() {
-        swervePIDGains = new PIDGains(0.2, 0, 0);
-        leftFront = new SwerveModule<>(new CANSparkMax(CANIds.leftFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftFront.encoder), swervePIDGains);
-        rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(0, 0), 135.4);
+        swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
+        leftFront = new SwerveModule<>(new CANSparkMax(CANIds.leftFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftFront.encoder), swervePIDGains, new Vector2d(-1, 1), 45 - 3.07);
+        leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
+        rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(1, 1), 110 + 0.615);
         rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        leftBack = new SwerveModule<>(new CANSparkMax(CANIds.leftBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftBack.encoder), swervePIDGains);
+        rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
+        leftBack = new SwerveModule<>(new CANSparkMax(CANIds.leftBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftBack.encoder), swervePIDGains, new Vector2d(-1, -1), 135 + 7.207);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        rightBack = new SwerveModule<>(new CANSparkMax(CANIds.rightBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightBack.encoder), swervePIDGains);
+        rightBack = new SwerveModule<>(new CANSparkMax(CANIds.rightBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightBack.encoder), swervePIDGains, new Vector2d(1, -1), 145 - 1.582);
+        rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
         chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
         chassis.setRotationLimit(SwerveChassis.DriveLimits.NONE);
+        gyro = new AHRS();
     }
 
-    public SwerveModule[] getModules() {
+    public ArrayList<SwerveModule<CANSparkMax>> getModules() {
         return chassis.modules;
     }
 
     public void drive(double x, double y, double rot) {
-        DashboardLayout.setNodeValue("joystick", "x: " + x + "\ny: " + y + "\nmagnitude: " + (new Vector2d(x, y)).magnitude);
+
         if (testMode) {
             Vector2d vector = new Vector2d(x, y);
-            chassis.modules[testModuleIndex].drive(vector.magnitude, vector.angle);
+            chassis.modules.get(testModuleIndex).drive(vector.magnitude, vector.angle);
         } else {
-            chassis.drive(x, y, rot);
+            //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
+            chassis.drive(x, -y, rot);
         }
+    }
+
+    public void zeroNavX() {
+        gyro.zeroYaw();
+        gyro.calibrate();
+    }
+
+    public void calibrateGyro() {
+        gyro.calibrate();
+        gyro.resetDisplacement();
+        gyro.zeroYaw();
     }
 
     @Override

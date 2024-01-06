@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.vision.Limelight;
 import frc.robot.webdashboard.WebdashboardServer;
 
 
@@ -25,6 +27,8 @@ public class Robot extends TimedRobot {
 
     public static WebdashboardServer socket = WebdashboardServer.getInstance(5800);
 
+    Limelight limelight = Limelight.getInstance();
+
     private Command[] initializationCommands;
 
     /**
@@ -37,7 +41,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
 
-        initializationCommands = new Command[] {new SwerveCalibrateCommand()};
+        initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
             CommandScheduler.getInstance().schedule(command);
         }
@@ -53,10 +57,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-        // commands, running already-scheduled commands, removing finished or interrupted commands,
-        // and running subsystem periodic() methods.  This must be called from the robot's periodic
-        // block in order for anything in the Command-based framework to work.
+        limelight.update();
         CommandScheduler.getInstance().run();
     }
 
@@ -101,6 +102,7 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        DriveSubsystem.getInstance().zeroNavX();
     }
 
 
