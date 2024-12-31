@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.swerve.PIDGains;
@@ -21,25 +21,25 @@ import static frc.robot.GlobalVariables.pose;
 
 public class DriveSubsystem extends SubsystemBase {
     AHRS gyro;
-    final SwerveModule<CANSparkMax> leftFront;
-    final SwerveModule<CANSparkMax> rightFront;
-    final SwerveModule<CANSparkMax> leftBack;
-    final SwerveModule<CANSparkMax> rightBack;
-    SwerveChassis<CANSparkMax> chassis;
+    final SwerveModule<SparkMax> leftFront;
+    final SwerveModule<SparkMax> rightFront;
+    final SwerveModule<SparkMax> leftBack;
+    final SwerveModule<SparkMax> rightBack;
+    SwerveChassis<SparkMax> chassis;
     PIDGains swervePIDGains;
 
     private static DriveSubsystem instance;
 
     private DriveSubsystem() {
         swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
-        leftFront = new SwerveModule<>(new CANSparkMax(CANIds.leftFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftFront.encoder), swervePIDGains, new Vector2d(-1, 1), 45 - 3.07);
+        leftFront = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder), swervePIDGains, new Vector2d(-1, 1), 45 - 3.07);
         leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        rightFront = new SwerveModule<>(new CANSparkMax(CANIds.rightFront.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightFront.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(1, 1), 110 + 0.615);
+        rightFront = new SwerveModule<>(new SparkMax(CANIds.rightFront.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.rightFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(1, 1), 110 + 0.615);
         rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        leftBack = new SwerveModule<>(new CANSparkMax(CANIds.leftBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.leftBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.leftBack.encoder), swervePIDGains, new Vector2d(-1, -1), 135 + 7.207);
+        leftBack = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder), swervePIDGains, new Vector2d(-1, -1), 135 + 7.207);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        rightBack = new SwerveModule<>(new CANSparkMax(CANIds.rightBack.driveMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(CANIds.rightBack.steeringMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANCoder(CANIds.rightBack.encoder), swervePIDGains, new Vector2d(1, -1), 145 - 1.582);
+        rightBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder), swervePIDGains, new Vector2d(1, -1), 145 - 1.582);
         rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
         chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
@@ -47,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
         gyro = new AHRS();
     }
 
-    public ArrayList<SwerveModule<CANSparkMax>> getModules() {
+    public ArrayList<SwerveModule<SparkMax>> getModules() {
         return chassis.modules;
     }
 
@@ -64,11 +64,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroNavX() {
         gyro.zeroYaw();
-        gyro.calibrate();
     }
 
     public void calibrateGyro() {
-        gyro.calibrate();
         gyro.resetDisplacement();
         gyro.zeroYaw();
     }

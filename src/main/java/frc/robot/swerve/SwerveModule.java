@@ -1,9 +1,10 @@
 package frc.robot.swerve;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -13,7 +14,7 @@ public class SwerveModule<T extends MotorController> {
     private final T driveMotor;
     private final T steeringMotor;
     private final PIDController controller;
-    public final CANCoder encoder;
+    public final CANcoder encoder;
 
     public Vector2d position;
     private boolean isCalibrating;
@@ -31,28 +32,32 @@ public class SwerveModule<T extends MotorController> {
         }
     }
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, Vector2d position, double encoderOffsetAngle) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANcoder encoder, PIDGains pidGains, Vector2d position, double encoderOffsetAngle) {
         this.driveMotor = driveMotor;
-        if (driveMotor instanceof CANSparkMax) {
-            ((CANSparkMax) driveMotor).setSmartCurrentLimit(80, 40);
-            ((CANSparkMax) driveMotor).setOpenLoopRampRate(Constants.Swerve.driveRampRate);
-            ((CANSparkMax) steeringMotor).setOpenLoopRampRate(Constants.Swerve.rotRampRate);
+        if (driveMotor instanceof SparkMax) {
+            ((SparkMax) driveMotor).configure(new SparkMaxConfig().smartCurrentLimit(80, 40)
+                            .openLoopRampRate(Constants.Swerve.driveRampRate),
+                    SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+            ((SparkMax) steeringMotor).configure(new SparkMaxConfig().smartCurrentLimit(80, 40)
+                            .openLoopRampRate(Constants.Swerve.rotRampRate),
+                    SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         }
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
-        encoder.configMagnetOffset(encoderOffsetAngle);
+        encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(encoderOffsetAngle));
         this.position = position;
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
     }
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANcoder encoder, PIDGains pidGains) {
         this(driveMotor, steeringMotor, encoder, pidGains, new Vector2d(1, 1), 0);
     }
 
     public void boot() {
-        encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360); //Must only be set to this value!
-        encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        encoder.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorDiscontinuityPoint(1)); // TODO: VERIFY THIS IS CORRECT!
+//        encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360); //Must only be set to this value!
+//        encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     }
 
     public void setDriveMotorDirection(MotorDirection direction) {
@@ -73,7 +78,7 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public double getAngleRadians() {
-        return encoder.getAbsolutePosition() / 180 * Math.PI;
+        return encoder.getAbsolutePosition().getValueAsDouble() / 180. * Math.PI;
     }
 
     private static double unsigned_0_to_2PI(double angle) {
