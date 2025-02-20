@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -12,6 +13,8 @@ import frc.robot.commands.SwerveCalibrateCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.vision.Limelight;
 import frc.robot.webdashboard.WebdashboardServer;
+
+import javax.swing.*;
 
 
 /**
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         limelight.update();
         CommandScheduler.getInstance().run();
+
     }
 
 
@@ -111,36 +115,5 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-    }
-
-
-    @Override
-    public void testInit() {
-        // Cancels all running commands at the start of test mode.
-        CommandScheduler.getInstance().cancelAll();
-    }
-
-
-    /**
-     * This method is called periodically during test mode.
-     */
-    @Override
-    public void testPeriodic() {
-    }
-
-
-    /**
-     * This method is called once when the robot is first started up.
-     */
-    @Override
-    public void simulationInit() {
-    }
-
-
-    /**
-     * This method is called periodically whilst in simulation.
-     */
-    @Override
-    public void simulationPeriodic() {
     }
 }

@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.Swerve;
-import static frc.robot.GlobalVariables.pose;
 
 public class SwerveChassis<T extends MotorController> {
     SwerveModule<T> leftFront;
@@ -101,13 +100,42 @@ public class SwerveChassis<T extends MotorController> {
         double limitedRot = rotationLimit.getLimitedInputValue(rot);
         limitedRot = rotationLimit.getLimitedAccelerationValue(lastInput.rot, limitedRot);
         Vector2d limitedVector = new Vector2d(limitedDrive, inputVector.angle, false); // Making another vector with the limited magnitude and the same angle
-        limitedVector = limitedVector.rotate(-pose.getRotation().getRadians()); // This is necessary for field centric drive
+        //limitedVector = limitedVector.rotate(-pose.getRotation().getRadians()); // This is necessary for field centric drive
+        // TODO: Reenable pose focus.
 
         for (SwerveModule<T> module : modules) {
             module.rotateAndDrive(limitedVector, limitedRot);
         }
 
         lastInput = new DriveInput(limitedVector, limitedRot);
+    }
+
+    public void DriveMotor(int motorNumber, boolean move)
+    {
+       Vector2d direction = new Vector2d(0,1);
+       double speed;
+
+       if(move)
+       {
+         speed = 0.5;
+       }
+       else
+       {
+           speed =0.;
+       }
+
+       if(motorNumber==0) {
+           leftFront.rotateAndDrive(direction, speed);
+       }
+       else if (motorNumber==1) {
+           rightFront.rotateAndDrive(direction, speed);
+       }
+       else if (motorNumber==2) {
+           leftBack.rotateAndDrive(direction, speed);
+       }
+       else if (motorNumber==3) {
+           rightBack.rotateAndDrive(direction, speed);
+       }
     }
 
     public void drive(double x, double y, double rot) {

@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.swerve.SwerveModule;
 
 import java.util.ArrayList;
 
-public class SwerveCalibrateCommand extends CommandBase {
+public class SwerveCalibrateCommand extends Command {
     boolean isFinished = false;
-    private ArrayList<SwerveModule<CANSparkMax>> modules;
+    private ArrayList<SwerveModule<SparkMax>> modules;
 
     private DriveSubsystem subsystem = Robot.robotContainer.driveSubsystem;
 

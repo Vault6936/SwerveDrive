@@ -1,25 +1,35 @@
 package frc.robot.swerve;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.revrobotics.CANSparkMax;
+
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+
+import java.util.function.DoubleSupplier;
 
 public class SwerveModule<T extends MotorController> {
     private final T driveMotor;
     private final T steeringMotor;
     private final PIDController controller;
-    public final CANCoder encoder;
+    public final CANcoder encoder;
+    private final DoubleSupplier driveEncoder;
+    public String name;
 
     public Vector2d position;
     private boolean isCalibrating;
 
     private MotorDirection driveDirection = MotorDirection.FORWARD;
     private MotorDirection turnDirection = MotorDirection.FORWARD;
+    private double encoderOffset;
 
     public enum MotorDirection {
         FORWARD(1),
@@ -31,28 +41,34 @@ public class SwerveModule<T extends MotorController> {
         }
     }
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains, Vector2d position, double encoderOffsetAngle) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANcoder encoder, PIDGains pidGains, Vector2d position, double encoderOffset) {
         this.driveMotor = driveMotor;
-        if (driveMotor instanceof CANSparkMax) {
-            ((CANSparkMax) driveMotor).setSmartCurrentLimit(80, 40);
-            ((CANSparkMax) driveMotor).setOpenLoopRampRate(Constants.Swerve.driveRampRate);
-            ((CANSparkMax) steeringMotor).setOpenLoopRampRate(Constants.Swerve.rotRampRate);
+        if (driveMotor instanceof SparkMax) {
+            ((SparkMax) driveMotor).configure(new SparkMaxConfig().smartCurrentLimit(80, 40)
+                            .openLoopRampRate(Constants.Swerve.driveRampRate),
+                    SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+            ((SparkMax) steeringMotor).configure(new SparkMaxConfig().smartCurrentLimit(80, 40)
+                            .openLoopRampRate(Constants.Swerve.rotRampRate),
+                    SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+            driveEncoder = ((SparkMax)driveMotor).getEncoder()::getPosition;
+        }
+        else {
+            driveEncoder = () -> 0;
         }
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
-        encoder.configMagnetOffset(encoderOffsetAngle);
+        this.encoderOffset = encoderOffset;
         this.position = position;
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
     }
 
-    public SwerveModule(T driveMotor, T steeringMotor, CANCoder encoder, PIDGains pidGains) {
+    public SwerveModule(T driveMotor, T steeringMotor, CANcoder encoder, PIDGains pidGains) {
         this(driveMotor, steeringMotor, encoder, pidGains, new Vector2d(1, 1), 0);
     }
 
     public void boot() {
-        encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360); //Must only be set to this value!
-        encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(encoderOffset).withAbsoluteSensorDiscontinuityPoint(1));
     }
 
     public void setDriveMotorDirection(MotorDirection direction) {
@@ -73,7 +89,13 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public double getAngleRadians() {
-        return encoder.getAbsolutePosition() / 180 * Math.PI;
+        double rawValue = encoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
+        if(rawValue < 0)
+        {
+            rawValue += (2 * Math.PI);
+        }
+        return rawValue;
+        //return encoder.getAbsolutePosition().getValueAsDouble();//((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset) * Math.PI * 2);//.getValueAsDouble() / 180. * Math.PI;
     }
 
     private static double unsigned_0_to_2PI(double angle) {
@@ -95,6 +117,12 @@ public class SwerveModule<T extends MotorController> {
         return minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle);
     }
 
+    public SwerveModulePosition getOdometryData() {
+        return new SwerveModulePosition(driveDirection.direction * driveEncoder.getAsDouble() /
+                Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO * Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
+                new Rotation2d(getAngleRadians() + Math.PI / 2));  // TODO : Decide on units and get a conversion somewhere sane.
+    }
+
     /***
      *
      * @param speed The speed to set the drive motor to.  It should be between -1.0 and 1.0.
@@ -112,15 +140,28 @@ public class SwerveModule<T extends MotorController> {
             polarity = -1;
         }
 
+        SmartDashboard.putNumber(name + "CurrentAngle", currentAngle);
+        SmartDashboard.putNumber(name + "TargetAngle", targetAngle);
+        SmartDashboard.putNumber(name + "ErrAngle", err);
+        if(Math.abs(speed) > 0.1)
+        {
+            steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);
+        }
+        else
+        {
+            steeringMotor.set(0);
+        }
+        speed *= 0.3;
         driveMotor.set(MathUtil.clamp(speed * polarity * driveDirection.direction, -1.0, 1.0));
-        steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
+        SmartDashboard.putNumber(name + "TargetPower", MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
 
         return currentAngle;
     }
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
-        double theta = position.angle - driveVector.angle;
+        double theta = position.angle - driveVector.angle; // TODO: re-enable when position angle is fixed.
+        //double theta = driveVector.angle;
         Vector2d velocityVector = new Vector2d(driveVector.magnitude - position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
         drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
-}
+}   

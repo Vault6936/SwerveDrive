@@ -11,6 +11,7 @@ public final class Constants {
 
     public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final int PAYLOAD_CONTROLLER_PORT = 1;
     }
 
     public static final class SwerveModuleTest {
@@ -24,6 +25,9 @@ public final class Constants {
         public static final SwerveCANId rightFront = new SwerveCANId(2, 3, 21); // module 1
         public static final SwerveCANId leftBack = new SwerveCANId(6, 7, 23); // module 3
         public static final SwerveCANId rightBack = new SwerveCANId(8, 9, 24); // module 4
+        public static int algae = 15;
+        public static int coral = 10;
+        public static int lift = 11;
     }
 
     public static class SwerveCANId {
@@ -43,5 +47,10 @@ public final class Constants {
         public static final double driveRampRate = 100.0;
         public static final double rotMultiplier = 1;
         public static final double rotRampRate = 75.0;
+        public static final double SPEED_OF_APRILALIGN = .5;
+        public static final double driveMotorTicksPerRev = 1;
+        public static final double GEAR_RATIO = 6.75;
+        public static final double WHEEL_DIAMETER_INCHES = 4.0;
+
     }
 }
