@@ -1,24 +1,24 @@
-package frc.robot.commands;
+package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LiftPresets;
-import frc.robot.subsystems.LiftSystem;
+import frc.robot.subsystems.LiftSubsystem;
 
 public class LiftPresetCommand  extends Command {
 
-    private final LiftSystem liftSystem;
+    private final LiftSubsystem liftSubsystem;
     LiftPresets target_preset;
 
-    public LiftPresetCommand(LiftSystem liftSystem, LiftPresets preset)
+    public LiftPresetCommand(LiftSubsystem liftSubsystem, LiftPresets preset)
     {
 
-        this.liftSystem = liftSystem;
+        this.liftSubsystem = liftSubsystem;
         target_preset = preset;
     }
 
     @Override
     public void initialize() {
-        liftSystem.goPreset(target_preset);
+        liftSubsystem.goPreset(target_preset);
     }
 
 
@@ -36,6 +36,6 @@ public class LiftPresetCommand  extends Command {
     @Override
     public void end(boolean cancelled)
     {
-        liftSystem.stop();
+        liftSubsystem.stopMoveToPos();
     }
 }

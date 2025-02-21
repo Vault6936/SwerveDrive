@@ -1,0 +1,37 @@
+package frc.robot.commands.coralCommands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.CoralPresets;
+import frc.robot.subsystems.CoralSubsystem;
+import frc.robot.subsystems.MotorDirection;
+
+public class CoralHozPresetCommand extends Command {
+    /*
+    Moves the Coral Placer's horizontal position to a preset position defined in "CoralPresets"
+    */
+    CoralSubsystem subsystem;
+    CoralPresets preset;
+    public CoralHozPresetCommand(CoralSubsystem subsystem, CoralPresets preset){
+        this.subsystem = subsystem;
+        this.preset = preset;
+    }
+    @Override
+    public void initialize() {
+        subsystem.slideToPreset(preset);
+    }
+
+    @Override
+    public void execute(){}
+
+    @Override
+    public void end(boolean isCancelled)
+    {
+        subsystem.stopMoveToPos();
+    }
+
+    @Override
+    public boolean isFinished()
+    {
+        return false;
+    }
+}

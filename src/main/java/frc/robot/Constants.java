@@ -25,9 +25,12 @@ public final class Constants {
         public static final SwerveCANId rightFront = new SwerveCANId(2, 3, 21); // module 1
         public static final SwerveCANId leftBack = new SwerveCANId(6, 7, 23); // module 3
         public static final SwerveCANId rightBack = new SwerveCANId(8, 9, 24); // module 4
-        public static int algae = 15;
-        public static int coral = 10;
         public static int lift = 11;
+        public static int algaeAngle = 12;
+        public static int algaePusher = 13;
+        public static int coralHoz = 14;
+        public static int CoraldispenserSingleWheel = 15;
+        public static int CoraldispenserTwoWheel = 16;
     }
 
     public static class SwerveCANId {
@@ -52,5 +55,20 @@ public final class Constants {
         public static final double GEAR_RATIO = 6.75;
         public static final double WHEEL_DIAMETER_INCHES = 4.0;
 
+    }
+
+    public static class SpeedConstants { //TODO REMOVE. I DID NOT KNOW WHERE TO PUT ALL THESE SPEED CONSTANTS
+        public static final double CORAL_HOZ_SPEED = 1;
+        public static final double CORAL_HOZ_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
+
+        public static final double CORAL_DISPENSER_SPEED = 1;
+
+        public static final double LIFT_SPEED = 1;
+        public static final double LIFT_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
+
+        public static final double ALGAE_ANGLE_SPEED = 1;
+        public static final double ALGAE_ANGLE_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
+
+        public static final double ALGAE_MOVE_SPEED = 1;
     }
 }

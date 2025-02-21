@@ -1,14 +1,14 @@
-package frc.robot.commands;
+package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.AlgaeEaterSystem;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.MotorDirection;
 
-public class AlgaeCommand extends Command {
-    AlgaeEaterSystem subsystem;
+public class LiftCommand extends Command {
+    LiftSubsystem subsystem;
     MotorDirection direction;
 
-    public AlgaeCommand(AlgaeEaterSystem system, MotorDirection dir)
+    public LiftCommand(LiftSubsystem system, MotorDirection dir)
     {
         subsystem = system;
         direction = dir;
@@ -23,13 +23,13 @@ public class AlgaeCommand extends Command {
     @Override
     public void execute()
     {
-        subsystem.setIntake(direction);
+        subsystem.setExtend(direction);
     }
 
     @Override
     public void end(boolean isCancelled)
     {
-        subsystem.setIntake(MotorDirection.STOP);
+        subsystem.setExtend(MotorDirection.STOP);
     }
 
     @Override

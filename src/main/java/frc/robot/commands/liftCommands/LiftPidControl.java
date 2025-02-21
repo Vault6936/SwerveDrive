@@ -1,16 +1,16 @@
-package frc.robot.commands;
+package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LiftSystem;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.MotorDirection;
 
 import java.util.function.DoubleSupplier;
 
 public class LiftPidControl extends Command {
-    LiftSystem subsystem;
+    LiftSubsystem subsystem;
     DoubleSupplier vertical;
 
-    public LiftPidControl(LiftSystem system, DoubleSupplier verticalUp) {
+    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp) {
         subsystem = system;
         vertical = verticalUp;
         addRequirements(system);
