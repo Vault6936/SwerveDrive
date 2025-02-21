@@ -28,8 +28,8 @@ public class RobotContainer {
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
-        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> baseController.getLeftY(), () -> baseController.getRightX());
-        //driveSubsystem.setDefaultCommand(driveDefaultCommand);
+        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
+        driveSubsystem.setDefaultCommand(driveDefaultCommand);
         //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         configureBindings();
 
@@ -52,7 +52,7 @@ public class RobotContainer {
         baseController.b().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0.5, 0, 0)));
         baseController.b().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
         baseController.x().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0.5)));
-        baseController.x().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
+        baseController.b().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
 
 
 //        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));

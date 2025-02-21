@@ -3,6 +3,7 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -68,7 +69,8 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public void boot() {
-        encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(encoderOffset).withAbsoluteSensorDiscontinuityPoint(1));
+        encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(encoderOffset).
+                withAbsoluteSensorDiscontinuityPoint(1).withSensorDirection(SensorDirectionValue.Clockwise_Positive));
     }
 
     public void setDriveMotorDirection(MotorDirection direction) {
@@ -135,10 +137,11 @@ public class SwerveModule<T extends MotorController> {
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
-        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
-            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
-            polarity = -1;
-        }
+        // TODO: reenable
+//        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
+//            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
+//            polarity = -1;
+//        }
 
         SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
         SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
@@ -160,7 +163,7 @@ public class SwerveModule<T extends MotorController> {
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
         double theta = position.angle - driveVector.angle; // TODO: re-enable when position angle is fixed.
-        Vector2d velocityVector = new Vector2d(driveVector.magnitude - position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
+        Vector2d velocityVector = new Vector2d(driveVector.magnitude + position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
         drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
 }   
