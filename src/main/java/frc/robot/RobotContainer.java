@@ -29,7 +29,7 @@ public class RobotContainer {
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> baseController.getLeftY(), () -> baseController.getRightX());
-        driveSubsystem.setDefaultCommand(driveDefaultCommand);
+        //driveSubsystem.setDefaultCommand(driveDefaultCommand);
         //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         configureBindings();
 
@@ -39,7 +39,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        baseController.a().whileTrue(new AprilAlign(driveSubsystem));
+        //baseController.a().whileTrue(new AprilAlign(driveSubsystem));
 
         //baseController.plus().whileTrue(new AlgaeCommand(algae, MotorDirection.FORWARD));
         //baseController.minus().whileTrue(new AlgaeCommand(algae, MotorDirection.REVERSE));
@@ -47,6 +47,12 @@ public class RobotContainer {
         //baseController.x().whileTrue(new CoralCommand(coral, MotorDirection.FORWARD));
         //baseController.y().whileTrue(new CoralCommand(coral, MotorDirection.REVERSE));
 //
+        baseController.a().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0, 0.5, 0)));
+        baseController.a().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
+        baseController.b().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0.5, 0, 0)));
+        baseController.b().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
+        baseController.x().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0.5)));
+        baseController.x().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
 
 
 //        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));

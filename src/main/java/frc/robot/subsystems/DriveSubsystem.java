@@ -40,22 +40,28 @@ public class DriveSubsystem extends SubsystemBase {
         swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
         rightBack = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder),
-                swervePIDGains, new Vector2d(-1, 1), -0.626220703125);
+                swervePIDGains, new Vector2d(1, 1), -0.626220703125);
         rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightBack.setDriveMotorDirection(SwerveModule.MotorDirection.FORWARD);
-        rightFront = new SwerveModule<>(new SparkMax(CANIds.rightFront.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.rightFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightFront.encoder), swervePIDGains, new Vector2d(1, 1), -0.193115234375);
+        rightFront = new SwerveModule<>(new SparkMax(CANIds.rightFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.rightFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightFront.encoder),
+                swervePIDGains, new Vector2d(1, -1), -0.4677734375);//-0.193115234375);
         rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.FORWARD);
-        leftFront = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder), swervePIDGains, new Vector2d(-1, -1), -0.85693359375);
+        leftFront = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder),
+                swervePIDGains, new Vector2d(-1, -1), -0.85693359375);
         leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        leftBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless), new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder), swervePIDGains, new Vector2d(1, -1),-0.35693359375);
+        leftBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder),
+                swervePIDGains, new Vector2d(-1, 1),-0.35693359375);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        rightBack.name = "lb";
-        rightFront.name = "lf";
-        leftFront.name = "rf";
-        leftBack.name = "rb";
+        rightBack.name = "rb";
+        rightFront.name = "rf";
+        leftFront.name = "lf";
+        leftBack.name = "lb";
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
         chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
         chassis.setRotationLimit(SwerveChassis.DriveLimits.NONE);
@@ -83,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
         } else {
             //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
 
-            chassis.drive(x, -y, rot);
+            chassis.drive(-x, y, rot);
 
 
         }
