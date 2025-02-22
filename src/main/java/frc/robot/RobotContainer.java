@@ -5,6 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
+import frc.robot.commands.algaeCommands.AlgaeAnglePidControl;
+import frc.robot.commands.algaeCommands.AlgaePushCommand;
+import frc.robot.commands.coralCommands.CoralDispenserCommand;
+import frc.robot.commands.coralCommands.CoralHozPidControl;
+import frc.robot.commands.liftCommands.LiftCommand;
 import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.*;
@@ -26,6 +31,8 @@ public class RobotContainer {
     public final LiftSubsystem lift;
     private final DriveDefaultCommand driveDefaultCommand;
     double speedMultiplier = 1;
+    CoralSubsystem coralSubsystem;
+    AlgaeSubsystem algaeSubsystem;
     //private final AutoFactory autoFactory; TODO add methods getPose and resetOdometry to the DriveSubsystem
 
     public RobotContainer() {
@@ -36,6 +43,8 @@ public class RobotContainer {
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit);
         lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         configureBindings();
+        coralSubsystem = new CoralSubsystem();
+        algaeSubsystem = new AlgaeSubsystem();
 
         //autoFactory = new AutoFactory(driveSubsystem::getPose, driveSubsystem::resetOdometry, driveSubsystem::FollowTrajectory, true, driveSubsystem);
 
@@ -44,11 +53,23 @@ public class RobotContainer {
     private void configureBindings() {
         //baseController.a().whileTrue(new AprilAlign(driveSubsystem));
 
-        //baseController.plus().whileTrue(new AlgaeCommand(algae, MotorDirection.FORWARD));
-        //baseController.minus().whileTrue(new AlgaeCommand(algae, MotorDirection.REVERSE));
-//
-        //baseController.x().whileTrue(new CoralCommand(coral, MotorDirection.FORWARD));
-        //baseController.y().whileTrue(new CoralCommand(coral, MotorDirection.REVERSE))
+        baseController.plus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
+        baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
+
+        baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 2));
+        baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -2));
+
+
+        baseController.x().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
+        baseController.b().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
+
+        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5));
+        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5));
+
+        baseController.y().whileTrue((new LiftCommand(lift,MotorDirection.FORWARD)));
+        baseController.a().whileTrue((new LiftCommand(lift,MotorDirection.REVERSE)));
+
+
 
 //        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));
 //        baseController.zl().whileTrue(new LiftCommand(lift, MotorDirection.REVERSE));
