@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 public class CoralHozPidControl extends Command {
     /*
     Don't understand what this class is for.
+    This is the default command that just moves the subsystem to a target position.
      */
     CoralSubsystem subsystem;
     DoubleSupplier horizontal;
@@ -17,15 +18,18 @@ public class CoralHozPidControl extends Command {
         this.horizontal = horizontal;
     }
     @Override
-    public void initialize() {}
+    public void initialize() {
+    }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        subsystem.updateHozTarget(horizontal.getAsDouble());
+        subsystem.doPositionControl();
+    }
 
     @Override
     public void end(boolean isCancelled)
     {
-        subsystem.setHozCoral(MotorDirection.STOP);
     }
 
     @Override

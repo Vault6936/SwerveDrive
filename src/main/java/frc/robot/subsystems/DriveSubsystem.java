@@ -38,8 +38,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private DriveSubsystem() {
         swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
-        rightBack = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
-                new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder),
+        rightBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder),
                 swervePIDGains, new Vector2d(1, -1), -0.374267578125);
         rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         rightBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
@@ -48,13 +48,13 @@ public class DriveSubsystem extends SubsystemBase {
                 swervePIDGains, new Vector2d(1, 1), -0.531005859375);//-0.193115234375);
         rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        leftFront = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
-                new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder),
+        leftFront = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder),
                 swervePIDGains, new Vector2d(-1, 1), -0.902099609375);
         leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         leftFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
-        leftBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
-                new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder),
+        leftBack = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
+                new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder),
                 swervePIDGains, new Vector2d(-1, -1),-0.900390625);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         leftBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);

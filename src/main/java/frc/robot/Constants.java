@@ -21,10 +21,10 @@ public final class Constants {
     }
 
     public static class CANIds {
-        public static final SwerveCANId leftFront = new SwerveCANId(4, 5, 22); // module 2
-        public static final SwerveCANId rightFront = new SwerveCANId(2, 3, 21); // module 1
-        public static final SwerveCANId leftBack = new SwerveCANId(6, 7, 23); // module 3
-        public static final SwerveCANId rightBack = new SwerveCANId(8, 9, 24); // module 4
+        public static final SwerveCANId rightBack  = new SwerveCANId(2, 3, 21); // module 2
+        public static final SwerveCANId rightFront = new SwerveCANId(6, 7, 23);// module 1
+        public static final SwerveCANId leftFront  = new SwerveCANId(8, 9, 24); // module 3
+        public static final SwerveCANId leftBack   = new SwerveCANId(4, 5, 22); // module 4
         public static int lift = 11;
         public static int algaeAngle = 12;
         public static int algaePusher = 13;
@@ -57,7 +57,7 @@ public final class Constants {
 
     }
 
-    public static class SpeedConstants { //TODO REMOVE. I DID NOT KNOW WHERE TO PUT ALL THESE SPEED CONSTANTS
+    public static class SpeedConstants {
         public static final double CORAL_HOZ_SPEED = 1;
         public static final double CORAL_HOZ_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 

@@ -9,16 +9,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+/**
+ * This system handles the motors for the coral placer system.
+ */
 public class CoralSubsystem extends SubsystemBase {
     /*
     Move Coral dispenser's coral pushers Forward/Backward
     Move Coral dispenser Left/Right (uses target pos, uses presets)
      */
-    SparkMax coralHoz = new SparkMax(Constants.CANIds.coralHoz, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
-    SparkMax coralDispenser1 = new SparkMax(Constants.CANIds.CoraldispenserSingleWheel, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
-    SparkMax coralDispenser2 = new SparkMax(Constants.CANIds.CoraldispenserSingleWheel, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
+    final SparkMax coralHoz = new SparkMax(Constants.CANIds.coralHoz, SparkLowLevel.MotorType.kBrushless);
+    final SparkMax coralDispenser1 = new SparkMax(Constants.CANIds.CoraldispenserSingleWheel, SparkLowLevel.MotorType.kBrushless);
+    final SparkMax coralDispenser2 = new SparkMax(Constants.CANIds.CoraldispenserTwoWheel, SparkLowLevel.MotorType.kBrushless);
 
-    RelativeEncoder hozEncoder;
+    final RelativeEncoder hozEncoder;
     double hozTargetPos;
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
@@ -26,6 +29,15 @@ public class CoralSubsystem extends SubsystemBase {
     double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
     double minPosition = 0;   //TODO SET THIS VALUE CORRECTLY
 
+    public CoralSubsystem(){
+        hozEncoder = coralHoz.getEncoder();
+        hozEncoder.setPosition(0);
+    }
+
+    /**
+     * This moves the dispenser motors forward or backward for the coral placer.
+     * @param dir Motor movement, where forward places the output.
+     */
     public void setDispenser(MotorDirection dir) {
         switch (dir) {
             case FORWARD -> {
@@ -52,12 +64,6 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public void coralSystem(){
-        //Not too sure about what the use of this is, but figured it would be important
-        hozEncoder = coralHoz.getEncoder();
-        hozEncoder.setPosition(0);
-    }
-
     public void updateHozTarget(double change){
         hozTargetPos = MathUtil.clamp(hozTargetPos + (change * 1.0), minPosition, maxPosition);
     }
@@ -70,18 +76,17 @@ public class CoralSubsystem extends SubsystemBase {
         hozTargetPos = hozEncoder.getPosition();
     }
 
+    public void doPositionControl() {
+        double outputPower = pid.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
+        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        coralHoz.set(outputPower);
+        SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
+    }
+
     @Override
     public void periodic()
     {
-        double outputPower = pid.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
-
         SmartDashboard.putNumber("Coral Horizontal Position", hozEncoder.getPosition());
         SmartDashboard.putNumber("Coral Horizontal Target Position", hozTargetPos);
-        SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
-
-        coralHoz.set(outputPower);
     }
-
 }
-
