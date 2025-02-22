@@ -16,6 +16,8 @@ public class SwerveChassis<T extends MotorController> {
 
     public final ArrayList<SwerveModule<T>> modules;
 
+    private double AccelerationLimit;
+
     public static final class DriveLimits {
         public static final InputLimit NONE = new InputLimit() {
             @Override
@@ -57,6 +59,11 @@ public class SwerveChassis<T extends MotorController> {
         }
     }
 
+    public void SetAccelerationLimit(double input)
+    {
+        AccelerationLimit = Math.clamp(input, -1, 1);
+    }
+
     public void setDriveLimit(InputLimit inputLimit) {
         this.driveLimit = inputLimit;
     }
@@ -95,7 +102,7 @@ public class SwerveChassis<T extends MotorController> {
             rot /= divisor;
         }
 
-        double limitedDrive = driveLimit.getLimitedInputValue(inputVector.magnitude);
+        double limitedDrive = driveLimit.getLimitedInputValue(inputVector.magnitude * AccelerationLimit);
         limitedDrive = driveLimit.getLimitedAccelerationValue(lastInput.vector.magnitude, limitedDrive);
         double limitedRot = rotationLimit.getLimitedInputValue(rot);
         limitedRot = rotationLimit.getLimitedAccelerationValue(lastInput.rot, limitedRot);

@@ -11,7 +11,6 @@ public class LiftPresetCommand  extends Command {
 
     public LiftPresetCommand(LiftSubsystem liftSubsystem, LiftPresets preset)
     {
-
         this.liftSubsystem = liftSubsystem;
         target_preset = preset;
     }

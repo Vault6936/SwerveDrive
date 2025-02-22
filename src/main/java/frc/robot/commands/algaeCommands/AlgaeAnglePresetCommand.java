@@ -11,7 +11,8 @@ public class AlgaeAnglePresetCommand extends Command {
      */
     AlgaeSubsystem subsystem;
     AlgaePresets preset;
-    public AlgaeAnglePresetCommand(AlgaeSubsystem subsystem, AlgaePresets preset){
+
+    public AlgaeAnglePresetCommand(AlgaeSubsystem subsystem, AlgaePresets preset) {
         this.subsystem = subsystem;
         this.preset = preset;
     }
@@ -22,17 +23,16 @@ public class AlgaeAnglePresetCommand extends Command {
     }
 
     @Override
-    public void execute(){}
+    public void execute() {
+    }
 
     @Override
-    public void end(boolean isCancelled)
-    {
+    public void end(boolean isCancelled) {
         subsystem.stopMoveToPos();
     }
 
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return (Math.abs(subsystem.angleEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
     }
 }

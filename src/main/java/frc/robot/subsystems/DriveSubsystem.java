@@ -82,7 +82,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
-
     public void drive(double x, double y, double rot) {
 
         if (testMode) {
@@ -90,10 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
             chassis.modules.get(testModuleIndex).drive(vector.magnitude, vector.angle);
         } else {
             //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
-
             chassis.drive(-x, y, rot);
-
-
         }
     }
 

@@ -5,9 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
+import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.*;
 
+import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
@@ -21,7 +23,7 @@ public class RobotContainer {
     public final CameraSystem cameraSystem = new CameraSystem();
     //public final AlgaeEaterSystem algae = new AlgaeEaterSystem();
     //public final CoralPlacerSystem coral = new CoralPlacerSystem();
-    //public final LiftSystem lift = new LiftSystem();
+    public final LiftSubsystem lift;
     private final DriveDefaultCommand driveDefaultCommand;
     double speedMultiplier = 1;
     //private final AutoFactory autoFactory; TODO add methods getPose and resetOdometry to the DriveSubsystem
@@ -30,13 +32,10 @@ public class RobotContainer {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
-        LiftSubsystem liftSubsystem = new LiftSubsystem();
-        speedMultiplier =
 
-
-        //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
+        lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit);
+        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         configureBindings();
-
 
         //autoFactory = new AutoFactory(driveSubsystem::getPose, driveSubsystem::resetOdometry, driveSubsystem::FollowTrajectory, true, driveSubsystem);
 
@@ -49,15 +48,7 @@ public class RobotContainer {
         //baseController.minus().whileTrue(new AlgaeCommand(algae, MotorDirection.REVERSE));
 //
         //baseController.x().whileTrue(new CoralCommand(coral, MotorDirection.FORWARD));
-        //baseController.y().whileTrue(new CoralCommand(coral, MotorDirection.REVERSE));
-//
-        baseController.a().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0, 0.5, 0)));
-        baseController.a().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
-        baseController.b().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0.5, 0, 0)));
-        baseController.b().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
-        baseController.x().whileTrue(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0.5)));
-        baseController.b().whileFalse(new InstantCommand(() -> driveSubsystem.drive(0, 0, 0)));
-
+        //baseController.y().whileTrue(new CoralCommand(coral, MotorDirection.REVERSE))
 
 //        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));
 //        baseController.zl().whileTrue(new LiftCommand(lift, MotorDirection.REVERSE));
@@ -84,6 +75,5 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return null;
     }
-
 
 }

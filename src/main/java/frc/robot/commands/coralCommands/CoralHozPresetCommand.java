@@ -33,6 +33,6 @@ public class CoralHozPresetCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return (Math.abs(subsystem.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
+        return (Math.abs(subsystem.hozEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
     }
 }

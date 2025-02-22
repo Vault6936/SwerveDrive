@@ -78,7 +78,7 @@ public class LiftSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        SmartDashboard.putNumber("LiftPosition", encoder.getPosition());
+        SmartDashboard.putNumber("LiftPosition", encoder_value.getAsDouble());
         SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
     }
 }
