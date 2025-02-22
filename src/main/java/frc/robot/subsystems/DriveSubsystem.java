@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.swerve.PIDGains;
 import frc.robot.swerve.SwerveChassis;
@@ -29,6 +30,7 @@ public class DriveSubsystem extends SubsystemBase {
     final SwerveModule<SparkMax> leftBack;
     public SwerveChassis<SparkMax> chassis;
     PIDGains swervePIDGains;
+    private Pose2d currentPose;
 
     private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
     private final PIDController yController = new PIDController(10.0, 0.0, 0.0);
@@ -95,6 +97,14 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
+    private void updatePose(SwerveModule<SparkMax> lf, SwerveModule<SparkMax> lb, SwerveModule<SparkMax> rb, SwerveModule<SparkMax> rf){
+        double magnitude = (lf.getOdometryData().distanceMeters + lb.getOdometryData().distanceMeters + rb.getOdometryData().distanceMeters + rf.getOdometryData().distanceMeters) /4;
+        double angle = (lf.getAngleRadians() + lb.getAngleRadians() + rb.getAngleRadians() +rf.getAngleRadians()) / 4;
+        double poseX = currentPose.getX() + magnitude * Math.cos(angle);
+        double poseY = currentPose.getY() + magnitude * Math.sin(angle);
+        currentPose = new Pose2d(poseX, poseY, gyro.getRotation2d());
+    }
+
     public void zeroNavX() {
         gyro.zeroYaw();
     }
@@ -106,12 +116,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        pose = new Pose2d(0, 0, gyro.getRotation2d());
+        updatePose(leftFront,leftBack,rightBack,rightFront);
         DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder3", leftFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder4", leftBack.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("test mode", testMode);
+        SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
+        SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);
+        SmartDashboard.putNumber("RightFrontEncoderDiff", rightFront.getOdometryData().distanceMeters);
+        SmartDashboard.putNumber("RightBackEncoderDiff", rightBack.getOdometryData().distanceMeters);
+
     }
 
     public static DriveSubsystem getInstance() {

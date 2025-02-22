@@ -27,6 +27,7 @@ public class SwerveModule<T extends MotorController> {
 
     public Vector2d position;
     private boolean isCalibrating;
+    private double lastEncoderPosition;
 
     private MotorDirection driveDirection = MotorDirection.FORWARD;
     private MotorDirection turnDirection = MotorDirection.FORWARD;
@@ -120,7 +121,10 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public SwerveModulePosition getOdometryData() {
-        return new SwerveModulePosition(driveDirection.direction * driveEncoder.getAsDouble() /
+        double temp = lastEncoderPosition - driveEncoder.getAsDouble();
+        lastEncoderPosition = driveEncoder.getAsDouble();
+
+        return new SwerveModulePosition(driveDirection.direction * temp /
                 Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO * Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
                 new Rotation2d(getAngleRadians() + Math.PI / 2));  // TODO : Decide on units and get a conversion somewhere sane.
     }
