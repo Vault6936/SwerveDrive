@@ -23,13 +23,17 @@ public class RobotContainer {
     //public final CoralPlacerSystem coral = new CoralPlacerSystem();
     //public final LiftSystem lift = new LiftSystem();
     private final DriveDefaultCommand driveDefaultCommand;
-
+    double speedMultiplier = 1;
     //private final AutoFactory autoFactory; TODO add methods getPose and resetOdometry to the DriveSubsystem
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
+        LiftSubsystem liftSubsystem = new LiftSubsystem();
+        speedMultiplier =
+
+
         //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         configureBindings();
 

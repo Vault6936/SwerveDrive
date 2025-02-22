@@ -22,10 +22,9 @@ public class SwerveChassis<T extends MotorController> {
             public double getLimitedInputValue(double currentValue, double... inputs) {
                 return currentValue;
             }
-
             @Override
             public double getLimitedAccelerationValue(double lastValue, double currentValue) {
-                return currentValue * LiftSubsystem.driveSpeedMultiplier; //TODO Make this an actual acceleration thing
+                return currentValue; //TODO Make this an actual acceleration thing
             }
         };
     }

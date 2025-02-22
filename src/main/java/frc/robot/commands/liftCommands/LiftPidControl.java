@@ -24,11 +24,11 @@ public class LiftPidControl extends Command {
     @Override
     public void execute() {
         subsystem.updatePos(vertical.getAsDouble());
+        subsystem.doPositionControl();
     }
 
     @Override
     public void end(boolean isCancelled) {
-        subsystem.setExtend(MotorDirection.STOP);
     }
 
     @Override

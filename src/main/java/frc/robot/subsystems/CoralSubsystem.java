@@ -21,7 +21,7 @@ public class CoralSubsystem extends SubsystemBase {
     final SparkMax coralDispenser1 = new SparkMax(Constants.CANIds.CoraldispenserSingleWheel, SparkLowLevel.MotorType.kBrushless);
     final SparkMax coralDispenser2 = new SparkMax(Constants.CANIds.CoraldispenserTwoWheel, SparkLowLevel.MotorType.kBrushless);
 
-    final RelativeEncoder hozEncoder;
+    public final RelativeEncoder hozEncoder;
     double hozTargetPos;
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY

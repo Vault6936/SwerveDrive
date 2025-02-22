@@ -1,6 +1,7 @@
 package frc.robot.commands.coralCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.CoralPresets;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.MotorDirection;
@@ -32,6 +33,6 @@ public class CoralHozPresetCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return false;
+        return (Math.abs(subsystem.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
     }
 }

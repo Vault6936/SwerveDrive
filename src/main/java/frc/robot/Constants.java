@@ -71,4 +71,10 @@ public final class Constants {
 
         public static final double ALGAE_MOVE_SPEED = 1;
     }
+
+    public static class ThresholdConstants {
+        public static final double ALGAE_PRESET_THRESHOLD = 10;
+        public static final double CORAL_PRESET_THRESHOLD = 10;
+
+    }
 }

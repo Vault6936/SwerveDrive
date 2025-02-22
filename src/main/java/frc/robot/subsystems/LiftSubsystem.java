@@ -1,31 +1,39 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import com.ctre.phoenix6.hardware.TalonFX;
 
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 
 public class LiftSubsystem extends SubsystemBase {
     /*
 
      */
-    SparkMax extend = new SparkMax(Constants.CANIds.lift, SparkLowLevel.MotorType.kBrushless);
-    static RelativeEncoder encoder;
+    TalonFX extend =  new TalonFX(Constants.CANIds.lift);
     PIDController pid = new PIDController(0.25, 0, 0);
     double currentTargetPos = 0;
     static double min_position = -380.0;
     static double max_position = 0.0;
-    public static double driveSpeedMultiplier = .8 / (1 + 2 * Math.pow(Math.E,.02 * (encoder.getPosition() - 2/3 * max_position))) + .2;
+    DoubleSupplier encoder_value;
+    DoubleConsumer setSpeedMultiplier;
 
-    public LiftSubsystem()
+    public LiftSubsystem(DoubleConsumer setSpeedMultiplier)
     {
-        encoder = extend.getEncoder();
-        encoder.setPosition(0);
+        encoder_value = () -> extend.getPosition().getValueAsDouble();
+    }
+
+    public double getDriveSpeedMultiplier(){
+        return .8 / (1 + 2 * Math.pow(Math.E,.02 * (encoder_value.getAsDouble() - 2./3. * max_position))) + .2;
     }
 
     public void updatePos(double change)
@@ -40,7 +48,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     public void stopMoveToPos()
     {
-        currentTargetPos = encoder.getPosition();
+        currentTargetPos = encoder_value.getAsDouble();
     }
 
     public void setExtend(MotorDirection dir) {
@@ -60,17 +68,17 @@ public class LiftSubsystem extends SubsystemBase {
             }
         }
     }
+    public void doPositionControl(){
+        double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
+        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        SmartDashboard.putNumber("LiftPower", outputPower);
+        extend.set(outputPower);
+    }
 
     @Override
     public void periodic()
     {
-        double outputPower = pid.calculate(encoder.getPosition(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
-
         SmartDashboard.putNumber("LiftPosition", encoder.getPosition());
         SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
-        SmartDashboard.putNumber("LiftPower", outputPower);
-
-        extend.set(outputPower);
     }
 }

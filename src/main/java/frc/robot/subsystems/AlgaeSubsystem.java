@@ -17,13 +17,15 @@ public class AlgaeSubsystem extends SubsystemBase {
     SparkMax algaeAngle = new SparkMax(Constants.CANIds.algaeAngle, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
     SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
 
-    final RelativeEncoder angleEncoder;
+    public final RelativeEncoder angleEncoder;
     double angleTargetPos;
+
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
 
     double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
     double minPosition = 0;   //TODO SET THIS VALUE CORRECTLY
+    double algae_hit_lift_pos = 100; //TODO SET THIS VALUE CORRECTLY
 
     public AlgaeSubsystem(){
         angleEncoder = algaeAngle.getEncoder();
@@ -50,6 +52,8 @@ public class AlgaeSubsystem extends SubsystemBase {
         angleTargetPos = MathUtil.clamp(angleTargetPos + (change * 1.0), minPosition, maxPosition);
     }
 
+
+
     public void tiltToPreset(AlgaePresets presets){
         angleTargetPos = presets.position;
     }
@@ -59,20 +63,18 @@ public class AlgaeSubsystem extends SubsystemBase {
     }
 
     public void doPositionControl(){
-
+        double outputPower = pid.calculate(angleEncoder.getPosition(), angleTargetPos) * Constants.SpeedConstants.ALGAE_ANGLE_SPEED_MAGNIFIER;
+        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        SmartDashboard.putNumber("Algae Power", outputPower);
+        algaeAngle.set(outputPower);
     }
 
     @Override
     public void periodic()
     {
-        double outputPower = pid.calculate(angleEncoder.getPosition(), angleTargetPos) * Constants.SpeedConstants.ALGAE_ANGLE_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
-
         SmartDashboard.putNumber("Algae Position", angleEncoder.getPosition());
         SmartDashboard.putNumber("Algae Target Position", angleTargetPos);
-        SmartDashboard.putNumber("Algae Power", outputPower);
 
-        algaeAngle.set(outputPower);
     }
 
 }

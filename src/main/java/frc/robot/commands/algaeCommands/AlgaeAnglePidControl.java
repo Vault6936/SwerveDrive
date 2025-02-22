@@ -30,7 +30,6 @@ public class AlgaeAnglePidControl extends Command {
 
     @Override
     public void end(boolean isCancelled) {
-        subsystem.setAngleAlgae(MotorDirection.STOP);
     }
 
     @Override

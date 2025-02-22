@@ -1,6 +1,7 @@
 package frc.robot.commands.algaeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.AlgaePresets;
 import frc.robot.subsystems.AlgaeSubsystem;
 
@@ -32,6 +33,6 @@ public class AlgaeAnglePresetCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return false;
+        return (Math.abs(subsystem.angleEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
     }
 }
