@@ -17,13 +17,18 @@ public class AlgaeSubsystem extends SubsystemBase {
     SparkMax algaeAngle = new SparkMax(Constants.CANIds.algaeAngle, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
     SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
 
-    RelativeEncoder angleEncoder;
+    final RelativeEncoder angleEncoder;
     double angleTargetPos;
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
 
     double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
     double minPosition = 0;   //TODO SET THIS VALUE CORRECTLY
+
+    public AlgaeSubsystem(){
+        angleEncoder = algaeAngle.getEncoder();
+        angleEncoder.setPosition(0);
+    }
 
     public void setPushAlgae(MotorDirection dir) {
         switch (dir) {
@@ -33,18 +38,12 @@ public class AlgaeSubsystem extends SubsystemBase {
         }
     }
     public void setAngleAlgae(MotorDirection dir) {
-        stopMoveToPos(); //TODO Check my usage here please. This reoccurs in all MoveToPos code
+        stopMoveToPos();
         switch (dir) {
             case FORWARD -> algaeAngle.set(Constants.SpeedConstants.ALGAE_ANGLE_SPEED);
             case STOP -> algaeAngle.set(0);
             case REVERSE -> algaeAngle.set(-Constants.SpeedConstants.ALGAE_ANGLE_SPEED);
         }
-    }
-
-    public void algaeSystem(){
-        //Not too sure about what the use of this is, but figured it would be important
-        angleEncoder = algaeAngle.getEncoder();
-        angleEncoder.setPosition(0);
     }
 
     public void updateAngleTarget(double change){
@@ -57,6 +56,10 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public void stopMoveToPos(){
         angleTargetPos = angleEncoder.getPosition();
+    }
+
+    public void doPositionControl(){
+
     }
 
     @Override

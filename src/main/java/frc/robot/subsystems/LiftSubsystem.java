@@ -9,16 +9,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+
 public class LiftSubsystem extends SubsystemBase {
     /*
 
      */
     SparkMax extend = new SparkMax(Constants.CANIds.lift, SparkLowLevel.MotorType.kBrushless);
-    RelativeEncoder encoder;
+    static RelativeEncoder encoder;
     PIDController pid = new PIDController(0.25, 0, 0);
     double currentTargetPos = 0;
-    double min_position = -380.0;
-    double max_position = 0.0;
+    static double min_position = -380.0;
+    static double max_position = 0.0;
+    public static double driveSpeedMultiplier = .8 / (1 + 2 * Math.pow(Math.E,.02 * (encoder.getPosition() - 2/3 * max_position))) + .2;
 
     public LiftSubsystem()
     {

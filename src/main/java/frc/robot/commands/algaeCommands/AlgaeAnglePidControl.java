@@ -8,7 +8,6 @@ import java.util.function.DoubleSupplier;
 
 public class AlgaeAnglePidControl extends Command {
     /*
-    Don't understand what this class is for.
     */
     AlgaeSubsystem subsystem;
     DoubleSupplier angle;
@@ -21,12 +20,12 @@ public class AlgaeAnglePidControl extends Command {
 
     @Override
     public void initialize() {
-
     }
 
     @Override
     public void execute() {
         subsystem.updateAngleTarget(angle.getAsDouble());
+        subsystem.doPositionControl();
     }
 
     @Override

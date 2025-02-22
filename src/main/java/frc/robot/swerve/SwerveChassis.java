@@ -2,6 +2,7 @@ package frc.robot.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import frc.robot.subsystems.LiftSubsystem;
 
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ public class SwerveChassis<T extends MotorController> {
 
             @Override
             public double getLimitedAccelerationValue(double lastValue, double currentValue) {
-                return currentValue;
+                return currentValue * LiftSubsystem.driveSpeedMultiplier; //TODO Make this an actual acceleration thing
             }
         };
     }
@@ -101,7 +102,7 @@ public class SwerveChassis<T extends MotorController> {
         limitedRot = rotationLimit.getLimitedAccelerationValue(lastInput.rot, limitedRot);
         Vector2d limitedVector = new Vector2d(limitedDrive, inputVector.angle, false); // Making another vector with the limited magnitude and the same angle
         //limitedVector = limitedVector.rotate(-pose.getRotation().getRadians()); // This is necessary for field centric drive
-        // TODO: Reenable pose focus.
+        // TODO: Re-enable pose focus.
 
         for (SwerveModule<T> module : modules) {
             module.rotateAndDrive(limitedVector, limitedRot);
