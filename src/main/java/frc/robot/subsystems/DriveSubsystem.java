@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        updatePose(leftFront,leftBack,rightBack,rightFront);
+        //updatePose(leftFront,leftBack,rightBack,rightFront);
         DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
         DashboardLayout.setNodeValue("encoder3", leftFront.encoder.getAbsolutePosition());

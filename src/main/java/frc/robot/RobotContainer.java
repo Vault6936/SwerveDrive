@@ -29,7 +29,7 @@ public class RobotContainer {
     //public final AlgaeEaterSystem algae = new AlgaeEaterSystem();
     //public final CoralPlacerSystem coral = new CoralPlacerSystem();
     public final LiftSubsystem lift;
-    private final DriveDefaultCommand driveDefaultCommand;
+    //private final DriveDefaultCommand driveDefaultCommand;
     double speedMultiplier = 1;
     CoralSubsystem coralSubsystem;
     AlgaeSubsystem algaeSubsystem;
@@ -37,18 +37,21 @@ public class RobotContainer {
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
-        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
-        driveSubsystem.setDefaultCommand(driveDefaultCommand);
+        //driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
+        //driveSubsystem.setDefaultCommand(driveDefaultCommand);
 
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit);
-        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
-        configureBindings();
+        lift.setDefaultCommand(new LiftPidControl(lift, () -> baseController.getLeftY()));
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
+
+
+        configureBindings();
 
         //autoFactory = new AutoFactory(driveSubsystem::getPose, driveSubsystem::resetOdometry, driveSubsystem::FollowTrajectory, true, driveSubsystem);
 
     }
+
 
     private void configureBindings() {
         //baseController.a().whileTrue(new AprilAlign(driveSubsystem));
@@ -56,18 +59,27 @@ public class RobotContainer {
         baseController.plus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
         baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
 
-        baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 2));
-        baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -2));
+//        baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
+//        baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
 
+        baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
+        baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));
+        baseController.povLeft().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
+        baseController.povRight().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
 
         baseController.x().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
-        baseController.b().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
+        baseController.y().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
 
-        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5));
-        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5));
+        baseController.a().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.FORWARD)));
+        baseController.b().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.REVERSE)));
+        baseController.a().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
+        baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
 
-        baseController.y().whileTrue((new LiftCommand(lift,MotorDirection.FORWARD)));
-        baseController.a().whileTrue((new LiftCommand(lift,MotorDirection.REVERSE)));
+        //baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5));
+        //baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5));
+
+        //baseController.y().whileTrue((new LiftCommand(lift,MotorDirection.FORWARD)));
+        //baseController.a().whileTrue((new LiftCommand(lift,MotorDirection.REVERSE)));
 
 
 

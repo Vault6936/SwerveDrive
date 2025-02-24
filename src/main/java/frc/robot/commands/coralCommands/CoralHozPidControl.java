@@ -30,6 +30,7 @@ public class CoralHozPidControl extends Command {
     @Override
     public void end(boolean isCancelled)
     {
+        subsystem.stopMoveToPos();
     }
 
     @Override

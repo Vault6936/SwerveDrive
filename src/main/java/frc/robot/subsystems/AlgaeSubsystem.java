@@ -14,8 +14,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     Move Algae angle up/down (uses target pos, uses presets)
     Push in or out Algae
      */
-    SparkMax algaeAngle = new SparkMax(Constants.CANIds.algaeAngle, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
-    SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless); //TODO CONFIRM MOTOR TYPE
+    SparkMax algaeAngle = new SparkMax(Constants.CANIds.algaeAngle, SparkLowLevel.MotorType.kBrushed);
+    SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless);
 
     public final RelativeEncoder angleEncoder;
     double angleTargetPos;

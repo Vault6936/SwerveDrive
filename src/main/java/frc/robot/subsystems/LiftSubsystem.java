@@ -30,6 +30,7 @@ public class LiftSubsystem extends SubsystemBase {
     public LiftSubsystem(DoubleConsumer setSpeedMultiplier)
     {
         encoder_value = () -> extend.getPosition().getValueAsDouble();
+        currentTargetPos = encoder_value.getAsDouble();
     }
 
     public double getDriveSpeedMultiplier(){
@@ -38,8 +39,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     public void updatePos(double change)
     {
-        currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 3.2),min_position,max_position);
-
+        currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 3.2), min_position, max_position);
     }
 
     public void goPreset(LiftPresets preset){
@@ -70,7 +70,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        outputPower = MathUtil.clamp(outputPower, -0.3, 0.3);
         SmartDashboard.putNumber("LiftPower", outputPower);
         extend.set(outputPower);
     }

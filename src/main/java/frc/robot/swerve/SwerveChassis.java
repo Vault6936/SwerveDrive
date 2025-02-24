@@ -102,7 +102,7 @@ public class SwerveChassis<T extends MotorController> {
             rot /= divisor;
         }
 
-        double limitedDrive = driveLimit.getLimitedInputValue(inputVector.magnitude * AccelerationLimit);
+        double limitedDrive = driveLimit.getLimitedInputValue(inputVector.magnitude);
         limitedDrive = driveLimit.getLimitedAccelerationValue(lastInput.vector.magnitude, limitedDrive);
         double limitedRot = rotationLimit.getLimitedInputValue(rot);
         limitedRot = rotationLimit.getLimitedAccelerationValue(lastInput.rot, limitedRot);
