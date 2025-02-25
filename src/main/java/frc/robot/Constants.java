@@ -21,10 +21,14 @@ public final class Constants {
     }
 
     public static class CANIds {
-        public static final SwerveCANId rightBack  = new SwerveCANId(2, 3, 21); // module 2
-        public static final SwerveCANId rightFront = new SwerveCANId(6, 7, 23);// module 1
-        public static final SwerveCANId leftFront  = new SwerveCANId(8, 9, 24); // module 3
-        public static final SwerveCANId leftBack   = new SwerveCANId(4, 5, 22); // module 4
+//        public static final SwerveCANId leftFront = new SwerveCANId(4, 5, 22); // module 2
+//        public static final SwerveCANId rightFront = new SwerveCANId(2, 3, 21); // module 1
+//        public static final SwerveCANId leftBack = new SwerveCANId(6, 7, 23); // module 3
+//        public static final SwerveCANId rightBack = new SwerveCANId(8, 9, 24); // module 4
+        public static final SwerveCANId rightBack  = new SwerveCANId(2, 3, 21, -0.776123046875); // lf module 2
+        public static final SwerveCANId rightFront = new SwerveCANId(6, 7, 23,-0.145751953125);// lb module 1
+        public static final SwerveCANId leftFront  = new SwerveCANId(8, 9, 24,-0.152099609375); // rb module 3
+        public static final SwerveCANId leftBack   = new SwerveCANId(4, 5, 22,-0.622802734375); // rf module 4
         public static int lift = 11;
         public static int algaeAngle = 12;
         public static int algaePusher = 13;
@@ -37,11 +41,13 @@ public final class Constants {
         public final int driveMotor;
         public final int steeringMotor;
         public final int encoder;
+        public final double encoderOffset;
 
-        public SwerveCANId(int driveMotor, int steeringMotor, int encoder) {
+        public SwerveCANId(int driveMotor, int steeringMotor, int encoder, double encoderOffset) {
             this.driveMotor = driveMotor;
             this.steeringMotor = steeringMotor;
             this.encoder = encoder;
+            this.encoderOffset = encoderOffset;
         }
     }
 
@@ -70,6 +76,8 @@ public final class Constants {
         public static final double ALGAE_ANGLE_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
         public static final double ALGAE_MOVE_SPEED = 1;
+
+        public static final double DRIVE_BASE_MAX_SPEED = .3;
     }
 
     public static class ThresholdConstants {

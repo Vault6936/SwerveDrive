@@ -16,21 +16,20 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 public class LiftSubsystem extends SubsystemBase {
-    /*
 
-     */
     TalonFX extend =  new TalonFX(Constants.CANIds.lift);
     PIDController pid = new PIDController(0.25, 0, 0);
     double currentTargetPos = 0;
-    static double min_position = -380.0;
+    static double min_position = -450.0;
     static double max_position = 0.0;
     DoubleSupplier encoder_value;
     DoubleConsumer setSpeedMultiplier;
 
     public LiftSubsystem(DoubleConsumer setSpeedMultiplier)
     {
+        extend.setPosition(0);
         encoder_value = () -> extend.getPosition().getValueAsDouble();
-        currentTargetPos = encoder_value.getAsDouble();
+        currentTargetPos = 0;
     }
 
     public double getDriveSpeedMultiplier(){
@@ -39,7 +38,9 @@ public class LiftSubsystem extends SubsystemBase {
 
     public void updatePos(double change)
     {
-        currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 3.2), min_position, max_position);
+        if(Math.abs(change) > 0.1) {
+            currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 3.2), min_position, max_position);
+        }
     }
 
     public void goPreset(LiftPresets preset){

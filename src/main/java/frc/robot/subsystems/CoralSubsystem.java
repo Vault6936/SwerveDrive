@@ -42,7 +42,7 @@ public class CoralSubsystem extends SubsystemBase {
         switch (dir) {
             case FORWARD -> {
                 coralDispenser1.set(Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
-                coralDispenser2.set(Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
+                coralDispenser2.set(-Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
             }
             case STOP -> {
                 coralDispenser1.set(0);
@@ -50,7 +50,7 @@ public class CoralSubsystem extends SubsystemBase {
             }
             case REVERSE -> {
                 coralDispenser1.set(-Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
-                coralDispenser2.set(-Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
+                coralDispenser2.set(Constants.SpeedConstants.CORAL_DISPENSER_SPEED);
             }
         }
     }

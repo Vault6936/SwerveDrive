@@ -31,11 +31,13 @@ public class CoralHozPidControl extends Command {
     public void end(boolean isCancelled)
     {
         subsystem.stopMoveToPos();
+        subsystem.doPositionControl();
     }
 
     @Override
     public boolean isFinished()
     {
+
         return false;
     }
 }

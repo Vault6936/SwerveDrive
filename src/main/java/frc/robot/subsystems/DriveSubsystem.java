@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import static frc.robot.Constants.CANIds;
 import static frc.robot.Constants.SwerveModuleTest.testMode;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
-import static frc.robot.GlobalVariables.pose;
 
 public class DriveSubsystem extends SubsystemBase {
     AHRS gyro;
@@ -42,22 +41,22 @@ public class DriveSubsystem extends SubsystemBase {
         swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
         rightBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder),
-                swervePIDGains, new Vector2d(1, -1), -0.531005859375);//-0.374267578125);
+                swervePIDGains, new Vector2d(1, -1), CANIds.rightBack.encoderOffset);//-0.374267578125);
         rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         rightBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightFront = new SwerveModule<>(new SparkMax(CANIds.rightFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.rightFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightFront.encoder),
-                swervePIDGains, new Vector2d(1, 1), -0.900390625);//-0.531005859375);//-0.193115234375);
+                swervePIDGains, new Vector2d(1, 1), CANIds.rightFront.encoderOffset);//-0.531005859375);//-0.193115234375);
         rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftFront = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder),
-                swervePIDGains, new Vector2d(-1, 1),-0.374267578125);
+                swervePIDGains, new Vector2d(-1, 1),CANIds.leftFront.encoderOffset);
         leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         leftFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftBack = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder),
-                swervePIDGains, new Vector2d(-1, -1),-0.902099609375);//-0.900390625);
+                swervePIDGains, new Vector2d(-1, -1),CANIds.leftBack.encoderOffset);//-0.900390625);
         leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
         leftBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightBack.name = "rb";
@@ -74,7 +73,6 @@ public class DriveSubsystem extends SubsystemBase {
         headingController.setIntegratorRange(-1,1);
 
         headingController.enableContinuousInput(-Math.PI,Math.PI);
-
     }
 
     public ArrayList<SwerveModule<SparkMax>> getModules() {

@@ -158,8 +158,9 @@ public class SwerveModule<T extends MotorController> {
         {
             steeringMotor.set(0);
         }
-        speed *= 0.3;
-        driveMotor.set(MathUtil.clamp(speed * polarity * driveDirection.direction, -1.0, 1.0));
+        driveMotor.set(MathUtil.clamp(
+                speed * polarity * driveDirection.direction * Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED,
+                 -1,1));
         //SmartDashboard.putNumber(name + "TargetPower", MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
 
         return currentAngle;
