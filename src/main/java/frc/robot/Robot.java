@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.vision.Limelight;
 import frc.robot.webdashboard.WebdashboardServer;
 
@@ -107,6 +108,7 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        //robotContainer.lift.stopMoveToPos();
         DriveSubsystem.getInstance().zeroNavX();
     }
 

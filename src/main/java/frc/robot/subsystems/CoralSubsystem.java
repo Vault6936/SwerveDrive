@@ -26,8 +26,10 @@ public class CoralSubsystem extends SubsystemBase {
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
 
-    double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
-    double minPosition = 0;   //TODO SET THIS VALUE CORRECTLY
+    static final double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
+    static final double minPosition = -300;   //TODO SET THIS VALUE CORRECTLY
+
+    boolean isSafeToLower;
 
     public CoralSubsystem(){
         hozEncoder = coralHoz.getEncoder();
@@ -81,6 +83,17 @@ public class CoralSubsystem extends SubsystemBase {
         outputPower = MathUtil.clamp(outputPower, -1, 1);
         coralHoz.set(outputPower);
         SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
+    }
+
+    public void setSafePos(){
+        if ((Math.abs(hozEncoder.getPosition() - hozTargetPos) < 10) &&
+                (Math.abs(hozTargetPos - (minPosition + maxPosition) / 2.) < 10 ))  //TODO SET TOLERANCE
+        {
+            isSafeToLower = true;
+        } else {
+            isSafeToLower = false;
+            slideToPreset(CoralPresets.CENTER_POSITION);
+        }
     }
 
     @Override

@@ -27,6 +27,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     double minPosition = 0;   //TODO SET THIS VALUE CORRECTLY
     double algae_hit_lift_pos = 100; //TODO SET THIS VALUE CORRECTLY
 
+    boolean isSafeToLower = true;
+
     public AlgaeSubsystem(){
         angleEncoder = algaeAngle.getEncoder();
         angleEncoder.setPosition(0);
@@ -45,6 +47,18 @@ public class AlgaeSubsystem extends SubsystemBase {
             case FORWARD -> algaeAngle.set(Constants.SpeedConstants.ALGAE_ANGLE_SPEED);
             case STOP -> algaeAngle.set(0);
             case REVERSE -> algaeAngle.set(-Constants.SpeedConstants.ALGAE_ANGLE_SPEED);
+        }
+    }
+
+    public void setSafePos()
+    {
+        if ((Math.abs(angleEncoder.getPosition() - angleTargetPos) < 10) &&
+                (Math.abs(angleTargetPos) < 10 ))   //TODO SET TOLERANCE
+        {
+            isSafeToLower = true;
+        } else {
+            //isSafeToLower = false;
+            tiltToPreset(AlgaePresets.DEFAULT_DOWN);
         }
     }
 

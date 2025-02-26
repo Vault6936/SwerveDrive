@@ -28,7 +28,7 @@ public class RobotContainer {
     public final CameraSystem cameraSystem = new CameraSystem();
     //public final AlgaeEaterSystem algae = new AlgaeEaterSystem();
     //public final CoralPlacerSystem coral = new CoralPlacerSystem();
-    public final LiftSubsystem lift;
+    //public final LiftSubsystem lift;
     private final DriveDefaultCommand driveDefaultCommand;
     CoralSubsystem coralSubsystem;
     AlgaeSubsystem algaeSubsystem;
@@ -39,10 +39,10 @@ public class RobotContainer {
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
 
-        lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit);
-        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
+        //lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
+        //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
 
 
         configureBindings();
@@ -58,8 +58,8 @@ public class RobotContainer {
         baseController.plus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
         baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
 
-        baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
-        baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
+        //baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
+        //baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
 
         baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
         baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));

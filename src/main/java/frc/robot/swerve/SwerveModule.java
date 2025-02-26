@@ -97,6 +97,7 @@ public class SwerveModule<T extends MotorController> {
         {
             rawValue += (2 * Math.PI);
         }
+        SmartDashboard.putNumber("ANGLE of " + name, Math.toDegrees(rawValue));
         return rawValue;
         //return encoder.getAbsolutePosition().getValueAsDouble();//((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset) * Math.PI * 2);//.getValueAsDouble() / 180. * Math.PI;
     }
@@ -141,11 +142,11 @@ public class SwerveModule<T extends MotorController> {
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
-
-        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
-            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
-            polarity = -1;
-        }
+//Doesn't work :( //TODO WE NEED IT TO WORK :,)
+//        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
+//            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
+//            polarity = -1;
+//        }
 
         SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
         SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);

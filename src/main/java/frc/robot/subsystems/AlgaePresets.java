@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 public enum AlgaePresets {
-    POSITION_1(0.0),
+    DEFAULT_DOWN(0.0),
     POSITION_2(300.0);
     //POSITION_3(0.0),
     //POSITION_4(0.0);
