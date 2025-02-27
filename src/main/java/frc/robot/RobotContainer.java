@@ -26,9 +26,7 @@ public class RobotContainer {
 
     public final DriveSubsystem driveSubsystem;
     public final CameraSystem cameraSystem = new CameraSystem();
-    //public final AlgaeEaterSystem algae = new AlgaeEaterSystem();
-    //public final CoralPlacerSystem coral = new CoralPlacerSystem();
-    //public final LiftSubsystem lift;
+    public final LiftSubsystem lift;
     private final DriveDefaultCommand driveDefaultCommand;
     CoralSubsystem coralSubsystem;
     AlgaeSubsystem algaeSubsystem;
@@ -41,8 +39,8 @@ public class RobotContainer {
 
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
-        //lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
-        //lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
+        lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
+        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
 
 
         configureBindings();

@@ -19,17 +19,25 @@ public class LiftSubsystem extends SubsystemBase {
 
     TalonFX extend =  new TalonFX(Constants.CANIds.lift);
     PIDController pid = new PIDController(0.25, 0, 0);
+
     double currentTargetPos = 0;
-    static double min_position = -450.0;
+    static double min_position = -300.0;
     static double max_position = 0.0;
     DoubleSupplier encoder_value;
     DoubleConsumer setSpeedMultiplier;
 
-    public LiftSubsystem(DoubleConsumer setSpeedMultiplier)
+    CoralSubsystem coralSubsystem;
+    AlgaeSubsystem algaeSubsystem;
+    boolean canLowerFully;
+
+
+    public LiftSubsystem(DoubleConsumer setSpeedMultiplier, CoralSubsystem coralSystem, AlgaeSubsystem algaeSystem)
     {
         extend.setPosition(0);
         encoder_value = () -> extend.getPosition().getValueAsDouble();
         currentTargetPos = 0;
+        coralSubsystem = coralSystem;
+        algaeSubsystem = algaeSystem;
     }
 
     public double getDriveSpeedMultiplier(){
@@ -57,7 +65,8 @@ public class LiftSubsystem extends SubsystemBase {
         switch (dir) {
             case FORWARD :
             {
-                extend.set(Constants.SpeedConstants.LIFT_SPEED);
+                //Did not want the motors to move without calling the safety commands
+                //extend.set(Constants.SpeedConstants.LIFT_SPEED);
             }
             case STOP :
             {
@@ -65,20 +74,31 @@ public class LiftSubsystem extends SubsystemBase {
             }
             case REVERSE :
             {
-                extend.set(-Constants.SpeedConstants.LIFT_SPEED);
+                //extend.set(-Constants.SpeedConstants.LIFT_SPEED);
             }
         }
     }
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -0.3, 0.3);
-        SmartDashboard.putNumber("LiftPower", outputPower);
-        extend.set(outputPower);
+        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        //SmartDashboard.putNumber("LiftErr", encoder_value.getAsDouble() - currentTargetPos);
+        //SmartDashboard.putNumber("LiftPower", outputPower);
+        if (currentTargetPos > -150 && !canLowerFully) {
+            move_components_safe_pos();
+        } else {
+            extend.set(outputPower);
+        }
+    }
+
+    private void move_components_safe_pos(){
+        coralSubsystem.setSafePos();
+        algaeSubsystem.setSafePos();
     }
 
     @Override
     public void periodic()
     {
+        canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
         SmartDashboard.putNumber("LiftPosition", encoder_value.getAsDouble());
         SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
     }
