@@ -148,9 +148,9 @@ public class SwerveModule<T extends MotorController> {
 //            polarity = -1;
 //        }
 
-        SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
-        SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
-        SmartDashboard.putNumber(name + "ErrAngle", 180 *  err / Math.PI);
+//        SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
+//        SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
+//        SmartDashboard.putNumber(name + "ErrAngle", 180 *  err / Math.PI);
         if(Math.abs(speed) > 0.1)
         {
             steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);

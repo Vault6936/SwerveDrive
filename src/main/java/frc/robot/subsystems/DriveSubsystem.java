@@ -112,9 +112,30 @@ public class DriveSubsystem extends SubsystemBase {
         double rf_y = rf_od.distanceMeters * Math.sin(rf_od.angle.getRadians());
         double rb_y = rb_od.distanceMeters * Math.sin(rb_od.angle.getRadians());
 
-        double poseX = currentPose.getX() + (lf_x + lb_x + rf_x + rb_x) / 4.0;
-        double poseY = currentPose.getX() + (lf_y + lb_y + rf_y + rb_y) / 4.0;
-        currentPose = new Pose2d(poseX, poseY, gyro.getRotation2d());
+        double poseX = (lf_x + lb_x + rf_x + rb_x) / 4.0 ;
+        double poseY = (lf_y + lb_y + rf_y + rb_y) / 4.0 ;
+
+        double turn_mag = (poseX / Math.abs(poseX)) * Math.sqrt(Math.pow(poseX,2) + Math.pow(poseY,2));
+        double turn_angle;
+        if (poseX == 0) {
+            turn_angle = gyro.getRotation2d().getRadians();
+        } else {
+            turn_angle = gyro.getRotation2d().getRadians() + Math.atan(poseY / poseX);
+        }
+
+        double turn_poseX = currentPose.getX() + turn_mag * Math.cos(turn_angle);
+        double turn_poseY = currentPose.getY() + turn_mag * Math.sin(turn_angle);
+        currentPose = new Pose2d(turn_poseX, turn_poseY, gyro.getRotation2d());
+        SmartDashboard.putNumber("Turn Mag: ", turn_mag);
+        SmartDashboard.putNumber("Turn Angle: ", turn_angle);
+        SmartDashboard.putNumber("PoseX: ", turn_poseX);
+        SmartDashboard.putNumber("PoseY: ", turn_poseY);
+        SmartDashboard.putString("Current Pose:", currentPose.toString());
+
+    }
+
+    public void poseReset(){
+        currentPose = new Pose2d(0,0,gyro.getRotation2d());
     }
 
     public void zeroNavX() {
@@ -138,7 +159,6 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);
         SmartDashboard.putNumber("RightFrontEncoderDiff", rightFront.getOdometryData().distanceMeters);
         SmartDashboard.putNumber("RightBackEncoderDiff", rightBack.getOdometryData().distanceMeters);
-        SmartDashboard.putString("Current Pose:", currentPose.toString());
     }
 
     public static DriveSubsystem getInstance() {

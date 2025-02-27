@@ -109,6 +109,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
         //robotContainer.lift.stopMoveToPos();
+        robotContainer.driveSubsystem.poseReset();
         DriveSubsystem.getInstance().zeroNavX();
     }
 
