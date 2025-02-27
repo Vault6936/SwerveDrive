@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class DriveDefaultCommand extends Command {
@@ -12,6 +13,7 @@ public class DriveDefaultCommand extends Command {
     private final DoubleSupplier x;
     private final DoubleSupplier y;
     private final DoubleSupplier rot;
+    public static boolean isFieldCentric;
 
     public DriveDefaultCommand(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
         subsystem = DriveSubsystem.getInstance();
@@ -23,6 +25,6 @@ public class DriveDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        subsystem.drive(x.getAsDouble(), y.getAsDouble(), rot.getAsDouble());
+        subsystem.drive(x.getAsDouble(), y.getAsDouble(), rot.getAsDouble(), isFieldCentric);
     }
 }

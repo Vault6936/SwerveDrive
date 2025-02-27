@@ -57,6 +57,7 @@ public class RobotContainer {
 
         baseController.plus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
         baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
+        baseController.button(13).onTrue(new InstantCommand(() -> DriveDefaultCommand.isFieldCentric = !DriveDefaultCommand.isFieldCentric));
 
         //baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
         //baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));

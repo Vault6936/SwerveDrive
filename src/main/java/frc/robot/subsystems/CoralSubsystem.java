@@ -26,8 +26,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
 
-    static final double maxPosition = 300; //TODO SET THIS VALUE CORRECTLY
-    static final double minPosition = -300;   //TODO SET THIS VALUE CORRECTLY
+    static final double maxPosition = 38; // 42 is the measured max, we're adding a temporary 4-point safety margin
+    static final double minPosition = -44; // 48 is the measured min  //TODO SET THIS VALUE CORRECTLY
 
     boolean isSafeToLower;
 
