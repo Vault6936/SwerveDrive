@@ -81,15 +81,31 @@ public class DriveSubsystem extends SubsystemBase {
         return chassis.modules;
     }
 
+    public void drive(double x, double y, double rot)
+    {
+        drive(x, y, rot, false);
+    }
 
-    public void drive(double x, double y, double rot) {
+    public void drive(double x, double y, double rot, boolean fieldCentric) {
 
         if (testMode) {
             Vector2d vector = new Vector2d(x, y);
             chassis.modules.get(testModuleIndex).drive(vector.magnitude, vector.angle);
         } else {
             //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
-            chassis.drive(-x, y, rot);
+            if(fieldCentric)
+            {
+                Vector2d driveDirection = new Vector2d(-x, y);
+                SmartDashboard.putString("Drive Raw ", driveDirection.y + "/" + driveDirection.x);
+                driveDirection = driveDirection.rotate(gyro.getRotation2d().getRadians());
+                SmartDashboard.putString("Drive Corrected ", driveDirection.y + "/" + driveDirection.x);
+                chassis.drive(driveDirection.x, driveDirection.y, rot);
+            }
+            else
+            {
+                chassis.drive(-x, y, rot);
+            }
+            SmartDashboard.putBoolean("Field Centric: ", fieldCentric);
         }
     }
 
