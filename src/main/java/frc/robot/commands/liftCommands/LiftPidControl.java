@@ -1,6 +1,7 @@
 package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.MotorDirection;
 
@@ -11,11 +12,12 @@ public class LiftPidControl extends Command {
     DoubleSupplier vertical;
     boolean overrideLimit;
 
-    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp, boolean overrideLimit) {
+    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp, Trigger zl, Trigger zr) {
         subsystem = system;
         vertical = verticalUp;
         addRequirements(system);
-        this.overrideLimit = overrideLimit;
+        this.overrideLimit = zr.getAsBoolean() && zl.getAsBoolean();
+
     }
 
     @Override

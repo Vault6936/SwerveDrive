@@ -20,7 +20,7 @@ public class LiftSubsystem extends SubsystemBase {
 
 
     final double CHANGE_MULTIPLIER = 2.2;
-    final double MAX_SPEED_PRECENT = .6;
+    final double MAX_SPEED_PERCENT = .6;
 
     static final double min_position = -480.0;
     static final double max_position = 0.0;
@@ -99,7 +99,7 @@ public class LiftSubsystem extends SubsystemBase {
      */
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PRECENT, MAX_SPEED_PRECENT);
+        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PERCENT, MAX_SPEED_PERCENT);
 
         // If the (lift is low enough) and (algaeAngle and coralHoz will collide with something)
         if (currentTargetPos > -150 && !canLowerFully) {
