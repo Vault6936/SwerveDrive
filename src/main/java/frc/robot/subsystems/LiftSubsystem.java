@@ -21,7 +21,7 @@ public class LiftSubsystem extends SubsystemBase {
     PIDController pid = new PIDController(0.25, 0, 0);
 
     double currentTargetPos = 0;
-    static double min_position = -300.0;
+    static double min_position = -550.0;
     static double max_position = 0.0;
     DoubleSupplier encoder_value;
     DoubleConsumer setSpeedMultiplier;
@@ -47,7 +47,7 @@ public class LiftSubsystem extends SubsystemBase {
     public void updatePos(double change)
     {
         if(Math.abs(change) > 0.1) {
-            currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 3.2), min_position, max_position);
+            currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 2.2), min_position, max_position);
         }
     }
 
@@ -80,7 +80,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        outputPower = MathUtil.clamp(outputPower, -.6, .6);
         //SmartDashboard.putNumber("LiftErr", encoder_value.getAsDouble() - currentTargetPos);
         //SmartDashboard.putNumber("LiftPower", outputPower);
         if (currentTargetPos > -150 && !canLowerFully) {

@@ -125,6 +125,7 @@ public class SwerveModule<T extends MotorController> {
         double temp = lastEncoderPosition - driveEncoder.getAsDouble();
         lastEncoderPosition = driveEncoder.getAsDouble();
 
+        temp *= 1;
         return new SwerveModulePosition(driveDirection.direction * temp /
                 Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO * Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
                 new Rotation2d(getAngleRadians() + Math.PI / 2));  // TODO : Decide on units and get a conversion somewhere sane.

@@ -11,6 +11,7 @@ import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
 import frc.robot.commands.liftCommands.LiftCommand;
 import frc.robot.commands.liftCommands.LiftPidControl;
+import frc.robot.commands.liftCommands.LiftPresetCommand;
 import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.*;
 
@@ -35,6 +36,13 @@ public class RobotContainer {
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
+//        driveDefaultCommand = new DriveDefaultCommand(
+//                () -> baseController.povRight().getAsBoolean() ? 0.5 :
+//                        (baseController.povLeft().getAsBoolean() ? -0.5 : 0.),
+//                () -> baseController.povUp().getAsBoolean() ? 0.5 :
+//                        (baseController.povDown().getAsBoolean() ? -0.5 : 0.),
+//                () -> 0
+//        );
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
 
         coralSubsystem = new CoralSubsystem();
@@ -57,13 +65,13 @@ public class RobotContainer {
         baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
         baseController.button(13).onTrue(new InstantCommand(() -> DriveDefaultCommand.isFieldCentric = !DriveDefaultCommand.isFieldCentric));
 
-        //baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
-        //baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
+        baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
+        baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
 
-        baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
-        baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));
-        baseController.povLeft().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
-        baseController.povRight().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
+//        baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
+//        baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));
+//        baseController.povLeft().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
+//        baseController.povRight().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
 
         baseController.x().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
         baseController.y().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
@@ -75,6 +83,11 @@ public class RobotContainer {
 
         //baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5));
         //baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5));
+
+        payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
+        payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_1));
+        payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_2));
+        payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_3));
 
         //baseController.y().whileTrue((new LiftCommand(lift,MotorDirection.FORWARD)));
         //baseController.a().whileTrue((new LiftCommand(lift,MotorDirection.REVERSE)));
