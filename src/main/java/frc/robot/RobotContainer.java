@@ -48,7 +48,8 @@ public class RobotContainer {
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
-        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY()));
+        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY(),
+                payloadController.zl().getAsBoolean() && payloadController.zr().getAsBoolean()));
 
 
         configureBindings();

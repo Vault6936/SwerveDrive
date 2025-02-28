@@ -9,11 +9,13 @@ import java.util.function.DoubleSupplier;
 public class LiftPidControl extends Command {
     LiftSubsystem subsystem;
     DoubleSupplier vertical;
+    boolean overrideLimit;
 
-    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp) {
+    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp, boolean overrideLimit) {
         subsystem = system;
         vertical = verticalUp;
         addRequirements(system);
+        this.overrideLimit = overrideLimit;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class LiftPidControl extends Command {
 
     @Override
     public void execute() {
-        subsystem.updatePos(vertical.getAsDouble());
+        subsystem.updatePos(vertical.getAsDouble(), overrideLimit);
         subsystem.doPositionControl();
     }
 

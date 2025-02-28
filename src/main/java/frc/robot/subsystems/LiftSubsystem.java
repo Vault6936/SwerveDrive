@@ -1,12 +1,7 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.ParentDevice;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,9 +16,15 @@ public class LiftSubsystem extends SubsystemBase {
     PIDController pid = new PIDController(0.25, 0, 0);
 
     double currentTargetPos = 0;
-    static double min_position = -550.0;
-    static double max_position = 0.0;
     DoubleSupplier encoder_value;
+
+
+    final double CHANGE_MULTIPLIER = 2.2;
+    final double MAX_SPEED_PRECENT = .6;
+
+    static final double min_position = -480.0;
+    static final double max_position = 0.0;
+
     DoubleConsumer setSpeedMultiplier;
 
     CoralSubsystem coralSubsystem;
@@ -40,60 +41,83 @@ public class LiftSubsystem extends SubsystemBase {
         algaeSubsystem = algaeSystem;
     }
 
-    public double getDriveSpeedMultiplier(){
+    /***
+     * Used to alter the speed of the robot based on the lift's vertical position based on a logistic function
+     */
+    public double getDriveSpeedMultiplier(){ //TODO Alter this function, the max has been updated; but it should still work
         return .8 / (1 + 2 * Math.pow(Math.E,.02 * (encoder_value.getAsDouble() - 2./3. * max_position))) + .2;
     }
 
-    public void updatePos(double change)
+    /***
+     * Updates current target position at the speed of CHANGE_MULTIPLIER
+     * Input of overridden allows min and max positions to be ignored
+     */
+    public void updatePos(double change, boolean overridden)
     {
-        if(Math.abs(change) > 0.1) {
-            currentTargetPos = MathUtil.clamp(currentTargetPos + (change * 2.2), min_position, max_position);
+        if(Math.abs(change) > 0.1)
+        {
+            currentTargetPos = overridden ?  currentTargetPos + change * CHANGE_MULTIPLIER:
+                    MathUtil.clamp(currentTargetPos + change * CHANGE_MULTIPLIER, min_position, max_position);
         }
     }
 
-    public void goPreset(LiftPresets preset){
+    /***
+     * Target position goes to a LiftPreset preset
+     */
+    public void goPreset(LiftPresets preset) {
         currentTargetPos = preset.position;
     }
 
-    public void stopMoveToPos()
-    {
+    /***
+     * Sets currentTargetPos to current encoder value
+     * DOES NOT RESET ENCODER VALUE
+     */
+    public void stopMoveToPos() {
         currentTargetPos = encoder_value.getAsDouble();
     }
 
+    /***
+     * Used to set the direction of the motors
+     * Only in use to stop the motors.
+     */
     public void setExtend(MotorDirection dir) {
         stopMoveToPos();
         switch (dir) {
-            case FORWARD :
-            {
-                //Did not want the motors to move without calling the safety commands
-                //extend.set(Constants.SpeedConstants.LIFT_SPEED);
-            }
             case STOP :
             {
                 extend.set(0);
             }
-            case REVERSE :
-            {
-                //extend.set(-Constants.SpeedConstants.LIFT_SPEED);
-            }
+            //If we need them:
+            case FORWARD:{}
+            case REVERSE:{}
         }
     }
+
+    /***
+     * Calculates output power using the pid controller.
+     * if the lift is too low, moves coralHoz and algaeAngle to safe positions first.
+     */
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -.6, .6);
-        //SmartDashboard.putNumber("LiftErr", encoder_value.getAsDouble() - currentTargetPos);
-        //SmartDashboard.putNumber("LiftPower", outputPower);
+        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PRECENT, MAX_SPEED_PRECENT);
+
+        // If the (lift is low enough) and (algaeAngle and coralHoz will collide with something)
         if (currentTargetPos > -150 && !canLowerFully) {
             move_components_safe_pos();
-        } else {
+        }
+        else {
             extend.set(outputPower);
         }
     }
 
+    /***
+     * Moves algaeAngle and coralHoz into safe place so the lift can lower.
+     */
     private void move_components_safe_pos(){
         coralSubsystem.setSafePos();
         algaeSubsystem.setSafePos();
     }
+
 
     @Override
     public void periodic()
