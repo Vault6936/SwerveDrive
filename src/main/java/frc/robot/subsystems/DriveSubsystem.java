@@ -72,8 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         xController.setIntegratorRange(-1,1);
         yController.setIntegratorRange(-1,1);
-        headingController.setIntegratorRange(-1,1);
 
+        headingController.setIntegratorRange(-1,1);
         headingController.enableContinuousInput(-Math.PI,Math.PI);
     }
 

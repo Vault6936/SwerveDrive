@@ -5,19 +5,19 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.MotorDirection;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class LiftPidControl extends Command {
     LiftSubsystem subsystem;
     DoubleSupplier vertical;
-    boolean overrideLimit;
+    BooleanSupplier overrideLimit;
 
-    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp, Trigger zl, Trigger zr) {
+    public LiftPidControl(LiftSubsystem system, DoubleSupplier verticalUp, BooleanSupplier override) {
         subsystem = system;
         vertical = verticalUp;
         addRequirements(system);
-        this.overrideLimit = zr.getAsBoolean() && zl.getAsBoolean();
-
+        this.overrideLimit = override;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LiftPidControl extends Command {
 
     @Override
     public void execute() {
-        subsystem.updatePos(vertical.getAsDouble(), overrideLimit);
+        subsystem.updatePos(vertical.getAsDouble(), overrideLimit.getAsBoolean());
         subsystem.doPositionControl();
     }
 

@@ -1,21 +1,18 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants;
-import frc.robot.vision.LimelightHelpers;
 import frc.robot.subsystems.CameraSystem;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class AprilAlign extends Command {
-    double hoz_off;
+public class AprilTurnAlign extends Command {
+    double turn_amount;
     DriveSubsystem driveSubsystem;
     PIDController pid_control = new PIDController(0.05,0,0);
 
-    public AprilAlign(DriveSubsystem driveSubsystem){
+    public AprilTurnAlign(DriveSubsystem driveSubsystem){
         this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
     }
@@ -23,11 +20,12 @@ public class AprilAlign extends Command {
 
     @Override
     public void execute() {
-        double tx = CameraSystem.tx;
-        this.hoz_off = tx;
-        double pid_calc = pid_control.calculate(tx,0);
+        double ry = CameraSystem.ry;
+        this.turn_amount = ry;
+        //Trying to accommodate for the value not being 0 - 1
+        double pid_calc = 6 * MathUtil.clamp(pid_control.calculate(ry,0), -6, 6);
         SmartDashboard.putNumber("PID VALUE: ",pid_calc);
-        driveSubsystem.drive(-pid_calc,0,0);
+        driveSubsystem.drive(0,0,pid_calc);
 
 //        if (tx < -2){
 //            driveSubsystem.drive(-Constants.Swerve.SPEED_OF_APRILALIGN,0.0,0.0);

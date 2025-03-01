@@ -1,23 +1,18 @@
 package frc.robot;
 
-import choreo.auto.AutoFactory;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
-import frc.robot.commands.algaeCommands.AlgaeAnglePidControl;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
-import frc.robot.commands.liftCommands.LiftCommand;
 import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.commands.liftCommands.LiftPresetCommand;
 import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.*;
-
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
+import frc.robot.swerve.SwerveModule;
 
 
 public class RobotContainer {
@@ -49,8 +44,7 @@ public class RobotContainer {
         algaeSubsystem = new AlgaeSubsystem();
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
         lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY(),
-                payloadController.zl(),payloadController.zr()));
-
+                payloadController.zl().and(payloadController.zr())));
 
         configureBindings();
 
@@ -68,6 +62,9 @@ public class RobotContainer {
 
         baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
         baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
+
+        baseController.zr().whileTrue(new AprilAlign(driveSubsystem));
+        baseController.zl().whileTrue(new AprilTurnAlign(driveSubsystem));
 
 //        baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
 //        baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));
@@ -120,5 +117,4 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return null;
     }
-
 }

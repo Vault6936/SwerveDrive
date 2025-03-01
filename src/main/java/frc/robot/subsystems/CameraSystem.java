@@ -8,6 +8,7 @@ public class CameraSystem  extends SubsystemBase {
     public static double tx;
     public static double ty;
     public static double id;
+    public static double ry;
 
     @Override
     public void periodic()
@@ -16,10 +17,13 @@ public class CameraSystem  extends SubsystemBase {
         double tx = LimelightHelpers.getTX("");  // Horizontal offset: crosshair to target in degrees
         double ty = LimelightHelpers.getTY("");  // Vertical offset: crosshair to target in degrees
         double id = LimelightHelpers.getFiducialID("");
+        double ry = LimelightHelpers.getTY("");
 
         CameraSystem.tx = tx;
         CameraSystem.ty = ty;
         CameraSystem.id = id;
+        CameraSystem.ry = ry;
+
         //double ta = LimelightHelpers.getTA("");  // Target area (0% to 100% of image)
         SmartDashboard.putNumber("Horizontal: ", tx);
         SmartDashboard.putNumber("Vertical:   ", ty);

@@ -26,9 +26,6 @@ public class Limelight {
         double x = tx.getDouble(0.0);
         double y = ty.getDouble(0.0);
         double area = ta.getDouble(0.0);
-        DashboardLayout.setNodeValue("limelight_x", "x: " + x);
-        DashboardLayout.setNodeValue("limelight_y", "y: " + y);
-        DashboardLayout.setNodeValue("limelight_area", "area: " + area);
     }
 
     public static Limelight getInstance() {
