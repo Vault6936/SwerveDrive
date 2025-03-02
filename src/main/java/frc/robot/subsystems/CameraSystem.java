@@ -17,7 +17,7 @@ public class CameraSystem  extends SubsystemBase {
         double tx = LimelightHelpers.getTX("");  // Horizontal offset: crosshair to target in degrees
         double ty = LimelightHelpers.getTY("");  // Vertical offset: crosshair to target in degrees
         double id = LimelightHelpers.getFiducialID("");
-        double ry = LimelightHelpers.getTY("");
+        double ry = LimelightHelpers.getBotPose3d_TargetSpace("").getRotation().getY();
 
         CameraSystem.tx = tx;
         CameraSystem.ty = ty;

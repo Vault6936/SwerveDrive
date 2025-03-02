@@ -1,19 +1,17 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants;
-import frc.robot.vision.LimelightHelpers;
 import frc.robot.subsystems.CameraSystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AprilAlign extends Command {
-    double hoz_off;
     DriveSubsystem driveSubsystem;
-    PIDController pid_control = new PIDController(0.05,0,0);
+    PIDController pid_hoz = new PIDController(0.5,0,0);
+    PIDController pid_rot = new PIDController(0.5,0,0);
+
 
     public AprilAlign(DriveSubsystem driveSubsystem){
         this.driveSubsystem = driveSubsystem;
@@ -24,11 +22,15 @@ public class AprilAlign extends Command {
     @Override
     public void execute() {
         double tx = CameraSystem.tx;
-        this.hoz_off = tx;
-        double pid_calc = pid_control.calculate(tx,0);
-        SmartDashboard.putNumber("PID VALUE: ",pid_calc);
-        driveSubsystem.drive(-pid_calc,0,0);
+        double ry = CameraSystem.ry;
+        double pid_move = pid_hoz.calculate(tx,0);
+        double pid_turn = MathUtil.clamp(pid_rot.calculate(ry,0), -0.5, 0.5);
 
+        SmartDashboard.putNumber("tx", tx);
+        SmartDashboard.putNumber("ry", ry);
+        SmartDashboard.putNumber("pid_move", pid_move);
+        SmartDashboard.putNumber("pid_turn", pid_turn);
+        driveSubsystem.drive(-pid_move,0 ,pid_turn);
 //        if (tx < -2){
 //            driveSubsystem.drive(-Constants.Swerve.SPEED_OF_APRILALIGN,0.0,0.0);
 //        } else if (tx > 2) {

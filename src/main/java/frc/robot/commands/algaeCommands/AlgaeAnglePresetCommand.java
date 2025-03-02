@@ -33,6 +33,6 @@ public class AlgaeAnglePresetCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(subsystem.angleEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
+        return (Math.abs(subsystem.getAngle() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
     }
 }

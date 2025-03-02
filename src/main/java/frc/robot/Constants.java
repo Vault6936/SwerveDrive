@@ -51,6 +51,10 @@ public final class Constants {
         }
     }
 
+    public static class AnalogueSensorsIds{
+        public final static int algaeAnglePot = 0;
+    }
+
     public static class Swerve {
         public static final double driveMultiplier = 0.5;
         public static final double driveRampRate = 100.0;
@@ -77,7 +81,7 @@ public final class Constants {
 
         public static final double ALGAE_MOVE_SPEED = 1;
 
-        public static final double DRIVE_BASE_MAX_SPEED = .3;
+        public static final double DRIVE_BASE_MAX_SPEED = .15;
     }
 
     public static class ThresholdConstants {

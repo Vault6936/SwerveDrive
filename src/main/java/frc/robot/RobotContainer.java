@@ -30,14 +30,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
-        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -baseController.getRightX());
-//        driveDefaultCommand = new DriveDefaultCommand(
-//                () -> baseController.povRight().getAsBoolean() ? 0.5 :
-//                        (baseController.povLeft().getAsBoolean() ? -0.5 : 0.),
-//                () -> baseController.povUp().getAsBoolean() ? 0.5 :
-//                        (baseController.povDown().getAsBoolean() ? -0.5 : 0.),
-//                () -> 0
-//        );
+        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -(-baseController.getRightX()));
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
 
         coralSubsystem = new CoralSubsystem();
@@ -66,11 +59,6 @@ public class RobotContainer {
         baseController.zr().whileTrue(new AprilAlign(driveSubsystem));
         baseController.zl().whileTrue(new AprilTurnAlign(driveSubsystem));
 
-//        baseController.povLeft().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.FORWARD)));
-//        baseController.povRight().whileTrue(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.REVERSE)));
-//        baseController.povLeft().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
-//        baseController.povRight().onFalse(new InstantCommand(() -> coralSubsystem.setHozCoral(MotorDirection.STOP)));
-
         baseController.x().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
         baseController.y().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
 
@@ -78,9 +66,6 @@ public class RobotContainer {
         baseController.b().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.REVERSE)));
         baseController.a().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
         baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
-
-        //baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5));
-        //baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5));
 
         payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
         payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_1));
@@ -94,23 +79,6 @@ public class RobotContainer {
 
 //        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));
 //        baseController.zl().whileTrue(new LiftCommand(lift, MotorDirection.REVERSE));
-
-        //CanID test buttons
-        //baseController.a().whileTrue(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(0, true))); //Left Front
-        //baseController.b().whileTrue(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(1, true))); //Right Front
-        //baseController.x().whileTrue(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(2, true))); //Left Back
-        //baseController.y().whileTrue(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(3, true))); //Right Back
-
-        //baseController.a().onFalse(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(0, false)));
-        //baseController.b().onFalse(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(1, false)));
-        //baseController.x().onFalse(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(2, false)));
-        //baseController.y().onFalse(new InstantCommand(() -> driveSubsystem.chassis.DriveMotor(3, false)));
-
-        
-        //baseController.povUp().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_1));
-        //baseController.povRight().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_2));
-        //baseController.povDown().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_3));
-        //baseController.povLeft().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_4));
 
     }
 

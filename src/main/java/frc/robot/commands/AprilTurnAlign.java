@@ -8,9 +8,8 @@ import frc.robot.subsystems.CameraSystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AprilTurnAlign extends Command {
-    double turn_amount;
     DriveSubsystem driveSubsystem;
-    PIDController pid_control = new PIDController(0.05,0,0);
+    PIDController pid_control = new PIDController(10/6. * 6. * 0.50,0,0);
 
     public AprilTurnAlign(DriveSubsystem driveSubsystem){
         this.driveSubsystem = driveSubsystem;
@@ -20,11 +19,10 @@ public class AprilTurnAlign extends Command {
 
     @Override
     public void execute() {
-        double ry = CameraSystem.ry;
-        this.turn_amount = ry;
+        final double ry = CameraSystem.ry;
         //Trying to accommodate for the value not being 0 - 1
-        double pid_calc = 6 * MathUtil.clamp(pid_control.calculate(ry,0), -6, 6);
-        SmartDashboard.putNumber("PID VALUE: ",pid_calc);
+        double pid_calc = MathUtil.clamp(pid_control.calculate(ry,0), -0.5, 0.5);
+
         driveSubsystem.drive(0,0,pid_calc);
 
 //        if (tx < -2){

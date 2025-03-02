@@ -152,24 +152,24 @@ public class SwerveModule<T extends MotorController> {
 //        SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
 //        SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
 //        SmartDashboard.putNumber(name + "ErrAngle", 180 *  err / Math.PI);
-        if(Math.abs(speed) > 0.1)
-        {
+        //if(Math.abs(speed) > 0.1)
+        //{
             steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);
-        }
-        else
-        {
-            steeringMotor.set(0);
-        }
+        //}
+        //else
+        //{
+        //    steeringMotor.set(0);
+        //}
         driveMotor.set(MathUtil.clamp(
-                speed * polarity * driveDirection.direction * Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED,
-                 -1,1));
+                speed * polarity * driveDirection.direction,
+                 -Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED, Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED));
         //SmartDashboard.putNumber(name + "TargetPower", MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
 
         return currentAngle;
     }
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
-        double theta = position.angle - driveVector.angle; // TODO: re-enable when position angle is fixed.
+        double theta = position.angle - driveVector.angle;
         Vector2d velocityVector = new Vector2d(driveVector.magnitude + position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
         drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
