@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
 public enum LiftPresets {
-    POSITION_0(0.0),
-    POSITION_1(-174),
-    POSITION_2(-209),
-    POSITION_3(-329);
-    //POSITION_4(-470);
+    STARTING(0.0),
+    TROUGH(-174),
+    HEIGHT_1(-209),
+    HEIGHT_2(-329);
+    //HEIGHT_3(-470);
 
     public final double position;
 
