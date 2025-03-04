@@ -1,6 +1,9 @@
 package frc.robot;
 
+import choreo.Choreo;
+import choreo.auto.AutoFactory;
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
@@ -26,13 +29,13 @@ public class RobotContainer {
     private final DriveDefaultCommand driveDefaultCommand;
     CoralSubsystem coralSubsystem;
     AlgaeSubsystem algaeSubsystem;
-    //private final AutoFactory autoFactory; TODO add methods getPose and resetOdometry to the DriveSubsystem
+    ChoreoSubsystem choreo;
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -(-baseController.getRightX()));
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
-
+        choreo = new ChoreoSubsystem(driveSubsystem);
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
@@ -40,9 +43,6 @@ public class RobotContainer {
                 payloadController.zl().and(payloadController.zr())));
 
         configureBindings();
-
-        //autoFactory = new AutoFactory(driveSubsystem::getPose, driveSubsystem::resetOdometry, driveSubsystem::FollowTrajectory, true, driveSubsystem);
-
     }
 
 
@@ -83,6 +83,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return null;
+        return choreo.SelectTrajectory("NewPath");
     }
 }

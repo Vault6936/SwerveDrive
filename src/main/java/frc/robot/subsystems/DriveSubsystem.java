@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
-import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,11 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
     final SwerveModule<SparkMax> leftBack;
     public SwerveChassis<SparkMax> chassis;
     PIDGains swervePIDGains;
-    private Pose2d currentPose;
-
-    private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
-    private final PIDController yController = new PIDController(10.0, 0.0, 0.0);
-    private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
+    public Pose2d currentPose;
 
     private static DriveSubsystem instance;
 
@@ -69,12 +63,6 @@ public class DriveSubsystem extends SubsystemBase {
         chassis = new SwerveChassis<>(leftFront, rightFront, leftBack, rightBack);
         chassis.setDriveLimit(SwerveChassis.DriveLimits.NONE);
         chassis.setRotationLimit(SwerveChassis.DriveLimits.NONE);
-
-        xController.setIntegratorRange(-1,1);
-        yController.setIntegratorRange(-1,1);
-
-        headingController.setIntegratorRange(-1,1);
-        headingController.enableContinuousInput(-Math.PI,Math.PI);
     }
 
     public ArrayList<SwerveModule<SparkMax>> getModules() {
@@ -154,6 +142,11 @@ public class DriveSubsystem extends SubsystemBase {
         currentPose = new Pose2d(0,0,gyro.getRotation2d());
     }
 
+    public void poseReset(Pose2d newPose)
+    {
+        currentPose = newPose;
+    }
+
     public void zeroNavX() {
         gyro.zeroYaw();
     }
@@ -181,17 +174,4 @@ public class DriveSubsystem extends SubsystemBase {
         if (instance == null) instance = new DriveSubsystem();
         return instance;
     }
-
-    public void FollowTrajectory(SwerveSample sample)
-    {
-        //Pose2d pose = getPos();
-//        ChassisSpeeds speeds = new ChassisSpeeds(
-//                sample.vx + xController.calculate(pose.getX(), sample.x),
-//                sample.vy + yController.calculate(pose.getY(), sample.y),
-//                sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
-//        );
-        //driveFieldRelative(speeds);
-
-    }
-
 }
