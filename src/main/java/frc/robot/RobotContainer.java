@@ -34,6 +34,7 @@ public class RobotContainer {
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -(-baseController.getRightX()));
+// THIS LINE ALLOWS D-PAD DRIVE BASE MOVEMENT driveDefaultCommand = new DriveDefaultCommand(() -> baseController.povRight().getAsBoolean() ? 0.5 :(baseController.povLeft().getAsBoolean() ? -0.5 : 0.),() -> baseController.povUp().getAsBoolean() ? 0.5 :(baseController.povDown().getAsBoolean() ? -0.5 : 0.),() -> 0);
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
         choreo = new ChoreoSubsystem(driveSubsystem);
         coralSubsystem = new CoralSubsystem();
@@ -47,38 +48,58 @@ public class RobotContainer {
 
 
     private void configureBindings() {
-        //baseController.a().whileTrue(new AprilAlign(driveSubsystem));
+        //TODO                             BASE CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
-        baseController.plus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
-        baseController.minus().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
+        // FIELD CENTRIC
         baseController.button(13).onTrue(new InstantCommand(() -> DriveDefaultCommand.isFieldCentric = !DriveDefaultCommand.isFieldCentric));
 
+        // CORAL OUTPUT/INPUT
+        baseController.r().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
+        baseController.l().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
+
+        // CORAL HORIZONTAL
         baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
         baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
 
-        baseController.zr().whileTrue(new AprilAlign(driveSubsystem));
-        baseController.zl().whileTrue(new AprilTurnAlign(driveSubsystem));
+        // ALGAE OUTPUT/INPUT
+        baseController.zr().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
+        baseController.zl().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
 
-        baseController.x().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.FORWARD));
-        baseController.y().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
+        // ALGAE ANGLE
+        baseController.x().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.FORWARD)));
+        baseController.x().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
 
-        baseController.a().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.FORWARD)));
         baseController.b().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.REVERSE)));
-        baseController.a().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
         baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
 
-        payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
-        payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_1));
-        payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_2));
-        payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_3));
+        // LIFT CONTROL
+        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> true));
+        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
 
-        //baseController.y().whileTrue((new LiftCommand(lift,MotorDirection.FORWARD)));
-        //baseController.a().whileTrue((new LiftCommand(lift,MotorDirection.REVERSE)));
+        // APRIL TAG ALIGN
+        //baseController.y().whileTrue(new AprilAlign(driveSubsystem));
 
+        // READY TO INTAKE
+        //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
 
+        /* TO ADD
+        Left "Start": Reset Gyro
+        Minus: Stop going to Pos
+        Plus: Go to next Pos
+        */
 
-//        baseController.zr().whileTrue(new LiftCommand(lift, MotorDirection.FORWARD));
-//        baseController.zl().whileTrue(new LiftCommand(lift, MotorDirection.REVERSE));
+        //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
+
+        payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.STARTING));
+        payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.TROUGH));
+        payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_1));
+        payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_2));
+
+        /*payloadController.povRight().whileTrue( new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.DEFAULT_DOWN));
+        payloadController.povDown().whileTrue(  new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_2));
+        payloadController.povUpLeft().whileTrue(new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_3));
+        payloadController.povUp().whileTrue(    new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_4)); */
+
 
     }
 
