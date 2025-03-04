@@ -119,12 +119,16 @@ public class DriveSubsystem extends SubsystemBase {
         double poseX = (lf_x + lb_x + rf_x + rb_x) / 4.0 ;
         double poseY = (lf_y + lb_y + rf_y + rb_y) / 4.0 ;
 
-        double turn_mag = (poseX / Math.abs(poseX)) * Math.sqrt(Math.pow(poseX,2) + Math.pow(poseY,2));
-        double turn_angle;
-        if (poseX == 0) {
-            turn_angle = gyro.getRotation2d().getRadians();
-        } else {
+        double NaNCheck = (poseX / Math.abs(poseX));
+        double turn_mag = 0.0;
+        double turn_angle = 0.0;
+        if(!Double.isNaN(NaNCheck)) {
+            turn_mag = NaNCheck * Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
             turn_angle = gyro.getRotation2d().getRadians() + Math.atan(poseY / poseX);
+        }
+        else{
+            turn_mag  = Math.abs(poseY);
+            turn_angle = gyro.getRotation2d().getRadians();
         }
 
         double turn_poseX = currentPose.getX() + turn_mag * Math.cos(turn_angle);
@@ -135,7 +139,6 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("PoseX: ", turn_poseX);
         SmartDashboard.putNumber("PoseY: ", turn_poseY);
         SmartDashboard.putString("Current Pose:", currentPose.toString());
-
     }
 
     public void poseReset(){

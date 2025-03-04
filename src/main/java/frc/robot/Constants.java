@@ -79,7 +79,7 @@ public final class Constants {
         public static final double ALGAE_ANGLE_SPEED = 1;
         public static final double ALGAE_ANGLE_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
-        public static final double ALGAE_MOVE_SPEED = 1;
+        public static final double ALGAE_MOVE_SPEED = .65;
 
         public static final double DRIVE_BASE_MAX_SPEED = .15;
     }
