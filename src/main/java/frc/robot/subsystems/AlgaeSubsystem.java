@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AnalogInput;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
