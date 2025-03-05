@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -131,6 +132,13 @@ public class SwerveModule<T extends MotorController> {
                 new Rotation2d(getAngleRadians() + Math.PI / 2));  // TODO : Decide on units and get a conversion somewhere sane.
     }
 
+    public void slowToStop(){
+        ((SparkMax)driveMotor).configure(new SparkMaxConfig().idleMode(SparkBaseConfig.IdleMode.kBrake), SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    }
+
+    public void allowMove(){
+        ((SparkMax)driveMotor).configure(new SparkMaxConfig().idleMode(SparkBaseConfig.IdleMode.kCoast), SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    }
     /***
      *
      * @param speed The speed to set the drive motor to.  It should be between -1.0 and 1.0.

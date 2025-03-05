@@ -6,9 +6,12 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
+import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
 import frc.robot.commands.liftCommands.LiftPidControl;
@@ -104,6 +107,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return choreo.SelectTrajectory("NewPath");
+        return new SequentialCommandGroup(choreo.SelectTrajectory("NewPath"),
+                new ToggleStop(driveSubsystem), new WaitCommand(0.2), new ToggleStop(driveSubsystem));
     }
 }

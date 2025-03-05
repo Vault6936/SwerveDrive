@@ -61,7 +61,7 @@ public class SwerveChassis<T extends MotorController> {
 
     public void SetAccelerationLimit(double input)
     {
-        AccelerationLimit = Math.clamp(input, -1, 1);
+        AccelerationLimit = MathUtil.clamp(input, -1, 1);
     }
 
     public void setDriveLimit(InputLimit inputLimit) {

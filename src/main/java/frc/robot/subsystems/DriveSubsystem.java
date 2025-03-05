@@ -75,12 +75,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double x, double y, double rot, boolean fieldCentric) {
-
-        if (testMode) {
-            Vector2d vector = new Vector2d(x, y);
-            chassis.modules.get(testModuleIndex).drive(vector.magnitude, vector.angle);
-        } else {
-            //DashboardLayout.setNodeValue("joystick", "x: " + x + "\ry: " + y);
             if(fieldCentric)
             {
                 Vector2d driveDirection = new Vector2d(-x, y);
@@ -94,7 +88,15 @@ public class DriveSubsystem extends SubsystemBase {
                 chassis.drive(-x, y, rot);
             }
             SmartDashboard.putBoolean("Field Centric: ", fieldCentric);
-        }
+
+    }
+
+    public void slowToStop(){
+        chassis.modules.forEach(module -> module.slowToStop());
+    }
+    
+    public void allowMove(){
+        chassis.modules.forEach(module -> module.slowToStop());
     }
 
     private void updatePose(SwerveModule<SparkMax> lf, SwerveModule<SparkMax> lb, SwerveModule<SparkMax> rb, SwerveModule<SparkMax> rf){
@@ -138,7 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Turn Angle: ", turn_angle);
         SmartDashboard.putNumber("PoseX: ", turn_poseX);
         SmartDashboard.putNumber("PoseY: ", turn_poseY);
-        SmartDashboard.putString("Current Pose:", currentPose.toString());
+        SmartDashboard.putString("Current Posea:", currentPose.toString());
     }
 
     public void poseReset(){
