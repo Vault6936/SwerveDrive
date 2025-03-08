@@ -4,25 +4,27 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CameraSystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
+    LimelightSubsystem limelightSubsystem;
     PIDController pid_hoz = new PIDController(0.5,0,0);
     PIDController pid_rot = new PIDController(0.5,0,0);
 
 
-    public AprilAlign(DriveSubsystem driveSubsystem){
+    public AprilAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem){
         this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
+        this.limelightSubsystem = limelightSubsystem;
     }
     //     ☆*: .｡. o(≧▽≦)o .｡.:*☆
 
     @Override
     public void execute() {
-        double tx = CameraSystem.tx;
-        double ry = CameraSystem.ry;
+        double tx = limelightSubsystem.tx;
+        double ry = limelightSubsystem.ry;
         double pid_move = pid_hoz.calculate(tx,0);
         double pid_turn = MathUtil.clamp(pid_rot.calculate(ry,0), -0.5, 0.5);
 
@@ -50,7 +52,7 @@ public class AprilAlign extends Command {
     @Override
     public boolean isFinished()
     {
-        return CameraSystem.id == 0;
+        return limelightSubsystem.id == 0;
     }
 
 }

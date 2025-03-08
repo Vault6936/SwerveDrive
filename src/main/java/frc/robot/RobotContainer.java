@@ -1,9 +1,5 @@
 package frc.robot;
 
-import choreo.Choreo;
-import choreo.auto.AutoFactory;
-import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -18,7 +14,6 @@ import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.commands.liftCommands.LiftPresetCommand;
 import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.*;
-import frc.robot.swerve.SwerveModule;
 
 
 public class RobotContainer {
@@ -27,7 +22,9 @@ public class RobotContainer {
     private final CommandSwitchController payloadController = new CommandSwitchController(OperatorConstants.PAYLOAD_CONTROLLER_PORT);
 
     public final DriveSubsystem driveSubsystem;
-    public final CameraSystem cameraSystem = new CameraSystem();
+    public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward");
+    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar");
+
     public final LiftSubsystem lift;
     private final DriveDefaultCommand driveDefaultCommand;
     CoralSubsystem coralSubsystem;
@@ -46,6 +43,7 @@ public class RobotContainer {
         lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY(),
                 payloadController.zl().and(payloadController.zr())));
 
+        choreo.scheduleAutoChooser();
         configureBindings();
     }
 
@@ -107,7 +105,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new SequentialCommandGroup(choreo.SelectTrajectory("NewPath"),
+        return new SequentialCommandGroup(choreo.SelectTrajectory("normalAuto"),
                 new ToggleStop(driveSubsystem), new WaitCommand(0.2), new ToggleStop(driveSubsystem));
     }
 }

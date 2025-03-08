@@ -2,24 +2,25 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CameraSystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AprilTurnAlign extends Command {
     DriveSubsystem driveSubsystem;
+    LimelightSubsystem limelightSubsystem;
     PIDController pid_control = new PIDController(10/6. * 6. * 0.50,0,0);
 
-    public AprilTurnAlign(DriveSubsystem driveSubsystem){
+    public AprilTurnAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem){
         this.driveSubsystem = driveSubsystem;
+        this.limelightSubsystem = limelightSubsystem;
         addRequirements(driveSubsystem);
     }
     //     ☆*: .｡. o(≧▽≦)o .｡.:*☆
 
     @Override
     public void execute() {
-        final double ry = CameraSystem.ry;
+        final double ry = limelightSubsystem.ry;
         //Trying to accommodate for the value not being 0 - 1
         double pid_calc = MathUtil.clamp(pid_control.calculate(ry,0), -0.5, 0.5);
 
@@ -44,7 +45,7 @@ public class AprilTurnAlign extends Command {
     @Override
     public boolean isFinished()
     {
-        return CameraSystem.id == 0;
+        return limelightSubsystem.id == 0;
     }
 
 }

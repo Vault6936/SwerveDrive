@@ -144,12 +144,13 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void poseReset(){
-        currentPose = new Pose2d(0,0,gyro.getRotation2d());
+        currentPose = new Pose2d(0,0, gyro.getRotation2d());
     }
 
     public void poseReset(Pose2d newPose)
     {
         currentPose = newPose;
+        gyro.setAngleAdjustment(newPose.getRotation().getRadians() + Math.PI/2);
     }
 
     public void zeroNavX() {
