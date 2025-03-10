@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.vision.LimelightHelpers;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -30,9 +31,11 @@ public class LimelightSubsystem extends SubsystemBase {
         this.ry = ry;
 
         //double ta = LimelightHelpers.getTA("");  // Target area (0% to 100% of image)
-        SmartDashboard.putNumber(limelightName + " Horizontal: ", tx);
-        SmartDashboard.putNumber(limelightName + " Vertical:   ", ty);
-        SmartDashboard.putNumber(limelightName + " ID:         ", id);
+        if (Constants.DebugInfo.debugCamera) {
+            SmartDashboard.putNumber(limelightName + " Horizontal: ", tx);
+            SmartDashboard.putNumber(limelightName + " Vertical:   ", ty);
+            SmartDashboard.putNumber(limelightName + " ID:         ", id);
+        }
     }
 
 

@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import javax.xml.stream.FactoryConfigurationError;
+
 public final class Constants {
 
     public static double deadZoneDefault;
@@ -15,16 +17,10 @@ public final class Constants {
     }
 
     public static final class SwerveModuleTest {
-        public static final boolean testMode = false;
-
         public static final int testModuleIndex = 1;
     }
 
     public static class CANIds {
-//        public static final SwerveCANId leftFront = new SwerveCANId(4, 5, 22); // module 2
-//        public static final SwerveCANId rightFront = new SwerveCANId(2, 3, 21); // module 1
-//        public static final SwerveCANId leftBack = new SwerveCANId(6, 7, 23); // module 3
-//        public static final SwerveCANId rightBack = new SwerveCANId(8, 9, 24); // module 4
         public static final SwerveCANId rightBack /* LEFT FRONT */ = new SwerveCANId(2, 3, 21,-0.776123046875); // lf module 2
         public static final SwerveCANId rightFront /* LEFT BACK */ = new SwerveCANId(6, 7, 23,-0.145751953125);// lb module 1
         public static final SwerveCANId leftFront /* RIGHT BACK */ = new SwerveCANId(8, 9, 24,-0.152099609375); // rb module 3
@@ -60,7 +56,6 @@ public final class Constants {
         public static final double driveRampRate = 100.0;
         public static final double rotMultiplier = 1;
         public static final double rotRampRate = 75.0;
-        public static final double SPEED_OF_APRILALIGN = .5;
         public static final double driveMotorTicksPerRev = 1;
         public static final double GEAR_RATIO = 6.75;
         public static final double WHEEL_DIAMETER_INCHES = 4.0;
@@ -82,6 +77,16 @@ public final class Constants {
         public static final double ALGAE_MOVE_SPEED = .65;
 
         public static final double DRIVE_BASE_MAX_SPEED = .15;
+    }
+
+    public static class DebugInfo{
+        public static final boolean debugDrivebase = true;
+        public static final boolean debugChoreo = true;
+        public static final boolean debugAlgae = false;
+        public static final boolean debugCoral = false;
+        public static final boolean debugCamera = false;
+        public static final boolean debugAlign = false;
+        public static final boolean debugLift = false;
     }
 
     public static class ThresholdConstants {

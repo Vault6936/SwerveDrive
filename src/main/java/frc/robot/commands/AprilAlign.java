@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -25,21 +26,16 @@ public class AprilAlign extends Command {
     public void execute() {
         double tx = limelightSubsystem.tx;
         double ry = limelightSubsystem.ry;
-        double pid_move = pid_hoz.calculate(tx,0);
-        double pid_turn = MathUtil.clamp(pid_rot.calculate(ry,0), -0.5, 0.5);
-
-        SmartDashboard.putNumber("tx", tx);
-        SmartDashboard.putNumber("ry", ry);
-        SmartDashboard.putNumber("pid_move", pid_move);
-        SmartDashboard.putNumber("pid_turn", pid_turn);
-        driveSubsystem.drive(-pid_move,0 ,pid_turn);
-//        if (tx < -2){
-//            driveSubsystem.drive(-Constants.Swerve.SPEED_OF_APRILALIGN,0.0,0.0);
-//        } else if (tx > 2) {
-//            driveSubsystem.drive(Constants.Swerve.SPEED_OF_APRILALIGN,0.0,0.0);
-//        } else{
-//            driveSubsystem.drive(0,0,0);
-//        }
+        double pidHozMovement = pid_hoz.calculate(tx,0);
+        double pidRotationMovement = MathUtil.clamp(pid_rot.calculate(ry,0), -0.5, 0.5);
+        if (Constants.DebugInfo.debugAlign)
+        {
+            SmartDashboard.putNumber("tx", tx);
+            SmartDashboard.putNumber("ry", ry);
+            SmartDashboard.putNumber("pidHozMovement", pidHozMovement);
+            SmartDashboard.putNumber("pidRotationMovement", pidRotationMovement);
+        }
+        driveSubsystem.drive(-pidHozMovement,0 ,pidRotationMovement);
     }
 
     @Override

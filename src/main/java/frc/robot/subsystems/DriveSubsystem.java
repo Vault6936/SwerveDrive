@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.swerve.PIDGains;
 import frc.robot.swerve.SwerveChassis;
 import frc.robot.swerve.SwerveModule;
@@ -17,7 +18,6 @@ import frc.robot.webdashboard.DashboardLayout;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.CANIds;
-import static frc.robot.Constants.SwerveModuleTest.testMode;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -78,9 +78,9 @@ public class DriveSubsystem extends SubsystemBase {
             if(fieldCentric)
             {
                 Vector2d driveDirection = new Vector2d(-x, y);
-                SmartDashboard.putString("Drive Raw ", driveDirection.y + "/" + driveDirection.x);
+                //SmartDashboard.putString("Drive Raw ", driveDirection.y + "/" + driveDirection.x);
                 driveDirection = driveDirection.rotate(gyro.getRotation2d().getRadians());
-                SmartDashboard.putString("Drive Corrected ", driveDirection.y + "/" + driveDirection.x);
+                //SmartDashboard.putString("Drive Corrected ", driveDirection.y + "/" + driveDirection.x);
                 chassis.drive(driveDirection.x, driveDirection.y, rot);
             }
             else
@@ -136,11 +136,13 @@ public class DriveSubsystem extends SubsystemBase {
         double turn_poseX = currentPose.getX() + turn_mag * Math.cos(turn_angle);
         double turn_poseY = currentPose.getY() + turn_mag * Math.sin(turn_angle);
         currentPose = new Pose2d(turn_poseX, turn_poseY, gyro.getRotation2d());
-        SmartDashboard.putNumber("Turn Mag: ", turn_mag);
-        SmartDashboard.putNumber("Turn Angle: ", turn_angle);
-        SmartDashboard.putNumber("PoseX: ", turn_poseX);
-        SmartDashboard.putNumber("PoseY: ", turn_poseY);
-        SmartDashboard.putString("Current Posea:", currentPose.toString());
+        if (Constants.DebugInfo.debugDrivebase) {
+            SmartDashboard.putNumber("Turn Mag: ", turn_mag);
+            SmartDashboard.putNumber("Turn Angle: ", turn_angle);
+            SmartDashboard.putNumber("PoseX: ", turn_poseX);
+            SmartDashboard.putNumber("PoseY: ", turn_poseY);
+        }
+        SmartDashboard.putString("Current Pose:", currentPose.toString());
     }
 
     public void poseReset(){
@@ -165,15 +167,16 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         updatePose(leftFront,leftBack,rightBack,rightFront);
-        DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
-        DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
-        DashboardLayout.setNodeValue("encoder3", leftFront.encoder.getAbsolutePosition());
-        DashboardLayout.setNodeValue("encoder4", leftBack.encoder.getAbsolutePosition());
-        DashboardLayout.setNodeValue("test mode", testMode);
-        SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
-        SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);
-        SmartDashboard.putNumber("RightFrontEncoderDiff", rightFront.getOdometryData().distanceMeters);
-        SmartDashboard.putNumber("RightBackEncoderDiff", rightBack.getOdometryData().distanceMeters);
+        if (Constants.DebugInfo.debugDrivebase) {
+            DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
+            DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
+            DashboardLayout.setNodeValue("encoder3", leftFront.encoder.getAbsolutePosition());
+            DashboardLayout.setNodeValue("encoder4", leftBack.encoder.getAbsolutePosition());
+            SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
+            SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);
+            SmartDashboard.putNumber("RightFrontEncoderDiff", rightFront.getOdometryData().distanceMeters);
+            SmartDashboard.putNumber("RightBackEncoderDiff", rightBack.getOdometryData().distanceMeters);
+        }
     }
 
     public static DriveSubsystem getInstance() {

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants;
 import frc.robot.commands.autonomousCommands.ToggleStop;
 
 public class ChoreoSubsystem extends SubsystemBase {
@@ -28,11 +29,13 @@ public class ChoreoSubsystem extends SubsystemBase {
         autoFactory = new AutoFactory(() -> driveSubsystem.currentPose, driveSubsystem::poseReset, this::FollowTrajectory,
                 true, driveSubsystem);
         this.autoChooser = new AutoChooser();
+
         this.autoChooser.addCmd("Complex auto", this::getBasicAuto);
         this.autoChooser.addCmd("Fast complex auto", this::getBasicAutoFast);
-        this.autoChooser.addCmd("Forwardwards", this::getHalfMeterForward);
-        this.autoChooser.addCmd("Leftwards", this::getHalfMeterLeft);
-        this.autoChooser.addCmd("Rightwards", this::getHalfMeterRight);
+        this.autoChooser.addCmd("Forward", this::getHalfMeterForward);
+        this.autoChooser.addCmd("Left", this::getHalfMeterLeft);
+        this.autoChooser.addCmd("Right", this::getHalfMeterRight);
+
         SmartDashboard.putData(autoChooser);
         this.driveSubsystem = driveSubsystem;
         xController.setIntegratorRange(-1,1);

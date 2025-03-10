@@ -2,7 +2,7 @@ package frc.robot.commands.algaeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlgaeSubsystem;
-import frc.robot.subsystems.MotorDirection;
+
 
 import java.util.function.DoubleSupplier;
 

@@ -82,7 +82,9 @@ public class CoralSubsystem extends SubsystemBase {
         double outputPower = pid.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -1, 1);
         coralHoz.set(outputPower);
-        SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
+        if (Constants.DebugInfo.debugCoral){
+            SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
+        }
     }
 
     public void setSafePos(){
@@ -99,7 +101,9 @@ public class CoralSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        SmartDashboard.putNumber("Coral Horizontal Position", hozEncoder.getPosition());
-        SmartDashboard.putNumber("Coral Horizontal Target Position", hozTargetPos);
+        if (Constants.DebugInfo.debugCoral){
+            SmartDashboard.putNumber("Coral Horizontal Position", hozEncoder.getPosition());
+            SmartDashboard.putNumber("Coral Horizontal Target Position", hozTargetPos);
+        }
     }
 }

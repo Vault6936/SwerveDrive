@@ -84,7 +84,11 @@ public class AlgaeSubsystem extends SubsystemBase {
     public void doPositionControl(){
         double outputPower = pid.calculate(getAngle(), angleTargetPos) * Constants.SpeedConstants.ALGAE_ANGLE_SPEED_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -1, 1);
-        SmartDashboard.putNumber("Algae Power", outputPower);
+        if (Constants.DebugInfo.debugAlgae)
+        {
+            SmartDashboard.putNumber("Algae Power", outputPower);
+        }
+
         algaeAngle.set(outputPower);
     }
 
@@ -96,8 +100,10 @@ public class AlgaeSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        SmartDashboard.putNumber("Algae Position", getAngle());
-        SmartDashboard.putNumber("Algae Target Position", angleTargetPos);
+        if (Constants.DebugInfo.debugAlgae) {
+            SmartDashboard.putNumber("Algae Position", getAngle());
+            SmartDashboard.putNumber("Algae Target Position", angleTargetPos);
+        }
 
     }
 
