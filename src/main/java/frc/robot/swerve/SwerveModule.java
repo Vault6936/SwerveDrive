@@ -178,8 +178,8 @@ public class SwerveModule<T extends MotorController> {
     }
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
-        double theta = position.angle - driveVector.angle;
-        Vector2d velocityVector = new Vector2d(driveVector.magnitude + position.magnitude * rotSpeed * Math.sin(theta),rotSpeed * position.magnitude * Math.cos(theta));
-        drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
+        Vector2d rotationVector = position.rotate(Math.PI / 2).multiply(rotSpeed);
+        Vector2d velocityVector = new Vector2d(rotationVector.x + driveVector.x,rotationVector.y + driveVector.y);
+        drive(velocityVector.magnitude, velocityVector.angle);
     }
 }

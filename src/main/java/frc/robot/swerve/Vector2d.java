@@ -56,4 +56,8 @@ public class Vector2d {
         return new Vector2d(x * cos - y * sin, x * sin + y * cos);*/ // Returns a vector with an angle of 180 degrees for some odd reason if x and y are 0.  Why?
     }
 
+    public Vector2d multiply(double magnitudeMultiplier){
+        return new Vector2d(this.magnitude * magnitudeMultiplier, this.angle, false);
+    }
+
 }

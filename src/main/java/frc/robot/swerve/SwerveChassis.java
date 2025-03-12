@@ -131,16 +131,16 @@ public class SwerveChassis<T extends MotorController> {
            speed =0.;
        }
 
-       if(motorNumber==0) {
+       if(motorNumber == 0) {
            leftFront.rotateAndDrive(direction, speed);
        }
-       else if (motorNumber==1) {
+       else if (motorNumber == 1) {
            rightFront.rotateAndDrive(direction, speed);
        }
-       else if (motorNumber==2) {
+       else if (motorNumber == 2) {
            leftBack.rotateAndDrive(direction, speed);
        }
-       else if (motorNumber==3) {
+       else if (motorNumber == 3) {
            rightBack.rotateAndDrive(direction, speed);
        }
     }
