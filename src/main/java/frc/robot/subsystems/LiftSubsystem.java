@@ -123,7 +123,7 @@ public class LiftSubsystem extends SubsystemBase {
     public void periodic()
     {
         canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
-        if (Constants.DebugInfo.debugLift) {
+        if (true) {
             SmartDashboard.putNumber("LiftPosition", encoder_value.getAsDouble());
             SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
         }

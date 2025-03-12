@@ -7,6 +7,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
@@ -44,8 +45,9 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
+        SmartDashboard.putNumber("AngleAdjustmentDegrees", 0);
 
-        initializationCommands = new Command[]{new SwerveCalibrateCommand()};
+                initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
             CommandScheduler.getInstance().schedule(command);
         }

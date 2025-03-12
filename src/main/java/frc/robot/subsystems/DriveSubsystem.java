@@ -21,7 +21,8 @@ import static frc.robot.Constants.CANIds;
 import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
 
 public class DriveSubsystem extends SubsystemBase {
-    AHRS gyro;
+    //AHRS gyro;
+    AHRS_The_Sequel gyro;
     final SwerveModule<SparkMax> rightBack;
     final SwerveModule<SparkMax> rightFront;
     final SwerveModule<SparkMax> leftFront;
@@ -33,7 +34,7 @@ public class DriveSubsystem extends SubsystemBase {
     private static DriveSubsystem instance;
 
     private DriveSubsystem() {
-        gyro = new AHRS();
+        gyro = new AHRS_The_Sequel();
         currentPose = new Pose2d(0.0,0.0,gyro.getRotation2d());
         swervePIDGains = new PIDGains(0.3, 0.01, 0.0005);
         rightBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
@@ -87,7 +88,6 @@ public class DriveSubsystem extends SubsystemBase {
             {
                 chassis.drive(-x, y, rot);
             }
-            SmartDashboard.putBoolean("Field Centric: ", fieldCentric);
 
     }
 
@@ -152,7 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void poseReset(Pose2d newPose)
     {
         currentPose = newPose;
-        gyro.setAngleAdjustment(newPose.getRotation().getRadians() + Math.PI/2);
+        gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
     }
 
     public void zeroNavX() {
@@ -167,6 +167,8 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         updatePose(leftFront,leftBack,rightBack,rightFront);
+        double weTurn = SmartDashboard.getNumber("AngleAdjustmentDegrees" , 0);
+        gyro.setAngleAdjustment(weTurn);
         if (Constants.DebugInfo.debugDrivebase) {
             DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
             DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());

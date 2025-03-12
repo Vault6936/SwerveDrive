@@ -84,7 +84,7 @@ public final class Constants {
         public static final boolean debugChoreo = true;
         public static final boolean debugAlgae = false;
         public static final boolean debugCoral = false;
-        public static final boolean debugCamera = false;
+        public static final boolean debugCamera = true;
         public static final boolean debugAlign = false;
         public static final boolean debugLift = false;
     }

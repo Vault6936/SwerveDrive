@@ -95,7 +95,11 @@ public class ChoreoSubsystem extends SubsystemBase {
     }
     public Command SelectTrajectory(String pathName)
     {
-        return autoFactory.trajectoryCmd(pathName);
+
+        return new SequentialCommandGroup(
+                autoFactory.resetOdometry(pathName),
+                autoFactory.trajectoryCmd(pathName)
+        );
     }
     public void scheduleAutoChooser(){
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());

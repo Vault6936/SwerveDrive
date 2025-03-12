@@ -73,7 +73,7 @@ public class SwerveChassis<T extends MotorController> {
     }
 
     private static double getCircularDivisor(double x, double y) {
-        if (x == 0.0 && y == 0.0) {
+        if (x == 0.0 && y == 0.0) { //TODO That doesn't seem very good...
             return 1.0;
         } else if (Math.abs(y / x) >= 1.0) {
             return Math.sqrt(1 + Math.pow(x / y, 2));

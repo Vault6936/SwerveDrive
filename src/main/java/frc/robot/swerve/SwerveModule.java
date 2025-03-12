@@ -117,7 +117,9 @@ public class SwerveModule<T extends MotorController> {
         return min;
     }
 
-    // By always finding the minimum error, this function will avoid the type of problems that can occur when the target angle is something like 30 degrees and the wheel angle is 300.  This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
+    // By always finding the minimum error, this function will avoid the type of problems that can occur when the target angle
+    // is something like 30 degrees and the wheel angle is 300.
+    // This code would interpret the target angle as 390 degrees and calculate the error out to 90 degrees instead of 270.  Much better :)
     private static double getError(double targetAngle, double currentAngle) {
         return minimumMagnitude(targetAngle - currentAngle, targetAngle + 2 * Math.PI - currentAngle, targetAngle - 2 * Math.PI - currentAngle);
     }
@@ -151,7 +153,6 @@ public class SwerveModule<T extends MotorController> {
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
-//Doesn't work :( //TODO WE NEED IT TO WORK :,)
         if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
             err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
             polarity = -1;
@@ -178,7 +179,7 @@ public class SwerveModule<T extends MotorController> {
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
         double theta = position.angle - driveVector.angle;
-        Vector2d velocityVector = new Vector2d(driveVector.magnitude + position.magnitude * rotSpeed * Math.sin(theta), rotSpeed * position.magnitude * Math.cos(theta));
+        Vector2d velocityVector = new Vector2d(driveVector.magnitude + position.magnitude * rotSpeed * Math.sin(theta),rotSpeed * position.magnitude * Math.cos(theta));
         drive(velocityVector.magnitude, velocityVector.angle + driveVector.angle - Math.PI / 2);
     }
-}   
+}

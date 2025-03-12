@@ -13,7 +13,7 @@ public class LimelightSubsystem extends SubsystemBase {
     public String limelightName;
 
     public LimelightSubsystem(String limelightName){
-        this.limelightName = limelightName;
+        this.limelightName = "limelight-" + limelightName;
     }
 
     @Override
