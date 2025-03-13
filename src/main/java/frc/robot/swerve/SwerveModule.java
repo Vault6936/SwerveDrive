@@ -86,7 +86,6 @@ public class SwerveModule<T extends MotorController> {
         isCalibrating = Math.abs(drive(0, 0)) < 0.0087; //Half of a degree
     }
 
-
     public boolean doneCalibrating() {
         return isCalibrating;
     }
@@ -165,9 +164,13 @@ public class SwerveModule<T extends MotorController> {
         } else {
             steeringMotor.set(0);
         }
-        driveMotor.set(MathUtil.clamp(
-                speed * polarity * driveDirection.direction,
-                -Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED, Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED));
+        if (err < Math.toRadians(5)) {
+            driveMotor.set(MathUtil.clamp(
+                    speed * polarity * driveDirection.direction,
+                    -Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED, Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED));
+        } else {
+            driveMotor.set(0);
+        }
         //SmartDashboard.putNumber(name + "TargetPower", MathUtil.clamp(controller.calculate(0, err), -1.0, 1.0) * turnDirection.direction);
 
         return currentAngle;
