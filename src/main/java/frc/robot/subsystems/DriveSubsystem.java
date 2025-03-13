@@ -30,6 +30,7 @@ public class DriveSubsystem extends SubsystemBase {
     public SwerveChassis<SparkMax> chassis;
     PIDGains swervePIDGains;
     public Pose2d currentPose;
+    private double accelLimit;
 
     private static DriveSubsystem instance;
 

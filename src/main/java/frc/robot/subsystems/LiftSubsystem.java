@@ -39,13 +39,14 @@ public class LiftSubsystem extends SubsystemBase {
         currentTargetPos = 0;
         coralSubsystem = coralSystem;
         algaeSubsystem = algaeSystem;
+        this.setSpeedMultiplier = setSpeedMultiplier;
     }
 
     /***
      * Used to alter the speed of the robot based on the lift's vertical position based on a logistic function
      */
-    public double getDriveSpeedMultiplier(){ //TODO Alter this function, the max has been updated; but it should still work
-        return .8 / (1 + 2 * Math.pow(Math.E,.02 * (encoder_value.getAsDouble() - 2./3. * max_position))) + .2;
+    public double getDriveSpeedMultiplier(){
+        return .8 / (1 + Math.pow(Math.E,.457799 * (encoder_value.getAsDouble() - 237.6))) + .2;
     }
 
     /***
@@ -123,6 +124,7 @@ public class LiftSubsystem extends SubsystemBase {
     public void periodic()
     {
         canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
+        setSpeedMultiplier.accept(getDriveSpeedMultiplier());
         if (true) {
             SmartDashboard.putNumber("LiftPosition", encoder_value.getAsDouble());
             SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
