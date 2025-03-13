@@ -1,5 +1,5 @@
 {
- "name":"sample",
+ "name":"basic_arc",
  "version":1,
  "type":"Swerve",
  "variables":{

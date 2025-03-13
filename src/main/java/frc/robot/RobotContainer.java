@@ -105,7 +105,11 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new SequentialCommandGroup(choreo.SelectTrajectory("normalAuto"),
-                new ToggleStop(driveSubsystem), new WaitCommand(0.2), new ToggleStop(driveSubsystem));
+        return new SequentialCommandGroup(
+                new ToggleStop(driveSubsystem, false),
+                choreo.SelectTrajectory("Loop"),
+                new ToggleStop(driveSubsystem, true),
+                new WaitCommand(0.2),
+                new ToggleStop(driveSubsystem, false));
     }
 }

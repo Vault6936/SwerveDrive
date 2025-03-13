@@ -7,13 +7,13 @@ public class ToggleStop extends Command {
     DriveSubsystem driveSubsystem;
     boolean stopped = false;
 
-    public ToggleStop(DriveSubsystem subsystem){
+    public ToggleStop(DriveSubsystem subsystem, boolean stopped){
         driveSubsystem = subsystem;
+        this.stopped = stopped;
     }
 
     @Override
     public void end(boolean isCancelled){
-        stopped = !stopped;
         if (stopped)
         {
             driveSubsystem.slowToStop();

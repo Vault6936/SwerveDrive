@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,90 +20,91 @@ public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
     private final DriveSubsystem driveSubsystem;
 
-    private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
-    private final PIDController yController = new PIDController(10.0, 0.0, 0.0);
+    private final PIDController xController = new PIDController(2.0, 0.0, 0.0);
+    private final PIDController yController = new PIDController(2.0, 0.0, 0.0);
     private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
     private AutoChooser autoChooser;
 
     public ChoreoSubsystem(DriveSubsystem driveSubsystem)
     {
         autoFactory = new AutoFactory(() -> driveSubsystem.currentPose, driveSubsystem::poseReset, this::FollowTrajectory,
-                true, driveSubsystem);
-        this.autoChooser = new AutoChooser();
-
-        this.autoChooser.addCmd("Complex auto", this::getBasicAuto);
-        this.autoChooser.addCmd("Fast complex auto", this::getBasicAutoFast);
-        this.autoChooser.addCmd("Forward", this::getHalfMeterForward);
-        this.autoChooser.addCmd("Left", this::getHalfMeterLeft);
-        this.autoChooser.addCmd("Right", this::getHalfMeterRight);
-
-        SmartDashboard.putData(autoChooser);
+                false, driveSubsystem);
         this.driveSubsystem = driveSubsystem;
-        xController.setIntegratorRange(-1,1);
-        yController.setIntegratorRange(-1,1);
+        xController.setIntegratorRange(-50,50);
+        yController.setIntegratorRange(-50,50);
         headingController.setIntegratorRange(-1,1);
         headingController.enableContinuousInput(-Math.PI,Math.PI);
     }
 
     private void FollowTrajectory(SwerveSample sample)
     {
-        Pose2d pose = driveSubsystem.currentPose;
-        ChassisSpeeds speeds = new ChassisSpeeds(
-                sample.vy /*+ xController.calculate(pose.getX(), sample.x)*/,
-                sample.vx /*+ yController.calculate(pose.getY(), sample.y)*/,
-                0 /*sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading*/
-        );
-        driveSubsystem.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+        double forwardCalc = -xController.calculate(driveSubsystem.currentPose.getX(), sample.x);
+        double leftCalc = -yController.calculate(driveSubsystem.currentPose.getY(), sample.y);
+
+//        ChassisSpeeds speeds = new ChassisSpeeds(
+//                -sample.vy, //+ forwardCalc,
+//                sample.vx, // + leftCalc,
+//                0 /*sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading*/
+//        );
+
+        SmartDashboard.putNumber("ForwardCalc", forwardCalc);
+        SmartDashboard.putNumber("LeftCalc", leftCalc);
+        SmartDashboard.putNumber("LeftDiff", -sample.vy);
+        SmartDashboard.putNumber("ForwardDiff", sample.vy);
+        driveSubsystem.drive(
+                MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
+                MathUtil.clamp(sample.vx - forwardCalc,-1,1),
+                0,
+                true);
     }
 
     private SequentialCommandGroup getBasicAuto(){
         return new SequentialCommandGroup(
                 SelectTrajectory("normalAuto"),
-                new ToggleStop(driveSubsystem),
+                new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem));
+                new ToggleStop(driveSubsystem, false));
     }
 
     private SequentialCommandGroup getBasicAutoFast(){
         return new SequentialCommandGroup(
                 SelectTrajectory("normalAutoFast"),
-                new ToggleStop(driveSubsystem),
+                new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem));
+                new ToggleStop(driveSubsystem, false));
     }
 
     private SequentialCommandGroup getHalfMeterForward(){
         return new SequentialCommandGroup(
                 SelectTrajectory("halfMeterForward"),
-                new ToggleStop(driveSubsystem),
+                new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem));
+                new ToggleStop(driveSubsystem, false));
     }
 
     private SequentialCommandGroup getHalfMeterLeft(){
         return new SequentialCommandGroup(
                 SelectTrajectory("halfMeterLeft"),
-                new ToggleStop(driveSubsystem),
+                new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem));
+                new ToggleStop(driveSubsystem, false));
     }
     private SequentialCommandGroup getHalfMeterRight() {
         return new SequentialCommandGroup(
                 SelectTrajectory("halfMeterRight"),
-                new ToggleStop(driveSubsystem),
+                new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem));
+                new ToggleStop(driveSubsystem, false));
     }
     public Command SelectTrajectory(String pathName)
     {
-
-        return new SequentialCommandGroup(
-                autoFactory.resetOdometry(pathName),
-                autoFactory.trajectoryCmd(pathName)
-        );
+       return new SequentialCommandGroup(
+               autoFactory.resetOdometry(pathName),
+               autoFactory.trajectoryCmd(pathName)
+       );
     }
     public void scheduleAutoChooser(){
-        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
+        //RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
 
     @Override

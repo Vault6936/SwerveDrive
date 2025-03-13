@@ -71,7 +71,7 @@ public class SwerveModule<T extends MotorController> {
 
     public void boot() {
         encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(encoderOffset).
-                withAbsoluteSensorDiscontinuityPoint(1).withSensorDirection(SensorDirectionValue.Clockwise_Positive));
+                withAbsoluteSensorDiscontinuityPoint(1).withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
     }
 
     public void setDriveMotorDirection(MotorDirection direction) {
@@ -125,9 +125,12 @@ public class SwerveModule<T extends MotorController> {
         double temp = lastEncoderPosition - driveEncoder.getAsDouble();
         lastEncoderPosition = driveEncoder.getAsDouble();
 
-        temp *= 1;
+
+
+        temp *= 1.15 / 39.3701;
         return new SwerveModulePosition(driveDirection.direction * temp /
-                Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO * Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
+                Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO *
+                Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
                 new Rotation2d(getAngleRadians() + Math.PI / 2));  // TODO : Decide on units and get a conversion somewhere sane.
     }
 
@@ -151,13 +154,14 @@ public class SwerveModule<T extends MotorController> {
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
-        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
-            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
-            polarity = -1;
-        }
+//        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
+//            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
+//            polarity = -1;
+//        }
 
 //        SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
-//        SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
+        SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
+        SmartDashboard.putNumber(name + "TargetSpeed", speed * polarity * driveDirection.direction);
 //        SmartDashboard.putNumber(name + "ErrAngle", 180 *  err / Math.PI);
         if (Math.abs(speed) > 0.1) {
             steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);
@@ -178,8 +182,10 @@ public class SwerveModule<T extends MotorController> {
 
     public void rotateAndDrive(Vector2d driveVector, double rotSpeed) {
         Vector2d rotationVector = position.rotate(Math.PI / 2).multiply(rotSpeed);
-        driveVector = driveVector.rotate(Math.PI / 2);
-        Vector2d velocityVector = new Vector2d(rotationVector.x + driveVector.x, rotationVector.y + driveVector.y);
+        Vector2d velocityVector = new Vector2d(rotationVector.x + driveVector.x,rotationVector.y + driveVector.y);
+        SmartDashboard.putNumber(name + "RotationVector", Math.toDegrees(rotationVector.angle));
+        SmartDashboard.putNumber(name + "VelocityVector", Math.toDegrees(velocityVector.angle));
+
         drive(velocityVector.magnitude, velocityVector.angle);
     }
 }

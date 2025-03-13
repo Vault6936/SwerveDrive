@@ -21,10 +21,15 @@ public final class Constants {
     }
 
     public static class CANIds {
-        public static final SwerveCANId rightBack /* LEFT FRONT */ = new SwerveCANId(2, 3, 21,-0.776123046875); // lf module 2
-        public static final SwerveCANId rightFront /* LEFT BACK */ = new SwerveCANId(6, 7, 23,-0.145751953125);// lb module 1
-        public static final SwerveCANId leftFront /* RIGHT BACK */ = new SwerveCANId(8, 9, 24,-0.152099609375); // rb module 3
-        public static final SwerveCANId leftBack /* RIGHT FRONT */  = new SwerveCANId(4, 5, 22,-0.622802734375); // rf module 4
+        public static final double offset = 0.250;
+        public static final SwerveCANId leftFront /* LEFT FRONT */ = new SwerveCANId(
+                2, 3, 21,-0.227294921875 + offset); // lf module 2
+        public static final SwerveCANId leftBack /* LEFT BACK */ = new SwerveCANId(
+                6, 7, 23,0.145751953125+ offset);// lb module 1
+        public static final SwerveCANId rightBack /* RIGHT BACK */ = new SwerveCANId(
+                8, 9, 24,0.152099609375 + offset); // rb module 3
+        public static final SwerveCANId rightFront /* RIGHT FRONT */  = new SwerveCANId(
+                4, 5, 22,0.622802734375 + offset); // rf module 4
         public static int lift = 11;
         public static int algaeAngle = 12;
         public static int algaePusher = 13;
@@ -54,7 +59,7 @@ public final class Constants {
     public static class Swerve {
         public static final double driveMultiplier = 0.5;
         public static final double driveRampRate = 100.0;
-        public static final double rotMultiplier = 1;
+        public static final double rotMultiplier = 0.5;
         public static final double rotRampRate = 75.0;
         public static final double driveMotorTicksPerRev = 1;
         public static final double GEAR_RATIO = 6.75;

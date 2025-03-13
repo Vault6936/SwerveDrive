@@ -18,7 +18,6 @@ import frc.robot.webdashboard.DashboardLayout;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.CANIds;
-import static frc.robot.Constants.SwerveModuleTest.testModuleIndex;
 
 public class DriveSubsystem extends SubsystemBase {
     //AHRS gyro;
@@ -41,22 +40,22 @@ public class DriveSubsystem extends SubsystemBase {
         rightBack = new SwerveModule<>(new SparkMax(CANIds.rightBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.rightBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightBack.encoder),
                 swervePIDGains, new Vector2d(1, -1), CANIds.rightBack.encoderOffset);//-0.374267578125);
-        rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
+        rightBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightFront = new SwerveModule<>(new SparkMax(CANIds.rightFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.rightFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.rightFront.encoder),
                 swervePIDGains, new Vector2d(1, 1), CANIds.rightFront.encoderOffset);//-0.531005859375);//-0.193115234375);
-        rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
+        rightFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftFront = new SwerveModule<>(new SparkMax(CANIds.leftFront.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.leftFront.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftFront.encoder),
                 swervePIDGains, new Vector2d(-1, 1),CANIds.leftFront.encoderOffset);
-        leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
+        leftFront.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftFront.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftBack = new SwerveModule<>(new SparkMax(CANIds.leftBack.driveMotor, SparkLowLevel.MotorType.kBrushless),
                 new SparkMax(CANIds.leftBack.steeringMotor, SparkLowLevel.MotorType.kBrushless), new CANcoder(CANIds.leftBack.encoder),
                 swervePIDGains, new Vector2d(-1, -1),CANIds.leftBack.encoderOffset);//-0.900390625);
-        leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.FORWARD);
+        leftBack.setSteeringMotorDirection(SwerveModule.MotorDirection.REVERSE);
         leftBack.setDriveMotorDirection(SwerveModule.MotorDirection.REVERSE);
         rightBack.name = "rb";
         rightFront.name = "rf";
@@ -79,15 +78,15 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double x, double y, double rot, boolean fieldCentric) {
             if(fieldCentric)
             {
-                Vector2d driveDirection = new Vector2d(-x, y);
-                //SmartDashboard.putString("Drive Raw ", driveDirection.y + "/" + driveDirection.x);
-                driveDirection = driveDirection.rotate(gyro.getRotation2d().getRadians());
-                //SmartDashboard.putString("Drive Corrected ", driveDirection.y + "/" + driveDirection.x);
+                Vector2d driveDirection = new Vector2d(x, y);
+                SmartDashboard.putNumber("Drive Raw ", Math.toDegrees(driveDirection.angle));
+                driveDirection = driveDirection.rotate(-gyro.getRotation2d().getRadians());
+                SmartDashboard.putNumber("Drive Corrected ", Math.toDegrees(driveDirection.angle));
                 chassis.drive(driveDirection.x, driveDirection.y, rot);
             }
             else
             {
-                chassis.drive(-x, y, rot);
+                chassis.drive(x, y, rot);
             }
 
     }
@@ -147,7 +146,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void poseReset(){
-        currentPose = new Pose2d(0,0, gyro.getRotation2d());
+        gyro.setAngleAdjustment(-gyro.getAngle());
+        currentPose = new Pose2d(0, 0, gyro.getRotation2d());
     }
 
     public void poseReset(Pose2d newPose)
@@ -171,10 +171,6 @@ public class DriveSubsystem extends SubsystemBase {
         double weTurn = SmartDashboard.getNumber("AngleAdjustmentDegrees" , 0);
         gyro.setAngleAdjustment(weTurn);
         if (Constants.DebugInfo.debugDrivebase) {
-            DashboardLayout.setNodeValue("encoder1", rightBack.encoder.getAbsolutePosition());
-            DashboardLayout.setNodeValue("encoder2", rightFront.encoder.getAbsolutePosition());
-            DashboardLayout.setNodeValue("encoder3", leftFront.encoder.getAbsolutePosition());
-            DashboardLayout.setNodeValue("encoder4", leftBack.encoder.getAbsolutePosition());
             SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
             SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);
             SmartDashboard.putNumber("RightFrontEncoderDiff", rightFront.getOdometryData().distanceMeters);

@@ -13,14 +13,14 @@ import java.util.function.DoubleSupplier;
 public class LiftSubsystem extends SubsystemBase {
 
     TalonFX extend =  new TalonFX(Constants.CANIds.lift);
-    PIDController pid = new PIDController(0.25, 0, 0);
+    PIDController pid = new PIDController(0.05, 0, 0);
 
     double currentTargetPos = 0;
     DoubleSupplier encoder_value;
 
 
     final double CHANGE_MULTIPLIER = 2.2;
-    final double MAX_SPEED_PERCENT = .6;
+    final double MAX_SPEED_PERCENT = .95;
 
     static final double min_position = -480.0;
     static final double max_position = 0.0;
