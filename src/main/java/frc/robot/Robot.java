@@ -116,9 +116,11 @@ public class Robot extends TimedRobot {
         }
 
         robotContainer.lift.stopMoveToPos();
+        Pose2d startTele = robotContainer.driveSubsystem.currentPose;
         robotContainer.driveSubsystem.poseReset();
         CommandScheduler.getInstance().schedule(new ToggleStop(robotContainer.driveSubsystem, false));
-        DriveSubsystem.getInstance().zeroNavX();
+
+        //DriveSubsystem.getInstance().zeroNavX();
     }
 
 

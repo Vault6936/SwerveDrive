@@ -5,6 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,7 +22,7 @@ import static frc.robot.Constants.CANIds;
 
 public class DriveSubsystem extends SubsystemBase {
     //AHRS gyro;
-    AHRS_The_Sequel gyro;
+    public AHRS_The_Sequel gyro;
     final SwerveModule<SparkMax> rightBack;
     final SwerveModule<SparkMax> rightFront;
     final SwerveModule<SparkMax> leftFront;
@@ -165,11 +166,14 @@ public class DriveSubsystem extends SubsystemBase {
         gyro.zeroYaw();
     }
 
+    public void adjustAngleDegree(double adjustBy) {
+        poseReset(new Pose2d(currentPose.getX(), currentPose.getY(), new Rotation2d(currentPose.getRotation().getDegrees() + adjustBy)));
+    }
+
     @Override
     public void periodic() {
         updatePose(leftFront,leftBack,rightBack,rightFront);
-        double weTurn = SmartDashboard.getNumber("AngleAdjustmentDegrees" , 0);
-        gyro.setAngleAdjustment(weTurn);
+        double adjust = 0;
         if (Constants.DebugInfo.debugDrivebase) {
             SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
             SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);

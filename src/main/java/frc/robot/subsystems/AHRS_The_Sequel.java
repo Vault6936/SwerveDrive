@@ -9,7 +9,7 @@ public class AHRS_The_Sequel extends AHRS {
 
     @Override
     public void setAngleAdjustment(double adjustment) {
-        angleAdjust = (adjustment);
+        angleAdjust += (adjustment);
     }
 
     @Override
