@@ -33,6 +33,7 @@ public class SwerveModule<T extends MotorController> {
     private MotorDirection driveDirection = MotorDirection.FORWARD;
     private MotorDirection turnDirection = MotorDirection.FORWARD;
     private double encoderOffset;
+    double driveSpeedMultiplier;
 
     public enum MotorDirection {
         FORWARD(1),
@@ -61,6 +62,10 @@ public class SwerveModule<T extends MotorController> {
         this.encoder = encoder;
         this.encoderOffset = encoderOffset;
         this.position = position;
+        if (Constants.REMOVE_THIS_CLASS_PLEASE.SLOW_MODE){
+            this.driveSpeedMultiplier = Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
+        }
+        else this.driveSpeedMultiplier = Constants.Swerve.driveMultiplier;
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
     }
@@ -168,6 +173,7 @@ public class SwerveModule<T extends MotorController> {
         } else {
             steeringMotor.set(0);
         }
+
         if (err < Math.toRadians(5)) {
             driveMotor.set(MathUtil.clamp(
                     speed * polarity * driveDirection.direction,

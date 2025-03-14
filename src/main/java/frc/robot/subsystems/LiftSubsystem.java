@@ -100,7 +100,7 @@ public class LiftSubsystem extends SubsystemBase {
      */
     public void doPositionControl(){
         double outputPower = pid.calculate(encoder_value.getAsDouble(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PERCENT, MAX_SPEED_PERCENT);
+        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PERCENT, MAX_SPEED_PERCENT) *Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
 
         // If the (lift is low enough) and (algaeAngle and coralHoz will collide with something)
         if (currentTargetPos > -150 && !canLowerFully) {

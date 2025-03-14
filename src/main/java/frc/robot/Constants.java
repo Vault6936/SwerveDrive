@@ -99,4 +99,10 @@ public final class Constants {
         public static final double CORAL_PRESET_THRESHOLD = 10;
 
     }
+
+    public static class REMOVE_THIS_CLASS_PLEASE{ //TODO DELETE THIS CLASS PLEASE
+        public static final boolean SLOW_MODE = true;
+        public static final double slowDriveMultiplier = .3;
+
+    }
 }

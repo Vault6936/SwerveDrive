@@ -173,7 +173,6 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         updatePose(leftFront,leftBack,rightBack,rightFront);
-        double adjust = 0;
         if (Constants.DebugInfo.debugDrivebase) {
             SmartDashboard.putNumber("LeftFrontEncoderDiff", leftFront.getOdometryData().distanceMeters);
             SmartDashboard.putNumber("LeftBackEncoderDiff", leftBack.getOdometryData().distanceMeters);

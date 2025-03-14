@@ -80,7 +80,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void doPositionControl() {
         double outputPower = pid.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -1, 1);
+        outputPower = MathUtil.clamp(outputPower, -1, 1) *Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
         coralHoz.set(outputPower);
         if (Constants.DebugInfo.debugCoral){
             SmartDashboard.putNumber("Coral Horizontal Power", outputPower);
