@@ -16,7 +16,7 @@ public class LiftSubsystem extends SubsystemBase {
     PIDController pid = new PIDController(0.05, 0, 0);
 
     double currentTargetPos = 0;
-    DoubleSupplier encoder_value;
+    public DoubleSupplier encoder_value;
 
 
     final double CHANGE_MULTIPLIER = 2.2;

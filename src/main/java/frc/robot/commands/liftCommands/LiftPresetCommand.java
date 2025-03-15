@@ -20,21 +20,15 @@ public class LiftPresetCommand  extends Command {
         liftSubsystem.goPreset(target_preset);
     }
 
-
-    // Called every time the scheduler runs while the command is scheduled.
-//    @Override
-//    public void execute() {
-//    }
-
-//    @Override
-//    public boolean isFinished()
-//    {
-//        return finished;
-//    }
-
     @Override
     public void end(boolean cancelled)
     {
         liftSubsystem.stopMoveToPos();
+    }
+
+    @Override
+    public boolean isFinished()
+    {
+        return Math.abs(liftSubsystem.encoder_value.getAsDouble() - target_preset.position) < 5;
     }
 }

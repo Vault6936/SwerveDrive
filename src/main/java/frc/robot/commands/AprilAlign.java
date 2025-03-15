@@ -13,29 +13,31 @@ public class AprilAlign extends Command {
     LimelightSubsystem limelightSubsystem;
     PIDController pid_hoz = new PIDController(0.5,0,0);
     PIDController pid_rot = new PIDController(0.5,0,0);
+    double aprilX = 0;
+    double aprilRot = 0;
 
 
     public AprilAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem){
         this.driveSubsystem = driveSubsystem;
-        addRequirements(driveSubsystem);
         this.limelightSubsystem = limelightSubsystem;
+        addRequirements(driveSubsystem);
     }
-    //     ☆*: .｡. o(≧▽≦)o .｡.:*☆
+
 
     @Override
     public void execute() {
-        double tx = limelightSubsystem.tx;
-        double ry = limelightSubsystem.ry;
-        double pidHozMovement = pid_hoz.calculate(tx,0);
-        double pidRotationMovement = MathUtil.clamp(pid_rot.calculate(ry,0), -0.5, 0.5);
+        aprilX = limelightSubsystem.tx;
+        aprilRot = limelightSubsystem.ry;
+        double pidHozMovement = pid_hoz.calculate(aprilX,0);
+        double pidRotationMovement = MathUtil.clamp(pid_rot.calculate(aprilRot,0), -0.5, 0.5);
         if (Constants.DebugInfo.debugAlign)
         {
-            SmartDashboard.putNumber("tx", tx);
-            SmartDashboard.putNumber("ry", ry);
+            SmartDashboard.putNumber("tx", aprilX);
+            SmartDashboard.putNumber("ry", aprilRot);
             SmartDashboard.putNumber("pidHozMovement", pidHozMovement);
             SmartDashboard.putNumber("pidRotationMovement", pidRotationMovement);
         }
-        driveSubsystem.drive(-pidHozMovement,0 ,pidRotationMovement);
+        driveSubsystem.drive(-pidHozMovement,0, pidRotationMovement);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class AprilAlign extends Command {
     @Override
     public boolean isFinished()
     {
-        return limelightSubsystem.id == 0;
+        return Math.abs(aprilX) < .1 && Math.abs(aprilRot) < .1;
     }
 
 }

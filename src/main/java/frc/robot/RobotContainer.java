@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
+import frc.robot.commands.autonomousCommands.AutoCoralDispCommand;
 import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
@@ -107,29 +108,28 @@ public class RobotContainer {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
                 choreo.SelectTrajectory(pathName),
-                new ToggleStop(driveSubsystem, false),
                 new WaitCommand(.5)
         );
     }
 
     public Command alignToApril(LimelightSubsystem limelightSubsystem){
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem,limelightForwardSubsystem),
-                new WaitCommand(4)
+                new AprilAlign(driveSubsystem,limelightSubsystem),
+                new WaitCommand(1)
         );
     }
 
     public Command liftToPos(LiftPresets liftPreset){
         return new SequentialCommandGroup(
                 new LiftPresetCommand(lift, liftPreset),
-                new WaitCommand(6)
+                new WaitCommand(1)
         );
     }
 
     public Command shootCoral(){
         return new SequentialCommandGroup(
-                new CoralDispenserCommand(coralSubsystem,MotorDirection.FORWARD),
-                new WaitCommand(3)
+                new AutoCoralDispCommand(coralSubsystem, MotorDirection.FORWARD, 1),
+                new WaitCommand(1)
         );
     }
     public Command getAutonomousCommand() {
