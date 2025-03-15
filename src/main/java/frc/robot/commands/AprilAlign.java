@@ -11,33 +11,49 @@ import frc.robot.subsystems.DriveSubsystem;
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
-    PIDController pid_hoz = new PIDController(0.5,0,0);
-    PIDController pid_rot = new PIDController(0.5,0,0);
-    double aprilX = 0;
-    double aprilRot = 0;
+    PIDController pidStrafe = new PIDController(0.5,0,0);
+    PIDController pidRot = new PIDController(0.5,0,0);
+    double aprilX; // Meters
+    double aprilDist; // Meters
+    double aprilRot; // Radians
+    double targetDist; // Meters
 
 
-    public AprilAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem){
+    public AprilAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem, double targetDist){
         this.driveSubsystem = driveSubsystem;
         this.limelightSubsystem = limelightSubsystem;
         addRequirements(driveSubsystem);
+        aprilX = limelightSubsystem.tx;
+        aprilDist = limelightSubsystem.tz;
+        aprilRot = limelightSubsystem.ry;
+        this.targetDist = targetDist;
     }
 
 
     @Override
     public void execute() {
+        aprilDist = limelightSubsystem.tz;
         aprilX = limelightSubsystem.tx;
         aprilRot = limelightSubsystem.ry;
-        double pidHozMovement = pid_hoz.calculate(aprilX,0);
-        double pidRotationMovement = MathUtil.clamp(pid_rot.calculate(aprilRot,0), -0.5, 0.5);
+
+        double pidCalcX = pidStrafe.calculate(aprilX, driveSubsystem.currentPose.getX());
+        double pidCalcY = pidStrafe.calculate(aprilDist, driveSubsystem.currentPose.getY() + targetDist);
+        double pidCalcRot = pidRot.calculate(aprilRot, driveSubsystem.currentPose.getRotation().getRadians());
+
+        pidCalcX = MathUtil.clamp(pidCalcX, -1,1);
+        pidCalcY = MathUtil.clamp(pidCalcY, -1,1);
+        pidCalcRot = MathUtil.clamp(pidCalcRot, -1,1);
+        driveSubsystem.drive(-pidCalcX,pidCalcY, pidCalcRot);
+
         if (Constants.DebugInfo.debugAlign)
         {
+            SmartDashboard.putNumber("tz", aprilDist);
             SmartDashboard.putNumber("tx", aprilX);
             SmartDashboard.putNumber("ry", aprilRot);
-            SmartDashboard.putNumber("pidHozMovement", pidHozMovement);
-            SmartDashboard.putNumber("pidRotationMovement", pidRotationMovement);
+            SmartDashboard.putNumber("pidCalcX", pidCalcX);
+            SmartDashboard.putNumber("pidCalcY", pidCalcY);
+            SmartDashboard.putNumber("pidCalcRot", pidCalcRot);
         }
-        driveSubsystem.drive(-pidHozMovement,0, pidRotationMovement);
     }
 
     @Override

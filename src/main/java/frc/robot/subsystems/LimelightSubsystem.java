@@ -6,6 +6,7 @@ import frc.robot.Constants;
 import frc.robot.vision.LimelightHelpers;
 
 public class LimelightSubsystem extends SubsystemBase {
+    public double tz;
     public double tx;
     public double ty;
     public double id;
@@ -20,11 +21,13 @@ public class LimelightSubsystem extends SubsystemBase {
     public void periodic()
     {
         // Basic targeting data
+        double tz = LimelightHelpers.getCameraPose3d_RobotSpace(limelightName).getTranslation().getZ();
         double tx = LimelightHelpers.getTX(limelightName);  // Horizontal offset: crosshair to target in degrees
         double ty = LimelightHelpers.getTY(limelightName);  // Vertical offset: crosshair to target in degrees
         double id = LimelightHelpers.getFiducialID(limelightName);
         double ry = LimelightHelpers.getBotPose3d_TargetSpace(limelightName).getRotation().getY();
 
+        this.tz = tz;
         this.tx = tx;
         this.ty = ty;
         this.id = id;
