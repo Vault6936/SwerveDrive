@@ -103,13 +103,44 @@ public class RobotContainer {
 
 
     }
+    public Command followAutoPath(String pathName){
+        return new SequentialCommandGroup(
+                new ToggleStop(driveSubsystem, false),
+                choreo.SelectTrajectory(pathName),
+                new ToggleStop(driveSubsystem, false),
+                new WaitCommand(.5)
+        );
+    }
 
+    public Command alignToApril(LimelightSubsystem limelightSubsystem){
+        return new SequentialCommandGroup(
+                new AprilAlign(driveSubsystem,limelightForwardSubsystem),
+                new WaitCommand(4)
+        );
+    }
+
+    public Command liftToPos(LiftPresets liftPreset){
+        return new SequentialCommandGroup(
+                new LiftPresetCommand(lift, liftPreset),
+                new WaitCommand(6)
+        );
+    }
+
+    public Command shootCoral(){
+        return new SequentialCommandGroup(
+                new CoralDispenserCommand(coralSubsystem,MotorDirection.FORWARD),
+                new WaitCommand(3)
+        );
+    }
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.SelectTrajectory("Loop"),
-                new ToggleStop(driveSubsystem, true),
-                new WaitCommand(0.2),
+                followAutoPath("moveToReef"),
+                alignToApril(limelightForwardSubsystem),
+                liftToPos(LiftPresets.TROUGH),
+                shootCoral(),
+                liftToPos(LiftPresets.STARTING),
+                followAutoPath("moveToSource"),
                 new ToggleStop(driveSubsystem, false));
     }
 }
