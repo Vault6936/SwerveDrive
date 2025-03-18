@@ -11,11 +11,11 @@ import frc.robot.subsystems.DriveSubsystem;
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
-    PIDController pidStrafe = new PIDController(0.5,0,0);
-    PIDController pidRot = new PIDController(0.5,0,0);
+    PIDController pidStrafe = new PIDController(0.05,3,0);
+    PIDController pidRot = new PIDController(2,3,0);
     double aprilX; // Meters
     double aprilDist; // Meters
-    double aprilRot; // Radians
+    double aprilRot; // Degrees
     double targetDist; // Meters
 
 
@@ -35,19 +35,25 @@ public class AprilAlign extends Command {
         aprilDist = limelightSubsystem.tz;
         aprilX = limelightSubsystem.tx;
         aprilRot = limelightSubsystem.ry;
+        if(limelightSubsystem.id == -1)
+        {
+            //driveSubsystem.drive(0,0,0);
+            return;
+        }
 
-        double pidCalcX = pidStrafe.calculate(aprilX, driveSubsystem.currentPose.getX());
-        double pidCalcY = pidStrafe.calculate(aprilDist, driveSubsystem.currentPose.getY() + targetDist);
-        double pidCalcRot = pidRot.calculate(aprilRot, driveSubsystem.currentPose.getRotation().getRadians());
+        double pidCalcX = pidStrafe.calculate(aprilX, 0);
+        double pidCalcY = -pidStrafe.calculate(aprilDist, targetDist) * 120.0;
+        double pidCalcRot = pidRot.calculate(aprilRot, 0);
 
         pidCalcX = MathUtil.clamp(pidCalcX, -1,1);
         pidCalcY = MathUtil.clamp(pidCalcY, -1,1);
         pidCalcRot = MathUtil.clamp(pidCalcRot, -1,1);
-        driveSubsystem.drive(-pidCalcX,pidCalcY, pidCalcRot);
+        driveSubsystem.drive(-pidCalcX, pidCalcY, pidCalcRot);
 
         if (Constants.DebugInfo.debugAlign)
         {
             SmartDashboard.putNumber("tz", aprilDist);
+            SmartDashboard.putNumber("tzTarget", targetDist);
             SmartDashboard.putNumber("tx", aprilX);
             SmartDashboard.putNumber("ry", aprilRot);
             SmartDashboard.putNumber("pidCalcX", pidCalcX);
@@ -66,7 +72,9 @@ public class AprilAlign extends Command {
     @Override
     public boolean isFinished()
     {
-        return Math.abs(aprilX) < .1 && Math.abs(aprilRot) < .1;
+        return Math.abs(aprilX) < .1 &&
+                Math.abs(aprilRot) < 0.5 &&
+                Math.abs(aprilDist-targetDist) < .1;
     }
 
 }

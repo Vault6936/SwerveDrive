@@ -16,17 +16,20 @@ public class AutoCoralDispCommand extends Command {
     MotorDirection direction;
     double endTime; //Seconds
     double currTime;
+    double runTime;
 
     public AutoCoralDispCommand(CoralSubsystem system, MotorDirection dir, double runTime /* in seconds */)
     {
-        currTime = Timer.getTimestamp();
-        endTime = currTime + runTime;
         subsystem = system;
         direction = dir;
+        this.runTime = runTime;
     }
 
     @Override
-    public void initialize(){}
+    public void initialize(){
+        currTime = Timer.getTimestamp();
+        endTime = currTime + runTime;
+    }
 
     @Override
     public void execute()
@@ -43,6 +46,6 @@ public class AutoCoralDispCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return currTime >= endTime;
+        return Timer.getTimestamp() >= endTime;
     }
 }

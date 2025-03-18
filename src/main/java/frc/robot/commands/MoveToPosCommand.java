@@ -50,15 +50,15 @@ public class MoveToPosCommand extends Command {
         currY = driveSubsystem.currentPose.getY();
         currRot = driveSubsystem.currentPose.getRotation().getRadians();
 
-        double pidCalcX = pidStrafe.calculate(currX,targetX);
-        double pidCalcY = pidStrafe.calculate(currY,targetY);
-        double pidCalcRot = pidRot.calculate(currY,targetY);
+        double pidCalcX = pidStrafe.calculate(currX, targetX);
+        double pidCalcY = pidStrafe.calculate(currY, targetY);
+        double pidCalcRot = pidRot.calculate(currRot, targetRot);
 
         pidCalcX = MathUtil.clamp(pidCalcX,-1,1);
         pidCalcY = MathUtil.clamp(pidCalcY,-1,1);
         pidCalcRot = MathUtil.clamp(pidCalcRot,-1,1);
 
-        driveSubsystem.drive(-pidCalcX,pidCalcY, pidCalcRot);
+        driveSubsystem.drive(-pidCalcX,pidCalcY, pidCalcRot,true);
     }
 
     @Override

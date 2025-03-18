@@ -146,15 +146,15 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Current Pose:", currentPose.toString());
     }
 
-    public void poseReset(){
-        gyro.setAngleAdjustment(-gyro.getAngle());
-        currentPose = new Pose2d(0, 0, gyro.getRotation2d());
-    }
+//    public void poseReset(){
+//        gyro.setAngleAdjustment(-gyro.getRawAngle().getDegrees());
+//        currentPose = new Pose2d(0, 0, gyro.getRotation2d());
+//    }
 
     public void poseReset(Pose2d newPose)
     {
+        gyro.setAngleAdjustment(-newPose.getRotation().getDegrees() + gyro.getRawAngle().getDegrees());
         currentPose = newPose;
-        gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
     }
 
     public void zeroNavX() {

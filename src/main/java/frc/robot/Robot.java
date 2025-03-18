@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -115,9 +116,12 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-        robotContainer.lift.stopMoveToPos();
-        Pose2d startTele = robotContainer.driveSubsystem.currentPose;
-        robotContainer.driveSubsystem.poseReset();
+//        robotContainer.lift.stopMoveToPos();
+        Pose2d startTele = new Pose2d(
+                robotContainer.driveSubsystem.currentPose.getX(),
+                robotContainer.driveSubsystem.currentPose.getY(),
+                Rotation2d.fromDegrees(0));
+        robotContainer.driveSubsystem.poseReset(startTele);
         CommandScheduler.getInstance().schedule(new ToggleStop(robotContainer.driveSubsystem, false));
 
         //DriveSubsystem.getInstance().zeroNavX();

@@ -65,7 +65,10 @@ public class SwerveModule<T extends MotorController> {
         if (Constants.REMOVE_THIS_CLASS_PLEASE.SLOW_MODE){
             this.driveSpeedMultiplier = Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
         }
-        else this.driveSpeedMultiplier = Constants.Swerve.driveMultiplier;
+        else
+        {
+            this.driveSpeedMultiplier = Constants.Swerve.driveMultiplier;
+        }
         controller = new PIDController(pidGains.kP, pidGains.kI, pidGains.kD);
         boot();
     }
@@ -159,10 +162,10 @@ public class SwerveModule<T extends MotorController> {
         // err is how many radians the robot is off from its target angle
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
-//        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
-//            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
-//            polarity = -1;
-//        }
+        if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
+            err = getError((targetAngle + Math.PI) % (2 * Math.PI), currentAngle);
+            polarity = -1;
+        }
 
 //        SmartDashboard.putNumber(name + "CurrentAngle", 180 * currentAngle / Math.PI);
         SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
@@ -174,7 +177,7 @@ public class SwerveModule<T extends MotorController> {
             steeringMotor.set(0);
         }
 
-        if (err < Math.toRadians(5)) {
+        if (Math.abs(err) < Math.toRadians(45)) {
             driveMotor.set(MathUtil.clamp(
                     speed * polarity * driveDirection.direction,
                     -Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED, Constants.SpeedConstants.DRIVE_BASE_MAX_SPEED));

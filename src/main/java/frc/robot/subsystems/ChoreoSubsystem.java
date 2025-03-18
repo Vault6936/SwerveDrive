@@ -20,9 +20,9 @@ public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
     private final DriveSubsystem driveSubsystem;
 
-    private final PIDController xController = new PIDController(2.0, 0.0, 0.0);
-    private final PIDController yController = new PIDController(2.0, 0.0, 0.0);
-    private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
+    private final PIDController xController = new PIDController(2.0, 0.5, 0.0);
+    private final PIDController yController = new PIDController(2.0, 0.5, 0.0);
+    private final PIDController headingController = new PIDController(3.0, 0.0, 0.0);
     private AutoChooser autoChooser;
 
     public ChoreoSubsystem(DriveSubsystem driveSubsystem)
@@ -30,9 +30,9 @@ public class ChoreoSubsystem extends SubsystemBase {
         autoFactory = new AutoFactory(() -> driveSubsystem.currentPose, driveSubsystem::poseReset, this::FollowTrajectory,
                 false, driveSubsystem);
         this.driveSubsystem = driveSubsystem;
-        xController.setIntegratorRange(-50,50);
-        yController.setIntegratorRange(-50,50);
-        headingController.setIntegratorRange(-1,1);
+        xController.setIntegratorRange(-50, 50);
+        yController.setIntegratorRange(-50, 50);
+        headingController.setIntegratorRange(-6, 6);
         headingController.enableContinuousInput(-Math.PI,Math.PI);
     }
 
@@ -40,6 +40,7 @@ public class ChoreoSubsystem extends SubsystemBase {
     {
         double forwardCalc = -xController.calculate(driveSubsystem.currentPose.getX(), sample.x);
         double leftCalc = -yController.calculate(driveSubsystem.currentPose.getY(), sample.y);
+        double headingCalc = headingController.calculate(driveSubsystem.currentPose.getRotation().getRadians(),sample.heading);
 
 //        ChassisSpeeds speeds = new ChassisSpeeds(
 //                -sample.vy, //+ forwardCalc,
@@ -51,11 +52,11 @@ public class ChoreoSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LeftCalc", leftCalc);
         SmartDashboard.putNumber("LeftDiff", -sample.vy);
         SmartDashboard.putNumber("ForwardDiff", sample.vy);
-        driveSubsystem.drive(
-                MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
-                MathUtil.clamp(sample.vx - forwardCalc,-1,1),
-                0,
-                true);
+            driveSubsystem.drive(
+                    MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
+                    MathUtil.clamp(sample.vx - forwardCalc, -1, 1),
+                    MathUtil.clamp(-headingCalc, -0.5, 0.5),
+                    true);
     }
 
     private SequentialCommandGroup getBasicAuto(){
@@ -96,12 +97,13 @@ public class ChoreoSubsystem extends SubsystemBase {
                 new WaitCommand(0.2),
                 new ToggleStop(driveSubsystem, false));
     }
+    public Command resetOdometry(String pathName){
+        return autoFactory.resetOdometry(pathName);
+    }
+
     public Command SelectTrajectory(String pathName)
     {
-       return new SequentialCommandGroup(
-               autoFactory.resetOdometry(pathName),
-               autoFactory.trajectoryCmd(pathName)
-       );
+        return autoFactory.trajectoryCmd(pathName);
     }
     public void scheduleAutoChooser(){
         //RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());

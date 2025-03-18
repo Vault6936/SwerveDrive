@@ -21,7 +21,7 @@ public class LimelightSubsystem extends SubsystemBase {
     public void periodic()
     {
         // Basic targeting data
-        double tz = LimelightHelpers.getCameraPose3d_RobotSpace(limelightName).getTranslation().getZ();
+        double tz = -LimelightHelpers.getCameraPose3d_TargetSpace(limelightName).getZ();
         double tx = LimelightHelpers.getTX(limelightName);  // Horizontal offset: crosshair to target in degrees
         double ty = LimelightHelpers.getTY(limelightName);  // Vertical offset: crosshair to target in degrees
         double id = LimelightHelpers.getFiducialID(limelightName);
@@ -38,6 +38,7 @@ public class LimelightSubsystem extends SubsystemBase {
             SmartDashboard.putNumber(limelightName + " Horizontal: ", tx);
             SmartDashboard.putNumber(limelightName + " Vertical:   ", ty);
             SmartDashboard.putNumber(limelightName + " ID:         ", id);
+            SmartDashboard.putNumber(limelightName + "tz", tz);
         }
     }
 

@@ -29,6 +29,6 @@ public class LiftPresetCommand  extends Command {
     @Override
     public boolean isFinished()
     {
-        return Math.abs(liftSubsystem.encoder_value.getAsDouble() - target_preset.position) < 5;
+        return Math.abs(liftSubsystem.getCurrentPosition() - target_preset.position) < 5;
     }
 }

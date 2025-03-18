@@ -16,7 +16,7 @@ public class SwerveChassis<T extends MotorController> {
 
     public final ArrayList<SwerveModule<T>> modules;
 
-    private double AccelerationLimit;
+    private double AccelerationLimit = 1;
 
     public static final class DriveLimits {
         public static final InputLimit NONE = new InputLimit() {

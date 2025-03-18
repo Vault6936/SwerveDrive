@@ -30,6 +30,7 @@ public final class Constants {
                 8, 9, 24,0.152099609375 + offset); // rb module 3
         public static final SwerveCANId rightFront /* RIGHT FRONT */  = new SwerveCANId(
                 4, 5, 22,0.622802734375 + offset); // rf module 4
+        public static int rightLift = 10;
         public static int lift = 11;
         public static int algaeAngle = 12;
         public static int algaePusher = 13;
@@ -81,7 +82,7 @@ public final class Constants {
 
         public static final double ALGAE_MOVE_SPEED = .65;
 
-        public static final double DRIVE_BASE_MAX_SPEED = .15;
+        public static final double DRIVE_BASE_MAX_SPEED = .3;
     }
 
     public static class DebugInfo{
@@ -90,7 +91,7 @@ public final class Constants {
         public static final boolean debugAlgae = false;
         public static final boolean debugCoral = false;
         public static final boolean debugCamera = true;
-        public static final boolean debugAlign = false;
+        public static final boolean debugAlign = true;
         public static final boolean debugLift = false;
     }
 
@@ -101,8 +102,8 @@ public final class Constants {
     }
 
     public static class REMOVE_THIS_CLASS_PLEASE{ //TODO DELETE THIS CLASS PLEASE
-        public static final boolean SLOW_MODE = true;
-        public static final double slowDriveMultiplier = .3;
+        public static final boolean SLOW_MODE = false;
+        public static final double slowDriveMultiplier = 1.;
 
     }
 }

@@ -33,6 +33,7 @@ public class LiftPidControl extends Command {
 
     @Override
     public void end(boolean isCancelled) {
+        subsystem.stopMoveToPos();
     }
 
     @Override
