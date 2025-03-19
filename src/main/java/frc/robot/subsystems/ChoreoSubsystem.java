@@ -52,8 +52,8 @@ public class ChoreoSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LeftCalc", leftCalc);
         SmartDashboard.putNumber("LeftDiff", -sample.vy);
         SmartDashboard.putNumber("ForwardDiff", sample.vy);
-            driveSubsystem.drive(
-                    MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
+            driveSubsystem.drive
+                    (MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
                     MathUtil.clamp(sample.vx - forwardCalc, -1, 1),
                     MathUtil.clamp(-headingCalc, -0.5, 0.5),
                     true);

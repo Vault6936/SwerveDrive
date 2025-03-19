@@ -1,9 +1,11 @@
-package frc.robot.commands;
+package frc.robot.commands.autonomousCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -18,6 +20,7 @@ public class MoveToPosCommand extends Command {
     double targetX; // Meters
     double targetY; // Meters
     double targetRot; /* IN RADIANS */
+    double endTime;
 
     public MoveToPosCommand(DriveSubsystem driveSubsystem, double x, double y, double rot /* IN RADIANS */){
         this.driveSubsystem = driveSubsystem;
@@ -31,18 +34,15 @@ public class MoveToPosCommand extends Command {
         currRot = driveSubsystem.currentPose.getRotation().getRadians();
     }
 
-    public MoveToPosCommand(DriveSubsystem driveSubsystem, Pose2d targetPose){
-        this.driveSubsystem = driveSubsystem;
-        addRequirements(driveSubsystem);
-        targetX = targetPose.getX();
-        targetY = targetPose.getY();
-        targetRot = targetPose.getRotation().getRadians();
-
-        currX = driveSubsystem.currentPose.getX();
-        currY = driveSubsystem.currentPose.getY();
-        currRot = driveSubsystem.currentPose.getRotation().getRadians();
+    public MoveToPosCommand(DriveSubsystem driveSubsystem, Pose2d targetPose)
+    {
+        this(driveSubsystem, targetPose.getX(), targetPose.getY(), targetPose.getRotation().getRadians());
     }
 
+    @Override
+    public void initialize(){
+        endTime = Timer.getTimestamp() + Constants.Timeouts.moveToPosTimeout;
+    }
 
     @Override
     public void execute() {
@@ -67,13 +67,13 @@ public class MoveToPosCommand extends Command {
         driveSubsystem.drive(0,0,0);
     }
 
-
     @Override
     public boolean isFinished()
     {
-        return  Math.abs(currX - targetX) < .1 &&
+        return  (Math.abs(currX - targetX) < .1 &&
                 Math.abs(currY - targetY) < .1 &&
-                Math.abs(currRot - targetRot) < .1;
+                Math.abs(currRot - targetRot) < .1)
+                || Timer.getTimestamp() > endTime;
     }
 
 }

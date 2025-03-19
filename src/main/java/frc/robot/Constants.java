@@ -5,8 +5,6 @@
 
 package frc.robot;
 
-import javax.xml.stream.FactoryConfigurationError;
-
 public final class Constants {
 
     public static double deadZoneDefault;
@@ -31,12 +29,12 @@ public final class Constants {
         public static final SwerveCANId rightFront /* RIGHT FRONT */  = new SwerveCANId(
                 4, 5, 22,0.622802734375 + offset); // rf module 4
         public static int rightLift = 10;
-        public static int lift = 11;
+        public static int leftLift = 11;
         public static int algaeAngle = 12;
         public static int algaePusher = 13;
         public static int coralHoz = 14;
-        public static int CoraldispenserSingleWheel = 15;
-        public static int CoraldispenserTwoWheel = 16;
+        public static int coralDispenserDoubleWheel = 15;
+        public static int coralDispenserSingleWheel = 16;
     }
 
     public static class SwerveCANId {
@@ -69,10 +67,10 @@ public final class Constants {
     }
 
     public static class SpeedConstants {
-        public static final double CORAL_HOZ_SPEED = 1;
+        public static final double CORAL_HOZ_SPEED = .5;
         public static final double CORAL_HOZ_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
-        public static final double CORAL_DISPENSER_SPEED = 1;
+        public static final double CORAL_DISPENSER_SPEED = .25;
 
         public static final double LIFT_SPEED = 1;
         public static final double LIFT_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
@@ -89,7 +87,7 @@ public final class Constants {
         public static final boolean debugDrivebase = true;
         public static final boolean debugChoreo = true;
         public static final boolean debugAlgae = false;
-        public static final boolean debugCoral = false;
+        public static final boolean debugCoral = true;
         public static final boolean debugCamera = true;
         public static final boolean debugAlign = true;
         public static final boolean debugLift = false;
@@ -105,5 +103,11 @@ public final class Constants {
         public static final boolean SLOW_MODE = false;
         public static final double slowDriveMultiplier = 1.;
 
+    }
+
+    public static class Timeouts{
+        public static final double coralTimeout = 6; //Seconds
+        public static final double aprilTimeout = 10;
+        public static final double moveToPosTimeout = 3;
     }
 }

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,19 +13,19 @@ import java.util.function.DoubleSupplier;
 
 public class LiftSubsystem extends SubsystemBase {
 
-    TalonFX extendLeft =  new TalonFX(Constants.CANIds.lift);
+    TalonFX extendLeft =  new TalonFX(Constants.CANIds.leftLift);
     TalonFX extendRight =  new TalonFX(Constants.CANIds.rightLift);
     PIDController pid = new PIDController(0.05, 0, 0);
 
-    double currentTargetPos = 0;
+    double currentTargetPos;
     DoubleSupplier encoderLeft;
     DoubleSupplier encoderRight;
 
     final double CHANGE_MULTIPLIER = 2.2;
     final double MAX_SPEED_PERCENT = .95;
 
-    static final double min_position = -400.;// -480.0;
-    static final double max_position = 0.0;
+    static final double min_position = 0.0;
+    static final double max_position = 370;
 
     DoubleConsumer setSpeedMultiplier;
 
@@ -38,6 +39,8 @@ public class LiftSubsystem extends SubsystemBase {
         pid.setTolerance(10);
         extendLeft.setPosition(0);
         extendRight.setPosition(0);
+        extendLeft.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentLimit(10));
+        extendLeft.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentLimit(10));
         encoderLeft = () -> extendLeft.getPosition().getValueAsDouble();
         encoderRight = () -> extendRight.getPosition().getValueAsDouble();
         currentTargetPos = 0;
@@ -145,6 +148,7 @@ public class LiftSubsystem extends SubsystemBase {
         canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
         setSpeedMultiplier.accept(getDriveSpeedMultiplier());
         if (true) {
+            SmartDashboard.putNumber("Lift speed multiplier", getDriveSpeedMultiplier());
             SmartDashboard.putNumber("LiftPosition", getCurrentPosition());
             SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
         }

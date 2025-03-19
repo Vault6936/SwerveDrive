@@ -1,7 +1,8 @@
-package frc.robot.commands;
+package frc.robot.commands.autonomousCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -17,6 +18,7 @@ public class AprilAlign extends Command {
     double aprilDist; // Meters
     double aprilRot; // Degrees
     double targetDist; // Meters
+    double endTime;
 
 
     public AprilAlign(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem, double targetDist){
@@ -29,6 +31,11 @@ public class AprilAlign extends Command {
         this.targetDist = targetDist;
     }
 
+    @Override
+    public void initialize(){
+        endTime = Timer.getTimestamp();
+    }
+
 
     @Override
     public void execute() {
@@ -37,7 +44,6 @@ public class AprilAlign extends Command {
         aprilRot = limelightSubsystem.ry;
         if(limelightSubsystem.id == -1)
         {
-            //driveSubsystem.drive(0,0,0);
             return;
         }
 
@@ -72,9 +78,10 @@ public class AprilAlign extends Command {
     @Override
     public boolean isFinished()
     {
-        return Math.abs(aprilX) < .1 &&
+        return (Math.abs(aprilX) < .1 &&
                 Math.abs(aprilRot) < 0.5 &&
-                Math.abs(aprilDist-targetDist) < .1;
+                Math.abs(aprilDist-targetDist) < .1)
+                || Timer.getTimestamp() >= endTime;
     }
 
 }

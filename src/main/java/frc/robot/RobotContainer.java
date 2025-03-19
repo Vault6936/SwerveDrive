@@ -1,7 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -9,7 +7,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
+import frc.robot.commands.autonomousCommands.AprilAlign;
 import frc.robot.commands.autonomousCommands.AutoCoralDispCommand;
+import frc.robot.commands.autonomousCommands.AutoCoralIntake;
 import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
@@ -36,9 +36,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         driveSubsystem = DriveSubsystem.getInstance();
-        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(),
-                () -> -baseController.getLeftY(),
-                () -> -(-baseController.getRightX()));
+        driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -(-baseController.getRightX()));
 // THIS LINE ALLOWS D-PAD DRIVE BASE MOVEMENT driveDefaultCommand = new DriveDefaultCommand(() -> baseController.povRight().getAsBoolean() ? 0.5 :(baseController.povLeft().getAsBoolean() ? -0.5 : 0.),() -> baseController.povUp().getAsBoolean() ? 0.5 :(baseController.povDown().getAsBoolean() ? -0.5 : 0.),() -> 0);
         driveSubsystem.setDefaultCommand(driveDefaultCommand);
         choreo = new ChoreoSubsystem(driveSubsystem);
@@ -79,17 +77,11 @@ public class RobotContainer {
         baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
 
         // LIFT CONTROL
-        //baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> true));
-        //baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
+        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> true));
+        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
 
         // APRIL TAG ALIGN
-        //baseController.y().whileTrue(new AprilAlign(driveSubsystem, limelightForwardSubsystem, 0.5));
-        //baseController.y().whileTrue(getAutonomousCommand());
-        baseController.y().whileTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> driveSubsystem.poseReset(new Pose2d(0, 0, Rotation2d.fromDegrees(0)))),
-                new MoveToPosCommand(driveSubsystem, 0, -1, 0))
-                );
-
+        baseController.y().whileTrue(new AutoCoralIntake(coralSubsystem));
 
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
@@ -102,10 +94,10 @@ public class RobotContainer {
 
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
-//        payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.STARTING));
-//        payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.TROUGH));
-//        payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_1));
-//        payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_2));
+        //payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.STARTING));
+        //payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.TROUGH));
+        //payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_1));
+        //payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_2));
 
         /*payloadController.povRight().whileTrue( new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.DEFAULT_DOWN));
         payloadController.povDown().whileTrue(  new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_2));
@@ -124,7 +116,7 @@ public class RobotContainer {
 
     public Command alignToApril(LimelightSubsystem limelightSubsystem){
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem, limelightSubsystem, .5),
+                new AprilAlign(driveSubsystem,limelightSubsystem,.3),
                 new WaitCommand(1)
         );
     }
@@ -142,19 +134,23 @@ public class RobotContainer {
                 new WaitCommand(1)
         );
     }
+    public Command getCoral(){
+        return new SequentialCommandGroup(
+                new AutoCoralIntake(coralSubsystem),
+                new WaitCommand(1)
+        );
+    }
+
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.resetOdometry("MoveTurnMove"),
-                followAutoPath("MoveTurnMove"),
+                //followAutoPath("moveToReef"),
                 //alignToApril(limelightForwardSubsystem),
                 //liftToPos(LiftPresets.TROUGH),
                 //shootCoral(),
                 //liftToPos(LiftPresets.STARTING),
-                //followAutoPath("ReefNWSourceN"),
-
-
-                //alignToApril(limelightForwardSubsystem),
+                //followAutoPath("moveToSource"),
+                getCoral(),
                 new ToggleStop(driveSubsystem, false));
     }
 }

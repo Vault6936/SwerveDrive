@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
@@ -18,9 +19,8 @@ public class CoralSubsystem extends SubsystemBase {
     Move Coral dispenser Left/Right (uses target pos, uses presets)
      */
     final SparkMax coralHoz = new SparkMax(Constants.CANIds.coralHoz, SparkLowLevel.MotorType.kBrushless);
-    final SparkMax coralDispenser1 = new SparkMax(Constants.CANIds.CoraldispenserSingleWheel, SparkLowLevel.MotorType.kBrushless);
-    final SparkMax coralDispenser2 = new SparkMax(Constants.CANIds.CoraldispenserTwoWheel, SparkLowLevel.MotorType.kBrushless);
-
+    final SparkMax coralDispenser1 = new SparkMax(Constants.CANIds.coralDispenserSingleWheel, SparkLowLevel.MotorType.kBrushless);
+    final SparkMax coralDispenser2 = new SparkMax(Constants.CANIds.coralDispenserDoubleWheel, SparkLowLevel.MotorType.kBrushless);
     public final RelativeEncoder hozEncoder;
     double hozTargetPos;
 
@@ -32,6 +32,7 @@ public class CoralSubsystem extends SubsystemBase {
     boolean isSafeToLower;
 
     public CoralSubsystem(){
+        coralDispenser1.getForwardLimitSwitch();
         hozEncoder = coralHoz.getEncoder();
         hozEncoder.setPosition(0);
     }
@@ -98,10 +99,15 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean getGateBool(){
+        return coralDispenser1.getForwardLimitSwitch().isPressed();
+    }
+
     @Override
     public void periodic()
     {
         if (Constants.DebugInfo.debugCoral){
+            SmartDashboard.putBoolean("Coral Gateway Triggered", getGateBool());
             SmartDashboard.putNumber("Coral Horizontal Position", hozEncoder.getPosition());
             SmartDashboard.putNumber("Coral Horizontal Target Position", hozTargetPos);
         }
