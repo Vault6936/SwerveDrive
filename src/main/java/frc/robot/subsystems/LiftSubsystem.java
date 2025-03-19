@@ -147,10 +147,10 @@ public class LiftSubsystem extends SubsystemBase {
     {
         canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
         setSpeedMultiplier.accept(getDriveSpeedMultiplier());
-        if (true) {
+        if (Constants.DebugInfo.debugLift) {
             SmartDashboard.putNumber("Lift speed multiplier", getDriveSpeedMultiplier());
-            SmartDashboard.putNumber("LiftPosition", getCurrentPosition());
-            SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
         }
+        SmartDashboard.putNumber("LiftPosition", getCurrentPosition());
+        SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
     }
 }

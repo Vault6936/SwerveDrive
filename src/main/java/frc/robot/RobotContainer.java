@@ -50,7 +50,6 @@ public class RobotContainer {
         configureBindings();
     }
 
-
     private void configureBindings() {
         //TODO                             BASE CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
@@ -106,6 +105,7 @@ public class RobotContainer {
 
 
     }
+
     public Command followAutoPath(String pathName){
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
@@ -134,6 +134,7 @@ public class RobotContainer {
                 new WaitCommand(1)
         );
     }
+
     public Command getCoral(){
         return new SequentialCommandGroup(
                 new AutoCoralIntake(coralSubsystem),
