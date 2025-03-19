@@ -33,14 +33,14 @@ public class ChoreoSubsystem extends SubsystemBase {
         xController.setIntegratorRange(-50, 50);
         yController.setIntegratorRange(-50, 50);
         headingController.setIntegratorRange(-6, 6);
-        headingController.enableContinuousInput(-Math.PI,Math.PI);
+        headingController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     private void FollowTrajectory(SwerveSample sample)
     {
         double forwardCalc = -xController.calculate(driveSubsystem.currentPose.getX(), sample.x);
         double leftCalc = -yController.calculate(driveSubsystem.currentPose.getY(), sample.y);
-        double headingCalc = headingController.calculate(driveSubsystem.currentPose.getRotation().getRadians(),sample.heading);
+        double headingCalc = headingController.calculate(driveSubsystem.currentPose.getRotation().getRadians(), sample.heading);
 
 //        ChassisSpeeds speeds = new ChassisSpeeds(
 //                -sample.vy, //+ forwardCalc,
@@ -48,14 +48,19 @@ public class ChoreoSubsystem extends SubsystemBase {
 //                0 /*sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading*/
 //        );
 
-        SmartDashboard.putNumber("ForwardCalc", forwardCalc);
-        SmartDashboard.putNumber("LeftCalc", leftCalc);
-        SmartDashboard.putNumber("LeftDiff", -sample.vy);
-        SmartDashboard.putNumber("ForwardDiff", sample.vy);
-            driveSubsystem.drive
+        if(Constants.DebugInfo.debugChoreo) {
+//            SmartDashboard.putNumber("ForwardCalc", forwardCalc);
+//            SmartDashboard.putNumber("LeftCalc", leftCalc);
+//            SmartDashboard.putNumber("LeftDiff", -sample.vy);
+//            SmartDashboard.putNumber("ForwardDiff", sample.vy);
+            SmartDashboard.putNumber("SampleHeading", Math.toDegrees(sample.heading));
+            SmartDashboard.putNumber("SampleCalc", headingCalc);
+            SmartDashboard.putNumber("SampleDiff", Math.toDegrees(sample.heading - driveSubsystem.currentPose.getRotation().getRadians()));
+        }
+        driveSubsystem.drive
                     (MathUtil.clamp(-sample.vy + leftCalc, -1, 1),
                     MathUtil.clamp(sample.vx - forwardCalc, -1, 1),
-                    MathUtil.clamp(-headingCalc, -0.5, 0.5),
+                    MathUtil.clamp( -sample.omega - headingCalc, -0.5, 0.5),
                     true);
     }
 

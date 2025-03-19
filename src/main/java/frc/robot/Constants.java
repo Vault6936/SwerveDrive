@@ -84,12 +84,12 @@ public final class Constants {
     }
 
     public static class DebugInfo{
-        public static final boolean debugDrivebase = true;
+        public static final boolean debugDrivebase = false;
         public static final boolean debugChoreo = true;
         public static final boolean debugAlgae = false;
-        public static final boolean debugCoral = true;
-        public static final boolean debugCamera = true;
-        public static final boolean debugAlign = true;
+        public static final boolean debugCoral = false;
+        public static final boolean debugCamera = false;
+        public static final boolean debugAlign = false;
         public static final boolean debugLift = false;
     }
 

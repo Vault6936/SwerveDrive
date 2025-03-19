@@ -51,7 +51,6 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
-        SmartDashboard.putNumber("AngleAdjustmentDegrees", 0);
 
                 initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
@@ -116,7 +115,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-//        robotContainer.lift.stopMoveToPos();
+        robotContainer.lift.stopMoveToPos();
         Pose2d startTele = new Pose2d(
                 robotContainer.driveSubsystem.currentPose.getX(),
                 robotContainer.driveSubsystem.currentPose.getY(),

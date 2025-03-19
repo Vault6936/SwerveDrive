@@ -43,7 +43,7 @@ public class RobotContainer {
         coralSubsystem = new CoralSubsystem();
         algaeSubsystem = new AlgaeSubsystem();
         lift = new LiftSubsystem(driveSubsystem.chassis::SetAccelerationLimit, coralSubsystem, algaeSubsystem);
-        lift.setDefaultCommand(new LiftPidControl(lift, () -> payloadController.getLeftY(),
+        lift.setDefaultCommand(new LiftPidControl(lift, () -> -payloadController.getLeftY(),
                 payloadController.zl().and(payloadController.zr())));
 
         choreo.scheduleAutoChooser();
@@ -144,13 +144,15 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("MoveTurnMove"),
+                choreo.SelectTrajectory("MoveTurnMove"),
                 //followAutoPath("moveToReef"),
                 //alignToApril(limelightForwardSubsystem),
                 //liftToPos(LiftPresets.TROUGH),
                 //shootCoral(),
                 //liftToPos(LiftPresets.STARTING),
                 //followAutoPath("moveToSource"),
-                getCoral(),
+                //getCoral(),
                 new ToggleStop(driveSubsystem, false));
     }
 }
