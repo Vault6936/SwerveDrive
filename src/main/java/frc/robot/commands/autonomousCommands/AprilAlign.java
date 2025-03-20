@@ -12,8 +12,8 @@ import frc.robot.subsystems.DriveSubsystem;
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
-    PIDController pidStrafe = new PIDController(0.05,3,0);
-    PIDController pidRot = new PIDController(2,3,0);
+    PIDController pidStrafe = new PIDController(0.05,0,0);
+    PIDController pidRot = new PIDController(2,0,0);
     double aprilX; // Meters
     double aprilDist; // Meters
     double aprilRot; // Degrees
@@ -33,7 +33,7 @@ public class AprilAlign extends Command {
 
     @Override
     public void initialize(){
-        endTime = Timer.getTimestamp();
+        endTime = Timer.getTimestamp() + Constants.Timeouts.aprilTimeout;
     }
 
 
@@ -48,13 +48,13 @@ public class AprilAlign extends Command {
         }
 
         double pidCalcX = pidStrafe.calculate(aprilX, 0);
-        double pidCalcY = -pidStrafe.calculate(aprilDist, targetDist) * 120.0;
+        double pidCalcY = pidStrafe.calculate(aprilDist, targetDist) * 60.0;
         double pidCalcRot = pidRot.calculate(aprilRot, 0);
 
-        pidCalcX = MathUtil.clamp(pidCalcX, -1,1);
-        pidCalcY = MathUtil.clamp(pidCalcY, -1,1);
-        pidCalcRot = MathUtil.clamp(pidCalcRot, -1,1);
-        driveSubsystem.drive(-pidCalcX, pidCalcY, pidCalcRot);
+        pidCalcX = MathUtil.clamp(pidCalcX, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        pidCalcY = MathUtil.clamp(pidCalcY, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        pidCalcRot = MathUtil.clamp(pidCalcRot, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        driveSubsystem.drive(-pidCalcX, -pidCalcY, pidCalcRot);
 
         if (Constants.DebugInfo.debugAlign)
         {
@@ -80,7 +80,7 @@ public class AprilAlign extends Command {
     {
         return (Math.abs(aprilX) < .1 &&
                 Math.abs(aprilRot) < 0.5 &&
-                Math.abs(aprilDist-targetDist) < .1)
+                Math.abs(aprilDist - targetDist) < .1)
                 || Timer.getTimestamp() >= endTime;
     }
 

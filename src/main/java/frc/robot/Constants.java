@@ -72,7 +72,7 @@ public final class Constants {
 
         public static final double CORAL_DISPENSER_SPEED = .25;
 
-        public static final double LIFT_SPEED = 1;
+        public static final double LIFT_SPEED = .65;
         public static final double LIFT_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
         public static final double ALGAE_ANGLE_SPEED = 1;
@@ -80,7 +80,8 @@ public final class Constants {
 
         public static final double ALGAE_MOVE_SPEED = .65;
 
-        public static final double DRIVE_BASE_MAX_SPEED = .3;
+        public static final double DRIVE_BASE_MAX_SPEED = .7;
+        public static final double APRIL_ALIGN_SPEED = .6;
     }
 
     public static class DebugInfo{
@@ -89,12 +90,12 @@ public final class Constants {
         public static final boolean debugAlgae = false;
         public static final boolean debugCoral = false;
         public static final boolean debugCamera = false;
-        public static final boolean debugAlign = false;
+        public static final boolean debugAlign = true;
         public static final boolean debugLift = false;
     }
 
     public static class ThresholdConstants {
-        public static final double ALGAE_PRESET_THRESHOLD = 10;
+        public static final double ALGAE_PRESET_THRESHOLD = 1;
         public static final double CORAL_PRESET_THRESHOLD = 10;
 
     }
@@ -107,7 +108,7 @@ public final class Constants {
 
     public static class Timeouts{
         public static final double coralTimeout = 6; //Seconds
-        public static final double aprilTimeout = 10;
+        public static final double aprilTimeout = 2;
         public static final double moveToPosTimeout = 3;
     }
 }
