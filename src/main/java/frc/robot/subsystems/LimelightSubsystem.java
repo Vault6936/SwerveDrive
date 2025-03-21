@@ -30,7 +30,7 @@ public class LimelightSubsystem extends SubsystemBase {
         double id = LimelightHelpers.getFiducialID(limelightName);
         double ry = LimelightHelpers.getBotPose3d_TargetSpace(limelightName).getRotation().getY();
 
-        this.fieldLoc = LimelightHelpers.getBotPose2d(limelightName);
+        this.fieldLoc = LimelightHelpers.getBotPose2d_wpiBlue(limelightName);
 
         this.tz = tz;
         this.tx = tx;

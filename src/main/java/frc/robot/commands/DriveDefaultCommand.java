@@ -21,8 +21,8 @@ public class DriveDefaultCommand extends Command {
     double lastX = 0;
     double lastY = 0;
     double lastRot = 0;
-    final double ACCEL_LIMIT = 0.002;
-    final double ROT_LIMIT = 0.002;
+    final double ACCEL_LIMIT = 0.02;
+    final double ROT_LIMIT = 0.02;
 
     public DriveDefaultCommand(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
         subsystem = DriveSubsystem.getInstance();

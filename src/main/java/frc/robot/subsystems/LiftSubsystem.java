@@ -113,12 +113,12 @@ public class LiftSubsystem extends SubsystemBase {
         double outputPower = pid.calculate(getCurrentPosition(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -Constants.SpeedConstants.LIFT_SPEED, Constants.SpeedConstants.LIFT_SPEED) * Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
 
-        if(Math.abs(encoderRight.getAsDouble()) > 400 || Math.abs(encoderLeft.getAsDouble()) > 400)
-        {
-            extendRight.set(0);
-            extendLeft.set(0);
-            return;
-        }
+//        if(Math.abs(encoderRight.getAsDouble()) > 400 || Math.abs(encoderLeft.getAsDouble()) > 400)
+//        {
+//            extendRight.set(0);
+//            extendLeft.set(0);
+//            return;
+//        }
 
         // If the (lift is low enough) and (algaeAngle and coralHoz will collide with something)
         if (currentTargetPos > -150 && !canLowerFully) {

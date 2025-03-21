@@ -1,5 +1,6 @@
 package frc.robot.commands.coralCommands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.CoralPresets;
@@ -12,17 +13,20 @@ public class CoralHozPresetCommand extends Command {
     */
     CoralSubsystem subsystem;
     CoralPresets preset;
+    double endTime = 0;
     public CoralHozPresetCommand(CoralSubsystem subsystem, CoralPresets preset){
         this.subsystem = subsystem;
         this.preset = preset;
+
     }
     @Override
     public void initialize() {
+        endTime = Timer.getTimestamp() + Constants.Timeouts.coralTimeout;
         subsystem.slideToPreset(preset);
     }
 
     @Override
-    public void execute(){}
+    public void execute(){subsystem.doPositionControl();}
 
     @Override
     public void end(boolean isCancelled)
@@ -33,6 +37,6 @@ public class CoralHozPresetCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return (Math.abs(subsystem.hozEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD);
+        return (Math.abs(subsystem.hozEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD) || Timer.getTimestamp() > endTime;
     }
 }
