@@ -12,10 +12,11 @@ import frc.robot.subsystems.DriveSubsystem;
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
-    PIDController pidStrafe = new PIDController(0.05,0,0);
+    PIDController pidHoz = new PIDController(0.05,0,0);
+    PIDController pidVert = new PIDController(0.05 * 60, 0, 0);
     PIDController pidRot = new PIDController(2,0,0);
-    double aprilX; // Meters
-    double aprilDist; // Meters
+    double aprilX;
+    double aprilDist;
     double aprilRot; // Degrees
     double targetDist; // Meters
     double endTime;
@@ -47,13 +48,13 @@ public class AprilAlign extends Command {
             return;
         }
 
-        double pidCalcX = pidStrafe.calculate(aprilX, 0);
-        double pidCalcY = pidStrafe.calculate(aprilDist, targetDist) * 60.0;
+        double pidCalcX = pidHoz.calculate(aprilX, 0);
+        double pidCalcY = pidVert.calculate(aprilDist, targetDist);
         double pidCalcRot = pidRot.calculate(aprilRot, 0);
 
-        pidCalcX = MathUtil.clamp(pidCalcX, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
-        pidCalcY = MathUtil.clamp(pidCalcY, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
-        pidCalcRot = MathUtil.clamp(pidCalcRot, -Constants.SpeedConstants.APRIL_ALIGN_SPEED,Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        pidCalcX = MathUtil.clamp(pidCalcX, -Constants.SpeedConstants.APRIL_ALIGN_SPEED, Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        pidCalcY = MathUtil.clamp(pidCalcY, -Constants.SpeedConstants.APRIL_ALIGN_SPEED, Constants.SpeedConstants.APRIL_ALIGN_SPEED);
+        pidCalcRot = MathUtil.clamp(pidCalcRot, -Constants.SpeedConstants.APRIL_ALIGN_SPEED, Constants.SpeedConstants.APRIL_ALIGN_SPEED);
         driveSubsystem.drive(-pidCalcX, -pidCalcY, pidCalcRot);
 
         if (Constants.DebugInfo.debugAlign)
