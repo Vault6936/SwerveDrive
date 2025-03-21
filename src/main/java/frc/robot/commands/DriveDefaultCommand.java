@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
@@ -17,6 +18,12 @@ public class DriveDefaultCommand extends Command {
     private final DoubleSupplier rot;
     public static boolean isFieldCentric;
 
+    double lastX = 0;
+    double lastY = 0;
+    double lastRot = 0;
+    final double ACCEL_LIMIT = 0.002;
+    final double ROT_LIMIT = 0.002;
+
     public DriveDefaultCommand(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
         subsystem = DriveSubsystem.getInstance();
         this.x = x;
@@ -27,9 +34,23 @@ public class DriveDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        SmartDashboard.putBoolean("Field Centric: ", isFieldCentric);
-        Vector2d vec = new Vector2d(x.getAsDouble(), y.getAsDouble());
-        SmartDashboard.putNumber("ControllerVector", Math.toDegrees(vec.angle));
-        subsystem.drive(x.getAsDouble(), y.getAsDouble(), rot.getAsDouble(), isFieldCentric);
+        double currentX = x.getAsDouble();
+        double currentY = y.getAsDouble();
+        double currentRot = rot.getAsDouble();
+        lastX = doAcceleration(currentX, lastX, ACCEL_LIMIT);
+        lastY = doAcceleration(currentY, lastY, ACCEL_LIMIT);
+        lastRot = doAcceleration(currentRot, lastRot, ROT_LIMIT);
+        subsystem.drive(lastX, lastY, lastRot, isFieldCentric);
+    }
+
+    public double doAcceleration(double input, double lastSpeed, double limit)
+    {
+        if(input > 0) {
+            return MathUtil.clamp(input, 0, lastSpeed + limit);
+        }
+        else
+        {
+            return MathUtil.clamp(input, lastSpeed - limit, 0);
+        }
     }
 }

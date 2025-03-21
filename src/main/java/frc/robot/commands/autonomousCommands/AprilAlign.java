@@ -13,7 +13,7 @@ public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
     PIDController pidStrafe = new PIDController(0.05,3,0);
-    PIDController pidRot = new PIDController(2,3,0);
+    PIDController pidRot = new PIDController(2,0,0);
     double aprilX; // Meters
     double aprilDist; // Meters
     double aprilRot; // Degrees

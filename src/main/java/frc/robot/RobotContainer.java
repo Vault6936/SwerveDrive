@@ -80,6 +80,7 @@ public class RobotContainer {
         baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
 
         // APRIL TAG ALIGN
+        //baseController.y().whileTrue(new AutoCoralIntake(coralSubsystem));
         baseController.y().whileTrue(new AutoCoralIntake(coralSubsystem));
 
         // READY TO INTAKE
