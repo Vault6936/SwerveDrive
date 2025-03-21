@@ -1,9 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
@@ -13,6 +10,7 @@ import frc.robot.commands.autonomousCommands.AutoCoralIntake;
 import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
+import frc.robot.commands.coralCommands.CoralHozPresetCommand;
 import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.commands.liftCommands.LiftPresetCommand;
 import frc.robot.control.CommandSwitchController;
@@ -80,8 +78,7 @@ public class RobotContainer {
         baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
 
         // APRIL TAG ALIGN
-        //baseController.y().whileTrue(new AutoCoralIntake(coralSubsystem));
-        baseController.y().whileTrue(new AutoCoralIntake(coralSubsystem));
+        baseController.y().whileTrue(new AprilAlign(driveSubsystem, limelightForwardSubsystem, .75));
 
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
@@ -117,7 +114,7 @@ public class RobotContainer {
 
     public Command alignToApril(LimelightSubsystem limelightSubsystem){
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem,limelightSubsystem,.3),
+                new AprilAlign(driveSubsystem,limelightSubsystem,.54),
                 new WaitCommand(1)
         );
     }
@@ -142,19 +139,37 @@ public class RobotContainer {
                 new WaitCommand(1)
         );
     }
+    public Command commandingThing(){
+        return new SequentialCommandGroup(
+                choreo.SelectTrajectory("SourceNReefNWfast"),
+                new WaitCommand(2),
+                alignToApril(limelightForwardSubsystem),
+                choreo.SelectTrajectory("ReefNWSourceNfast"),
+                new WaitCommand(2)
+        );
+    }
+
+    public Command coralHoz(CoralPresets preset){
+        return new SequentialCommandGroup(
+                new CoralHozPresetCommand(coralSubsystem, preset)
+        );
+    }
 
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.resetOdometry("MoveTurnMove"),
-                choreo.SelectTrajectory("MoveTurnMove"),
-                //followAutoPath("moveToReef"),
-                //alignToApril(limelightForwardSubsystem),
-                //liftToPos(LiftPresets.TROUGH),
-                //shootCoral(),
-                //liftToPos(LiftPresets.STARTING),
-                //followAutoPath("moveToSource"),
+                choreo.resetOdometry("SourceNReefNWfast"),
                 //getCoral(),
+                new ParallelCommandGroup(choreo.SelectTrajectory("SourceNReefNWfast"),
+                        liftToPos(LiftPresets.BOTTOM_REEF),
+                        coralHoz(CoralPresets.LEFT_POSITION)),
+
+                alignToApril(limelightForwardSubsystem),
+                shootCoral(),
+                coralHoz(CoralPresets.CENTER_POSITION),
+                new ParallelCommandGroup(liftToPos(LiftPresets.BOTTOM),
+                        choreo.SelectTrajectory("ReefNWSourceNfast")),
+                //liftToPos(LiftPresets.STARTING)
                 new ToggleStop(driveSubsystem, false));
     }
 }

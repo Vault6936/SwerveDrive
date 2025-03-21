@@ -22,7 +22,6 @@ public class LiftSubsystem extends SubsystemBase {
     DoubleSupplier encoderRight;
 
     final double CHANGE_MULTIPLIER = 2.2;
-    final double MAX_SPEED_PERCENT = .95;
 
     static final double min_position = 0.0;
     static final double max_position = 370;
@@ -112,7 +111,7 @@ public class LiftSubsystem extends SubsystemBase {
      */
     public void doPositionControl(){
         double outputPower = pid.calculate(getCurrentPosition(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
-        outputPower = MathUtil.clamp(outputPower, -MAX_SPEED_PERCENT, MAX_SPEED_PERCENT) * Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
+        outputPower = MathUtil.clamp(outputPower, -Constants.SpeedConstants.LIFT_SPEED, Constants.SpeedConstants.LIFT_SPEED) * Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
 
         if(Math.abs(encoderRight.getAsDouble()) > 400 || Math.abs(encoderLeft.getAsDouble()) > 400)
         {
