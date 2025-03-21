@@ -149,10 +149,10 @@ public class RobotContainer {
     }
     public Command commandingThing(){
         return new SequentialCommandGroup(
-                choreo.SelectTrajectory("SourceNReefNWfast"),
+                choreo.SelectTrajectory("SourceNReefNW"),
                 new WaitCommand(2),
                 alignToApril(limelightForwardSubsystem),
-                choreo.SelectTrajectory("ReefNWSourceNfast"),
+                choreo.SelectTrajectory("ReefNWSourceN"),
                 new WaitCommand(2)
         );
     }
@@ -176,9 +176,9 @@ public class RobotContainer {
                 //shootCoral(),
                 //coralHoz(CoralPresets.CENTER_POSITION),
                 new ParallelCommandGroup(liftToPos(LiftPresets.BOTTOM),
-                    choreo.SelectTrajectory(endLoc + startLoc + "fast")),
+                    choreo.SelectTrajectory(endLoc + startLoc)),
                     liftToPos(LiftPresets.BOTTOM),
-                    new InstantCommand(() -> SmartDashboard.putString("TargetPath", endLoc + startLoc + "fast")));
+                    new InstantCommand(() -> SmartDashboard.putString("TargetPath", endLoc + startLoc)));
     }
 
     public Command getAutonomousCommand() {

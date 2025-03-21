@@ -70,8 +70,8 @@ public class Robot extends TimedRobot {
 //        for (String pathName : getAllChoreoLocs()){
 //            murder = robotContainer.choreo.SelectTrajectory(pathName);
 //        }
-        murder = robotContainer.choreo.SelectTrajectory("SourceNReefNWfast");
-        murder = robotContainer.choreo.SelectTrajectory("ReefNWSourceNfast");
+        murder = robotContainer.choreo.SelectTrajectory("SourceNReefNW");
+        murder = robotContainer.choreo.SelectTrajectory("ReefNWSourceN");
 
                 initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
