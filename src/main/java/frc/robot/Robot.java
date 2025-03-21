@@ -20,6 +20,8 @@ import frc.robot.vision.Limelight;
 import frc.robot.webdashboard.WebdashboardServer;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Iterator;
 
 
 /**
@@ -39,9 +41,22 @@ public class Robot extends TimedRobot {
 
     private Command[] initializationCommands;
 
+    String[] reefLocs = {"ReefNW", "ReefNE", "ReefE", "ReefSE", "ReefSW", "ReefW"};
+    String[] sourceLocs = {"SourceN", "SourceS"};
 
-
-
+    private String[] getAllChoreoLocs(){
+        String[] allPaths = new String[48];
+        int i = 0;
+        for (String reefLoc : reefLocs){
+            for (String sourceLoc : sourceLocs){
+                allPaths[i] = reefLoc + sourceLoc;
+                i++;
+                allPaths[i] = sourceLoc + reefLoc;
+                i++;
+            }
+        }
+        return allPaths;
+    }
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.
@@ -51,6 +66,12 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
+        Command murder;
+//        for (String pathName : getAllChoreoLocs()){
+//            murder = robotContainer.choreo.SelectTrajectory(pathName);
+//        }
+        murder = robotContainer.choreo.SelectTrajectory("SourceNReefNWfast");
+        murder = robotContainer.choreo.SelectTrajectory("ReefNWSourceNfast");
 
                 initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {

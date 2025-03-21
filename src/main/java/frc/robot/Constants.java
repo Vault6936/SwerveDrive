@@ -107,7 +107,7 @@ public final class Constants {
     }
 
     public static class Timeouts{
-        public static final double coralTimeout = 6; //Seconds
+        public static final double coralTimeout = 5; //Seconds
         public static final double aprilTimeout = 2;
         public static final double moveToPosTimeout = 3;
     }
