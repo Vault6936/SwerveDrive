@@ -1,13 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.commands.algaeCommands.AlgaePushCommand;
-import frc.robot.commands.autonomousCommands.AprilAlign;
-import frc.robot.commands.autonomousCommands.AutoCoralDispCommand;
-import frc.robot.commands.autonomousCommands.AutoCoralIntake;
-import frc.robot.commands.autonomousCommands.ToggleStop;
+import frc.robot.commands.autonomousCommands.*;
 import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
 import frc.robot.commands.coralCommands.CoralHozPresetCommand;
@@ -155,21 +153,27 @@ public class RobotContainer {
         );
     }
 
+    public Command goToAndPlace(String startLoc, String endLoc, LiftPresets liftLoc, CoralPresets coralLoc){
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        choreo.SelectTrajectory(startLoc + endLoc + "fast"),
+                        liftToPos(liftLoc),
+                        //coralHoz(coralLoc),
+                        new InstantCommand(() -> SmartDashboard.putString("TargetPath", startLoc + endLoc + "fast"))),
+                alignToApril(limelightForwardSubsystem),
+                new Snapshot(driveSubsystem, limelightForwardSubsystem),
+                shootCoral(),
+                //coralHoz(CoralPresets.CENTER_POSITION),
+                new ParallelCommandGroup(liftToPos(LiftPresets.BOTTOM),
+                    choreo.SelectTrajectory(endLoc + startLoc + "fast")),
+                    liftToPos(LiftPresets.BOTTOM),
+                    new InstantCommand(() -> SmartDashboard.putString("TargetPath", endLoc + startLoc + "fast")));
+    }
+
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.resetOdometry("SourceNReefNWfast"),
-                //getCoral(),
-                new ParallelCommandGroup(choreo.SelectTrajectory("SourceNReefNWfast"),
-                        liftToPos(LiftPresets.BOTTOM_REEF),
-                        coralHoz(CoralPresets.LEFT_POSITION)),
-
-                alignToApril(limelightForwardSubsystem),
-                shootCoral(),
-                coralHoz(CoralPresets.CENTER_POSITION),
-                new ParallelCommandGroup(liftToPos(LiftPresets.BOTTOM),
-                        choreo.SelectTrajectory("ReefNWSourceNfast")),
-                //liftToPos(LiftPresets.STARTING)
+                goToAndPlace("SourceN", "ReefNW", LiftPresets.BOTTOM_REEF, CoralPresets.LEFT_POSITION),
                 new ToggleStop(driveSubsystem, false));
     }
 }
