@@ -64,44 +64,14 @@ public class ChoreoSubsystem extends SubsystemBase {
                     true);
     }
 
-    private SequentialCommandGroup getBasicAuto(){
-        return new SequentialCommandGroup(
-                SelectTrajectory("normalAuto"),
-                new ToggleStop(driveSubsystem, true),
-                new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem, false));
-    }
-
-    private SequentialCommandGroup getBasicAutoFast(){
-        return new SequentialCommandGroup(
-                SelectTrajectory("normalAutoFast"),
-                new ToggleStop(driveSubsystem, true),
-                new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem, false));
-    }
-
-    private SequentialCommandGroup getHalfMeterForward(){
-        return new SequentialCommandGroup(
-                SelectTrajectory("halfMeterForward"),
-                new ToggleStop(driveSubsystem, true),
-                new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem, false));
-    }
-
-    private SequentialCommandGroup getHalfMeterLeft(){
-        return new SequentialCommandGroup(
-                SelectTrajectory("halfMeterLeft"),
-                new ToggleStop(driveSubsystem, true),
-                new WaitCommand(0.2),
-                new ToggleStop(driveSubsystem, false));
-    }
-    private SequentialCommandGroup getHalfMeterRight() {
+    private SequentialCommandGroup Example() {
         return new SequentialCommandGroup(
                 SelectTrajectory("halfMeterRight"),
                 new ToggleStop(driveSubsystem, true),
                 new WaitCommand(0.2),
                 new ToggleStop(driveSubsystem, false));
     }
+
     public Command resetOdometry(String pathName){
         return autoFactory.resetOdometry(pathName);
     }

@@ -78,9 +78,9 @@ public class RobotContainer {
         // APRIL TAG ALIGN
         baseController.y().whileTrue(new SequentialCommandGroup(
                 getCoral(),
-                choreo.resetOdometry("SourceNReefNWfast"),
+                choreo.resetOdometry("SourceNReefNW"),
                 new ParallelCommandGroup(
-                        choreo.SelectTrajectory("SourceNReefNWfast"),
+                        choreo.SelectTrajectory("SourceNReefNW"),
                         coralHoz(CoralPresets.LEFT_POSITION),
                         liftToPos(LiftPresets.BOTTOM_REEF)
                 ),
@@ -167,10 +167,10 @@ public class RobotContainer {
         return new SequentialCommandGroup(
                 getCoral(),
                 new ParallelCommandGroup(
-                        choreo.SelectTrajectory(startLoc + endLoc + "fast"),
+                        choreo.SelectTrajectory(startLoc + endLoc),
                         liftToPos(liftLoc),
                         //coralHoz(coralLoc),
-                        new InstantCommand(() -> SmartDashboard.putString("TargetPath", startLoc + endLoc + "fast"))),
+                        new InstantCommand(() -> SmartDashboard.putString("TargetPath", startLoc + endLoc))),
                 alignToApril(limelightForwardSubsystem),
                 //new Snapshot(driveSubsystem, limelightForwardSubsystem),
                 //shootCoral(),
@@ -184,7 +184,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.resetOdometry("SourceNReefNWfast"),
+                choreo.resetOdometry("SourceNReefNW"),
                 goToAndPlace("SourceN", "ReefNW", LiftPresets.MIDDLE_REEF, CoralPresets.LEFT_POSITION),
                 new ToggleStop(driveSubsystem, false));
     }
