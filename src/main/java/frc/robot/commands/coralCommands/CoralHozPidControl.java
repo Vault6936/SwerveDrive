@@ -24,7 +24,6 @@ public class CoralHozPidControl extends Command {
     @Override
     public void execute() {
         subsystem.updateHozTarget(horizontal.getAsDouble());
-        subsystem.doPositionControl();
     }
 
     @Override

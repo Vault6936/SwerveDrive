@@ -66,12 +66,12 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
+        robotContainer.driveSubsystem.poseReset(new Pose2d(0,0,new Rotation2d()));
+
         Command murder;
 //        for (String pathName : getAllChoreoLocs()){
 //            murder = robotContainer.choreo.SelectTrajectory(pathName);
 //        }
-        murder = robotContainer.choreo.SelectTrajectory("SourceNReefNW");
-        murder = robotContainer.choreo.SelectTrajectory("ReefNWSourceN");
 
                 initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
@@ -135,8 +135,10 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        robotContainer.driveSubsystem.poseReset(new Pose2d(0,0,new Rotation2d()));
 
         robotContainer.lift.stopMoveToPos();
+        robotContainer.algaeSubsystem.setAngle(0);
         Pose2d startTele = new Pose2d(
                 robotContainer.driveSubsystem.currentPose.getX(),
                 robotContainer.driveSubsystem.currentPose.getY(),

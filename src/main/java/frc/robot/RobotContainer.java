@@ -19,6 +19,7 @@ public class RobotContainer {
 
     private final CommandSwitchController baseController = new CommandSwitchController(OperatorConstants.DRIVER_CONTROLLER_PORT);
     private final CommandSwitchController payloadController = new CommandSwitchController(OperatorConstants.PAYLOAD_CONTROLLER_PORT);
+    private final CommandSwitchController joystickController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLELR_PORT);
 
     public final DriveSubsystem driveSubsystem;
     public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward");
@@ -72,21 +73,11 @@ public class RobotContainer {
         baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
 
         // LIFT CONTROL
-        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> true));
-        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
+        baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> false));
+        baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> false));
 
         // APRIL TAG ALIGN
-        baseController.y().whileTrue(new SequentialCommandGroup(
-                getCoral(),
-                choreo.resetOdometry("SourceNReefNW"),
-                new ParallelCommandGroup(
-                        choreo.SelectTrajectory("SourceNReefNW"),
-                        coralToPos(CoralPresets.LEFT_POSITION),
-                        liftToPos(LiftPresets.BOTTOM_REEF)
-                ),
-                        alignToApril(limelightForwardSubsystem)
-
-        ));
+        baseController.y().whileTrue(alignToApril(limelightForwardSubsystem));
 
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
@@ -98,22 +89,36 @@ public class RobotContainer {
         */
 
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
+        joystickController.button(1).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefNW"), goTo("SourceN", "ReefNW"), goTo("ReefNW", "SourceN")));
+        joystickController.button(2).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefNE"), goTo("SourceN", "ReefNE"), goTo("ReefNE", "SourceN")));
+        joystickController.button(3).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefE"), goTo("SourceN", "ReefE"), goTo("ReefE", "SourceN")));
+        joystickController.button(4).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefSE"), goTo("SourceN", "ReefSE"), goTo("ReefSE", "SourceN")));
+        joystickController.button(5).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefSW"), goTo("SourceN", "ReefSW"), goTo("ReefSW", "SourceN")));
+        joystickController.button(6).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceNReefW"), goTo("SourceN", "ReefW"), goTo("ReefW", "SourceN")));
 
-        //payloadController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.STARTING));
-        //payloadController.x().whileTrue(new LiftPresetCommand(lift, LiftPresets.TROUGH));
-        //payloadController.y().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_1));
-        //payloadController.b().whileTrue(new LiftPresetCommand(lift, LiftPresets.HEIGHT_2));
-
-        /*payloadController.povRight().whileTrue( new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.DEFAULT_DOWN));
-        payloadController.povDown().whileTrue(  new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_2));
-        payloadController.povUpLeft().whileTrue(new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_3));
-        payloadController.povUp().whileTrue(    new AlgaeAnglePresetCommand(algaeSubsystem, AlgaePresets.POSITION_4)); */
-
+        joystickController.button(7).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefNW"), goTo("SourceS", "ReefNW"), goTo("ReefNW", "SourceS")));
+        joystickController.button(8).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefNE"), goTo("SourceS", "ReefNE"), goTo("ReefNE", "SourceS")));
+        joystickController.button(9).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefE"), goTo("SourceS", "ReefE"), goTo("ReefE", "SourceS")));
+        joystickController.button(10).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefSE"), goTo("SourceS", "ReefSE"), goTo("ReefSE", "SourceS")));
+        joystickController.button(11).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefSW"), goTo("SourceS", "ReefSW"), goTo("ReefSW", "SourceS")));
+        joystickController.button(12).whileTrue(new SequentialCommandGroup( new ToggleStop(driveSubsystem, false),
+                choreo.resetOdometry("SourceSReefW"), goTo("SourceS", "ReefW"), goTo("ReefW", "SourceS")));
     }
 
     public Command followPath(String pathName){
         return new SequentialCommandGroup(
-                choreo.SelectTrajectory(pathName),
+                choreo.selectTrajectory(pathName),
                 new WaitCommand(.2)
         );
     }
@@ -135,8 +140,11 @@ public class RobotContainer {
 
     public Command goTo(String startLoc, String endLoc){
         return new ParallelCommandGroup(
+                new ToggleStop(driveSubsystem,false),
                 new InstantCommand(() -> SmartDashboard.putString("TargetPath", startLoc + endLoc)),
-                followPath(startLoc + endLoc));
+                followPath(startLoc + endLoc),
+                new ToggleStop(driveSubsystem,true));
+
     }
 
     public Command setRobotAt(String startLoc, String endLoc, LiftPresets liftLoc, CoralPresets coralLoc){
@@ -149,18 +157,20 @@ public class RobotContainer {
 
     public Command goToAndPlace(String startLoc, String endLoc, LiftPresets liftLoc, CoralPresets coralLoc){
         return new SequentialCommandGroup(
-                getCoral(),
                 setRobotAt(startLoc, endLoc, liftLoc, coralLoc),
                 alignToApril(limelightForwardSubsystem),
-                //new Snapshot(driveSubsystem, limelightForwardSubsystem),
-                //shootCoral(),
-                setRobotAt(endLoc, startLoc, LiftPresets.BOTTOM, CoralPresets.CENTER_POSITION));
+                choreo.resetOdometry(endLoc + "SourceN"), //TODO DO BETTER
+                shootCoral());
     }
 
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                choreo.resetOdometry("SourceNReefNW"),
-                goToAndPlace("SourceN", "ReefNW", LiftPresets.MIDDLE_REEF, CoralPresets.LEFT_POSITION));
+//                choreo.resetOdometry("FieldRun"),
+//                choreo.selectTrajectory("FieldRun"));
+                choreo.resetOdometry("BargeNReefNE"),
+                goToAndPlace("BargeN","ReefNE",LiftPresets.BOTTOM_REEF,CoralPresets.CENTER_POS),
+                setRobotAt("ReefNE","SourceN", LiftPresets.BOTTOM, CoralPresets.CENTER_POS));
+
     }
 }

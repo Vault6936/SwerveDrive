@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,17 +27,24 @@ public class CoralSubsystem extends SubsystemBase {
     public final RelativeEncoder hozEncoder;
     double hozTargetPos;
 
-    PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
+    PIDController pidHoz = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
+    boolean leftSwitch;
+    boolean rightSwitch;
+    boolean centerSwitch;
 
-    static final double maxPosition = 38; // 42 is the measured max, we're adding a temporary 4-point safety margin
-    static final double minPosition = -44; // 48 is the measured min  //TODO SET THIS VALUE CORRECTLY
+    static final double maxPos = 24.7;
+    static final double minPos = -24.7;
 
     boolean isSafeToLower;
 
     public CoralSubsystem(){
+        coralHoz.getAnalog();
+        rightSwitch = coralHoz.getForwardLimitSwitch().isPressed();
+        leftSwitch = coralHoz.getReverseLimitSwitch().isPressed();
         coralDispenser1.getForwardLimitSwitch();
         hozEncoder = coralHoz.getEncoder();
         hozEncoder.setPosition(0);
+        ((SparkMax) coralHoz).configure(new SparkMaxConfig().idleMode(SparkBaseConfig.IdleMode.kCoast), SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     }
 
     /**
@@ -68,7 +78,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void updateHozTarget(double change){
-        hozTargetPos = MathUtil.clamp(hozTargetPos + (change * 1.0), minPosition, maxPosition);
+        hozTargetPos = MathUtil.clamp(hozTargetPos + (change * 1.0), minPos, maxPos);
     }
 
     public void slideToPreset(CoralPresets presets){
@@ -80,7 +90,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void doPositionControl() {
-        double outputPower = pid.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
+        double outputPower = pidHoz.calculate(hozEncoder.getPosition(), hozTargetPos) * Constants.SpeedConstants.CORAL_HOZ_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -1, 1) *Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
         coralHoz.set(outputPower);
         if (Constants.DebugInfo.debugCoral){
@@ -90,12 +100,12 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void setSafePos(){
         if ((Math.abs(hozEncoder.getPosition() - hozTargetPos) < 10) &&
-                (Math.abs(hozTargetPos - (minPosition + maxPosition) / 2.) < 10 ))  //TODO SET TOLERANCE
+                (Math.abs(hozTargetPos - (minPos + maxPos) / 2.) < 10 ))  //TODO SET TOLERANCE
         {
             isSafeToLower = true;
         } else {
             isSafeToLower = false;
-            slideToPreset(CoralPresets.CENTER_POSITION);
+            slideToPreset(CoralPresets.CENTER_POS);
         }
     }
 
@@ -106,7 +116,24 @@ public class CoralSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
+        rightSwitch = coralHoz.getForwardLimitSwitch().isPressed();
+        leftSwitch = coralHoz.getReverseLimitSwitch().isPressed();
+        centerSwitch = (coralHoz.getAnalog().getVoltage() < 1);
+        //doPositionControl();
+        if (centerSwitch){
+            hozEncoder.setPosition(0);
+        }
+        if (leftSwitch){
+            hozEncoder.setPosition(minPos);
+        }
+        if (rightSwitch){
+            hozEncoder.setPosition(maxPos);
+        }
         if (Constants.DebugInfo.debugCoral){
+            SmartDashboard.putBoolean("Coral Left Switch", leftSwitch);
+            SmartDashboard.putBoolean("Coral Right Switch", rightSwitch);
+            SmartDashboard.putBoolean("Coral Center Switch", centerSwitch);
+
             SmartDashboard.putBoolean("Coral Gateway Triggered", getGateBool());
             SmartDashboard.putNumber("Coral Horizontal Position", hozEncoder.getPosition());
             SmartDashboard.putNumber("Coral Horizontal Target Position", hozTargetPos);

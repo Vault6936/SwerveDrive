@@ -23,7 +23,7 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"SourceN.x", "val":1.09}, "y":{"exp":"SourceN.y", "val":6.98}, "heading":{"exp":"SourceN.heading", "val":-0.9337511498169664}, "intervals":65, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"SourceN.x", "val":1.1}, "y":{"exp":"SourceN.y", "val":7.0}, "heading":{"exp":"SourceN.heading", "val":-0.9861110273767962}, "intervals":65, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"6.54227876663208 m", "val":6.54227876663208}, "y":{"exp":"5.256393909454346 m", "val":5.256393909454346}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":36, "split":false, "fixTranslation":false, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"6.032408714294434 m", "val":6.032408714294434}, "y":{"exp":"2.7439088821411133 m", "val":2.7439088821411133}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":66, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"ReefSE.x", "val":5.35}, "y":{"exp":"ReefSE.y", "val":2.6}, "heading":{"exp":"ReefSE.heading", "val":2.0943951023931953}, "intervals":51, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
@@ -31,7 +31,7 @@
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"17.548 m", "val":17.548}, "h":{"exp":"8.052 m", "val":8.052}}}, "enabled":false},
-    {"from":"first", "to":"last", "data":{"type":"MaxVelocity", "props":{"max":{"exp":"Vel", "val":9.0}}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"MaxVelocity", "props":{"max":{"exp":"Vel", "val":6.0}}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"MaxAcceleration", "props":{"max":{"exp":"Acc", "val":3.2}}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"MaxAngularVelocity", "props":{"max":{"exp":"angVel", "val":4.014257279586958}}}, "enabled":true},
     {"from":0, "to":3, "data":{"type":"KeepOutCircle", "props":{"x":{"exp":"5.381076896563172 m", "val":5.381076896563172}, "y":{"exp":"4.6705502569675446 m", "val":4.6705502569675446}, "r":{"exp":"0.6 m", "val":0.6}}}, "enabled":true},

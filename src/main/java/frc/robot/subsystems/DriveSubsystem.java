@@ -97,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     
     public void allowMove(){
-        chassis.modules.forEach(module -> module.slowToStop());
+        chassis.modules.forEach(module -> module.allowMove());
     }
 
     private void updatePose(SwerveModule<SparkMax> lf, SwerveModule<SparkMax> lb, SwerveModule<SparkMax> rb, SwerveModule<SparkMax> rf){

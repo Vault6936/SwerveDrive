@@ -14,8 +14,8 @@
    "Vel":{
     "dimension":"LinVel",
     "var":{
-     "exp":"9 m / s",
-     "val":9.0
+     "exp":"6 m / s",
+     "val":6.0
     }
    },
    "angAcc":{
@@ -116,6 +116,20 @@
     "heading":{
      "exp":"0 deg",
      "val":0.0
+    }
+   },
+   "SourceN":{
+    "x":{
+     "exp":"1.1 m",
+     "val":1.1
+    },
+    "y":{
+     "exp":"7 m",
+     "val":7.0
+    },
+    "heading":{
+     "exp":"-56.5 deg",
+     "val":-0.9861110273767962
     }
    },
    "SourceS":{

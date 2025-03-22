@@ -12,6 +12,7 @@ public final class Constants {
     public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
         public static final int PAYLOAD_CONTROLLER_PORT = 1;
+        public static final int JOYSTICK_CONTROLLELR_PORT = 2;
     }
 
     public static final class SwerveModuleTest {
@@ -67,7 +68,7 @@ public final class Constants {
     }
 
     public static class SpeedConstants {
-        public static final double CORAL_HOZ_SPEED = .5;
+        public static final double CORAL_HOZ_SPEED = .8;
         public static final double CORAL_HOZ_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
         public static final double CORAL_DISPENSER_SPEED = .25;
@@ -87,16 +88,16 @@ public final class Constants {
     public static class DebugInfo{
         public static final boolean debugDrivebase = false;
         public static final boolean debugChoreo = true;
-        public static final boolean debugAlgae = false;
-        public static final boolean debugCoral = false;
+        public static final boolean debugAlgae = true;
+        public static final boolean debugCoral = true;
         public static final boolean debugCamera = false;
-        public static final boolean debugAlign = true;
+        public static final boolean debugAlign = false;
         public static final boolean debugLift = false;
     }
 
     public static class ThresholdConstants {
         public static final double ALGAE_PRESET_THRESHOLD = 1;
-        public static final double CORAL_PRESET_THRESHOLD = 10;
+        public static final double CORAL_PRESET_THRESHOLD = .02;
 
     }
 

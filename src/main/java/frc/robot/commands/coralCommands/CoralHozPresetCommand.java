@@ -17,8 +17,8 @@ public class CoralHozPresetCommand extends Command {
     public CoralHozPresetCommand(CoralSubsystem subsystem, CoralPresets preset){
         this.subsystem = subsystem;
         this.preset = preset;
-
     }
+
     @Override
     public void initialize() {
         endTime = Timer.getTimestamp() + Constants.Timeouts.coralTimeout;
@@ -26,7 +26,7 @@ public class CoralHozPresetCommand extends Command {
     }
 
     @Override
-    public void execute(){subsystem.doPositionControl();}
+    public void execute(){}
 
     @Override
     public void end(boolean isCancelled)
@@ -37,6 +37,6 @@ public class CoralHozPresetCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return (Math.abs(subsystem.hozEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD) || Timer.getTimestamp() > endTime;
+        return (Math.abs(subsystem.hozEncoder.getPosition() - preset.position) < Constants.ThresholdConstants.CORAL_PRESET_THRESHOLD) || Timer.getTimestamp() > endTime;
     }
 }

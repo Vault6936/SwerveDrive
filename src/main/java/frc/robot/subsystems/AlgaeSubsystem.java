@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AnalogInput;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
@@ -19,20 +20,21 @@ public class AlgaeSubsystem extends SubsystemBase {
     SparkMax algaeAngle = new SparkMax(Constants.CANIds.algaeAngle, SparkLowLevel.MotorType.kBrushed);
     SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless);
 
-    DutyCycleEncoder angleValue = new DutyCycleEncoder(Constants.AnalogueSensorsIds.algaeAnglePot);
+    RelativeEncoder angleEncoder;
     //AnalogInput angleValue = new AnalogInput(Constants.AnalogueSensorsIds.algaeAnglePot);
     double angleTargetPos;
 
 
     PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
 
-    double maxPosition = 1;
+    double maxPosition = 1.8;
     double minPosition = 0;
     double algae_hit_lift_pos = .5; //TODO This value may not be correct
 
     boolean isSafeToLower = true;
 
     public AlgaeSubsystem(){
+        angleEncoder = algaeAngle.getEncoder();
     }
 
     public void setPushAlgae(MotorDirection dir) {
@@ -53,8 +55,8 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public void setSafePos()
     {
-        if ((Math.abs(getAngle() - angleTargetPos) < 10) &&
-                (Math.abs(angleTargetPos) < 10 ))   //TODO SET TOLERANCE
+        if ((Math.abs(getAngle() - angleTargetPos) <  Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD) &&
+                (Math.abs(angleTargetPos) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD ))   //TODO SET TOLERANCE
         {
             isSafeToLower = true;
         } else {
@@ -94,12 +96,16 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public double getAngle()
     {
-        return angleValue.get();
+        return angleEncoder.getPosition();
     }
 
+    public void setAngle(double angle){
+        angleEncoder.setPosition(angle);
+    }
     @Override
     public void periodic()
     {
+        //doPositionControl();
         if (Constants.DebugInfo.debugAlgae) {
             SmartDashboard.putNumber("Algae Position", getAngle());
             SmartDashboard.putNumber("Algae Target Position", angleTargetPos);

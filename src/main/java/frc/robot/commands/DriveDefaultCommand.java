@@ -41,16 +41,18 @@ public class DriveDefaultCommand extends Command {
         lastY = doAcceleration(currentY, lastY, ACCEL_LIMIT);
         lastRot = doAcceleration(currentRot, lastRot, ROT_LIMIT);
         subsystem.drive(lastX, lastY, lastRot, isFieldCentric);
+        SmartDashboard.putBoolean("FieldCentric", isFieldCentric);
     }
 
     public double doAcceleration(double input, double lastSpeed, double limit)
     {
-        if(input > 0) {
-            return MathUtil.clamp(input, 0, lastSpeed + limit);
-        }
-        else
-        {
-            return MathUtil.clamp(input, lastSpeed - limit, 0);
-        }
+        return input;
+//        if(input > 0) {
+//            return MathUtil.clamp(input, 0, lastSpeed + limit);
+//        }
+//        else
+//        {
+//            return MathUtil.clamp(input, lastSpeed - limit, 0);
+//        }
     }
 }

@@ -61,6 +61,7 @@ public class SwerveModule<T extends MotorController> {
         this.steeringMotor = steeringMotor;
         this.encoder = encoder;
         this.encoderOffset = encoderOffset;
+        lastEncoderPosition = driveEncoder.getAsDouble();
         this.position = position;
         if (Constants.REMOVE_THIS_CLASS_PLEASE.SLOW_MODE){
             this.driveSpeedMultiplier = Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
@@ -135,7 +136,7 @@ public class SwerveModule<T extends MotorController> {
 
 
 
-        temp *= 1.15 / 39.3701;
+        temp *= (1.15 / 39.3701) * 0.90;
         return new SwerveModulePosition(driveDirection.direction * temp /
                 Constants.Swerve.driveMotorTicksPerRev / Constants.Swerve.GEAR_RATIO *
                 Constants.Swerve.WHEEL_DIAMETER_INCHES * Math.PI,
