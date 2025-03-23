@@ -17,8 +17,8 @@ public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
     private final DriveSubsystem driveSubsystem;
 
-    private final PIDController xController = new PIDController(1.0/2, 0.1, 0.0);
-    private final PIDController yController = new PIDController(1.0/2, 0.1, 0.0);
+    private final PIDController xController = new PIDController(1.0, 0.1, 0.0);
+    private final PIDController yController = new PIDController(1.0, 0.1, 0.0);
     private final PIDController headingController = new PIDController(1.0, 0.0, 0.0);
     private AutoChooser autoChooser;
 

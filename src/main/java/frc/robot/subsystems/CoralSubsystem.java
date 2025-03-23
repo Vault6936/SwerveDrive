@@ -119,7 +119,7 @@ public class CoralSubsystem extends SubsystemBase {
         rightSwitch = coralHoz.getForwardLimitSwitch().isPressed();
         leftSwitch = coralHoz.getReverseLimitSwitch().isPressed();
         centerSwitch = (coralHoz.getAnalog().getVoltage() < 1);
-        //doPositionControl();
+        doPositionControl();
         if (centerSwitch){
             hozEncoder.setPosition(0);
         }

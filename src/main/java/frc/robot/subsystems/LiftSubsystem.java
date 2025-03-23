@@ -24,7 +24,7 @@ public class LiftSubsystem extends SubsystemBase {
     final double CHANGE_MULTIPLIER = 2.2;
 
     static final double min_position = 0.0;
-    static final double max_position = 370;
+    static final double max_position = 440;
 
     DoubleConsumer setSpeedMultiplier;
 
