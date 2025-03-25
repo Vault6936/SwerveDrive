@@ -156,11 +156,21 @@ public class SwerveModule<T extends MotorController> {
      * @param speed The speed to set the drive motor to.  It should be between -1.0 and 1.0.
      * @param targetAngle The desired angle, in radians, of the module.
      */
+    double lastAngle = 0.0;
+
     public double drive(double speed, double targetAngle) {
         targetAngle = unsigned_0_to_2PI(targetAngle);
         double currentAngle = getAngleRadians();
 
         // err is how many radians the robot is off from its target angle
+        if(speed > 0.05)
+        {
+            lastAngle = targetAngle;
+        }
+        else{
+           targetAngle = lastAngle;
+        }
+
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;
         if (Math.abs(err) > Math.PI / 2) { // Most of the time, the module will drive forward.  However, if the module is more than 90 degrees away from its target angle, it is more efficient for it to drive in reverse towards a target angle offset by 180 degrees from the original.
@@ -172,11 +182,7 @@ public class SwerveModule<T extends MotorController> {
         //SmartDashboard.putNumber(name + "TargetAngle", 180 * targetAngle / Math.PI);
         //SmartDashboard.putNumber(name + "TargetSpeed", speed * polarity * driveDirection.direction);
 //        SmartDashboard.putNumber(name + "ErrAngle", 180 *  err / Math.PI);
-        if (Math.abs(speed) > 0.1) {
-            steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);
-        } else {
-            steeringMotor.set(0);
-        }
+        steeringMotor.set(MathUtil.clamp(controller.calculate(0, err), -0.4, 0.4) * turnDirection.direction);
 
         if (Math.abs(err) < Math.toRadians(45)) {
             driveMotor.set(MathUtil.clamp(

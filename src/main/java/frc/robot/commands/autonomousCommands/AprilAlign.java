@@ -57,6 +57,10 @@ public class AprilAlign extends Command {
     public void execute() {
         aprilDist = limelightSubsystem.tz;
         aprilX = limelightSubsystem.tx;
+        if(limelightSubsystem.reversed)
+        {
+            aprilX = -aprilX;
+        }
         aprilRot = limelightSubsystem.ry;
         if(limelightSubsystem.id == -1)
         {
@@ -66,6 +70,11 @@ public class AprilAlign extends Command {
         double pidCalcX = pidHoz.calculate(aprilX, aprilOffset);
         double pidCalcY = pidVert.calculate(aprilDist, targetDist);
         double pidCalcRot = pidRot.calculate(aprilRot, 0);
+
+        if(limelightSubsystem.reversed)
+        {
+            pidCalcY = - pidCalcY;
+        }
 
         pidCalcX = MathUtil.clamp(pidCalcX, -Constants.SpeedConstants.APRIL_ALIGN_SPEED, Constants.SpeedConstants.APRIL_ALIGN_SPEED);
         pidCalcY = MathUtil.clamp(pidCalcY, -Constants.SpeedConstants.APRIL_ALIGN_SPEED, Constants.SpeedConstants.APRIL_ALIGN_SPEED);
