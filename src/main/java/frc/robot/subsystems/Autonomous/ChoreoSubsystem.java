@@ -25,6 +25,8 @@ import frc.robot.subsystems.Lift.LiftSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
 import frc.robot.subsystems.Other.MotorDirection;
 
+import java.io.Console;
+
 public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
     private final DriveSubsystem driveSubsystem;
@@ -81,12 +83,27 @@ public class ChoreoSubsystem extends SubsystemBase {
                         true);
     }
 
-    public Command resetOdometry(String pathName) {
-        return autoFactory.resetOdometry(pathName);
+    public Command resetOdometry(String start, String end) {
+        if (checkPath(start, end)){
+            System.out.println("Cannot reset odometry when one of the targets is blank");
+            return new InstantCommand();
+        } else {
+            return autoFactory.resetOdometry(start + end);
+        }
     }
 
-    public Command selectTrajectory(String pathName) {
-        return autoFactory.trajectoryCmd(pathName);
+    public Command selectTrajectory(String start, String end) {
+        if (checkPath(start, end)){
+            System.out.println("Cannot select a trajectory when one of the targets is blank");
+            return new InstantCommand();
+        } else {
+            return autoFactory.trajectoryCmd(start + end);
+        }
+    }
+
+    public boolean checkPath(String str1, String str2){
+        return str1.isEmpty() || str2.isEmpty();
+
     }
 
 //    public void scheduleAutoChooser(){
@@ -112,20 +129,15 @@ public class ChoreoSubsystem extends SubsystemBase {
         return new LiftPresetCommand(lift, robotGoal.getLift());
     }
 
+
     // MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT
     public Command goTo(RobotGoal robotGoal) {
         return new ParallelCommandGroup(
                 new ToggleStop(driveSubsystem, false),
                 new InstantCommand(() -> SmartDashboard.putString("TargetPath", robotGoal.getPathname())),
-                selectTrajectory(robotGoal.getPathname())
+                selectTrajectory(robotGoal.getStart(), robotGoal.getEnd())
         );
                 //new ToggleStop(driveSubsystem, true)); TODO CONFIRM IF THIS IS WANTED BEHAVIOR
-    }
-
-    public Command goBack(RobotGoal robotGoal) {
-        String start = robotGoal.getStart();
-        String end = robotGoal.getEnd();
-        return goTo(robotGoal.copy().setEnd(start).setStart(end));
     }
 
     public Command setRobotAt(RobotGoal robotGoal) {
@@ -151,7 +163,7 @@ public class ChoreoSubsystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 setRobotAt(robotGoal),
                 alignToApril(limelightForward, robotGoal),
-                resetOdometry(robotGoal.getEnd() + "SourceN"), //TODO DO BETTER
+                resetOdometry(robotGoal.getEnd(), "SourceN"), //TODO DO BETTER
                 shootCoral()
         );
     }
@@ -166,7 +178,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                resetOdometry(robotGoal.getPathname()),
+                resetOdometry(robotGoal.getStart(), robotGoal.getEnd()),
                 goToAndPlace(robotGoal),
                 setRobotAt(robotGoal.setLift(LiftPresets.BOTTOM).setCoral(CoralPresets.CENTER_POS)));
 
@@ -175,11 +187,20 @@ public class ChoreoSubsystem extends SubsystemBase {
     //TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO//
 
     public SequentialCommandGroup runTeleAuto(RobotGoal teleGoal) {
+        RobotGoal returnGoal = new RobotGoal()
+                .setStart(teleGoal.getEnd())
+                .setEnd(teleGoal.getStart())
+                .setLift(LiftPresets.BOTTOM)
+                .setCoral(CoralPresets.CENTER_POS)
+                .setOffset(AprilAlign.AprilPositions.CENTER)
+                .setAlgae(AlgaePresets.SAVE_MOVE);
+
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                resetOdometry(teleGoal.getPathname()),
+                resetOdometry(teleGoal.getStart(), teleGoal.getEnd()),
                 goToAndPlace(teleGoal),
-                setRobotAt(teleGoal)
+                setRobotAt(returnGoal),
+                alignToApril(limelightBackwar, returnGoal)
                 );
     }
 

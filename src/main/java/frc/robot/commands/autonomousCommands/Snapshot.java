@@ -23,7 +23,7 @@ public class Snapshot extends Command {
     @Override
     public void initialize(){
         if (limelightSubsystem.id != -1) {
-            CommandScheduler.getInstance().schedule(choreoSubsystem.resetOdometry(startLoc + endLoc));
+            CommandScheduler.getInstance().schedule(choreoSubsystem.resetOdometry(startLoc, endLoc));
         }
     }
 

@@ -9,6 +9,7 @@ import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
 import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.control.CommandSwitchController;
+import frc.robot.subsystems.Algae.AlgaePresets;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
 import frc.robot.subsystems.Autonomous.ChoreoSubsystem;
 import frc.robot.subsystems.Autonomous.RobotGoal;
@@ -92,25 +93,98 @@ public class RobotContainer {
 
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
-        payloadController.a().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.BOTTOM)));
-        payloadController.x().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.BOTTOM_REEF)));
-        payloadController.y().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.MIDDLE_REEF)));
-        payloadController.b().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.TOP_REEF)));
-        payloadController.povDown().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.ALGAE_HIGH)));
-        payloadController.povUp().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.ALGAE_LOW)));
+        payloadController.a().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.BOTTOM)));
+        payloadController.x().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.BOTTOM_REEF)));
+        payloadController.y().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.MIDDLE_REEF)));
+        payloadController.b().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.TOP_REEF)));
+        payloadController.povDown().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.ALGAE_HIGH)));
+        payloadController.povUp().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.ALGAE_LOW)));
 
 
         //TODO                  CUSTOM CONTROLLER
         customController.button(1).onTrue(new SequentialCommandGroup()); //To be edited, use it for whatever
         customController.button(2).onTrue(new InstantCommand());
-        customController.button(3).onTrue(new InstantCommand(() -> teleGoal = teleGoal.reset()));       //Reset pose
-        customController.button(4).whileTrue(choreo.alignToApril(limelightForwardSubsystem, teleGoal)); //April align
-        customController.button(5).whileTrue(choreo.runTeleAuto(teleGoal));                             //GO TO, PLACE, RETURN
+        //Reset teleGoal
+        customController.button(3).onTrue(new InstantCommand(() -> teleGoal = teleGoal.reset()));
+        //AprilAlign
+        customController.button(4).whileTrue(choreo.alignToApril(limelightForwardSubsystem, teleGoal));
+        //GO TO, PLACE, RETURN
+        customController.button(5).whileTrue(choreo.runTeleAuto(teleGoal));
+        //Stop??
         customController.button(6).onTrue(new InstantCommand());
 
+        //Choose Source Location
         customController.button(7).onTrue(new InstantCommand(() -> teleGoal.setStart("SourceN")));
         customController.button(8).onTrue(new InstantCommand(() -> teleGoal.setStart("SourceS")));
 
+        //Choose Reef Location
+        customController.button(9).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefW")));
+        customController.button(10).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNW")));
+        customController.button(11).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNE")));
+        customController.button(12).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefE")));
+        customController.button(13).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefSE")));
+        customController.button(14).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefSW")));
+
+        //Intake and shoot coral
+        customController.button(15).whileTrue(choreo.getCoral());
+        customController.button(16).whileTrue(choreo.shootCoral());
+
+        //Place on reef location
+        customController.button(17).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.BOTTOM_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+        customController.button(18).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.MIDDLE_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+        customController.button(19).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.TOP_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+        customController.button(20).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.BOTTOM_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+        customController.button(21).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.MIDDLE_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+        customController.button(22).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.TOP_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+                .setAlgae(AlgaePresets.SAVE_MOVE)));
+
+        //Will be go to net
+        customController.button(23).onTrue(new InstantCommand());
+
+        //Grab algae at
+        customController.button(24).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.ALGAE_HIGH)
+                .setAlgae(AlgaePresets.GRAB)
+                .setOffset(AprilAlign.AprilPositions.CENTER)));
+        customController.button(25).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.ALGAE_LOW)
+                .setAlgae(AlgaePresets.GRAB)
+                .setOffset(AprilAlign.AprilPositions.CENTER)));
+
+        //Push, intake, and push algae
+        customController.button(26).whileTrue(new AlgaePushCommand(algaeSubsystem, MotorDirection.FORWARD));
+        customController.button(27).whileTrue(new AlgaePushCommand(algaeSubsystem, MotorDirection.REVERSE));
+        customController.button(28).whileTrue(new AlgaePushCommand(algaeSubsystem, MotorDirection.FORWARD));
+
+        customController.button(29).onTrue(new InstantCommand()); //Will be processor
+        //customController.button(30).onTrue(teleGoal.setLift(LiftPresets.Trough)) No Trough Enum made, nor intended to use
+        customController.button(31).onTrue(new InstantCommand()); //Unsure of use
+
+        customController.button(32).onTrue(new InstantCommand()); //Speed 1
+        customController.button(33).onTrue(new InstantCommand()); //Speed 2
+        customController.button(34).onTrue(new InstantCommand()); //Speed 3
+        customController.button(35).onTrue(new InstantCommand()); //Speed 4
+        customController.button(36).onTrue(new InstantCommand()); //Speed 5
+        customController.button(37).onTrue(new InstantCommand()); //Climb Speed 1
+        customController.button(38).onTrue(new InstantCommand()); //Climb Speed 2
+        customController.button(39).onTrue(new InstantCommand()); //Climb Speed 3
+
+        customController.button(40).onTrue(new InstantCommand()); //Go to Cage 1
+        customController.button(41).onTrue(new InstantCommand()); //Go to Cage 2
+        customController.button(42).onTrue(new InstantCommand()); //Go to Cage 3
+
+        customController.button(43).onTrue(new InstantCommand()); //Deploy climber
+        customController.button(44).onTrue(new InstantCommand()); //Climb up
+        customController.button(45).onTrue(new InstantCommand()); //Climb down
     }
 
 
