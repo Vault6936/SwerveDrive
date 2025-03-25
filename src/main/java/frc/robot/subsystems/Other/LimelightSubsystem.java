@@ -14,12 +14,14 @@ public class LimelightSubsystem extends SubsystemBase {
     public double ry;
     public final String limelightName;
     public final double flushOffset;
+    public final boolean isReversed;
 
     public Pose2d fieldLoc = new Pose2d();
 
-    public LimelightSubsystem(String limelightName, double flushOffset){
+    public LimelightSubsystem(String limelightName, double flushOffset, boolean reverse){
         this.limelightName = "limelight-" + limelightName;
         this.flushOffset = flushOffset;
+        this.isReversed = reverse;
     }
 
     @Override

@@ -147,7 +147,7 @@ public class LiftSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
+        //canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
         setSpeedMultiplier.accept(getDriveSpeedMultiplier());
         if (Constants.DebugInfo.debugLift) {
             SmartDashboard.putNumber("Lift speed multiplier", getDriveSpeedMultiplier());

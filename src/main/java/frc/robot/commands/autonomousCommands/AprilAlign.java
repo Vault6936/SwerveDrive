@@ -57,7 +57,7 @@ public class AprilAlign extends Command {
     public void execute() {
         aprilDist = limelightSubsystem.tz;
         aprilX = limelightSubsystem.tx;
-        if(limelightSubsystem.reversed)
+        if(limelightSubsystem.isReversed)
         {
             aprilX = -aprilX;
         }
@@ -71,7 +71,7 @@ public class AprilAlign extends Command {
         double pidCalcY = pidVert.calculate(aprilDist, targetDist);
         double pidCalcRot = pidRot.calculate(aprilRot, 0);
 
-        if(limelightSubsystem.reversed)
+        if(limelightSubsystem.isReversed)
         {
             pidCalcY = - pidCalcY;
         }

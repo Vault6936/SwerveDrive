@@ -15,6 +15,7 @@ import frc.robot.subsystems.Autonomous.ChoreoSubsystem;
 import frc.robot.subsystems.Autonomous.RobotGoal;
 import frc.robot.subsystems.Coral.CoralSubsystem;
 import frc.robot.subsystems.Drive.DriveSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.Lift.LiftPresets;
 import frc.robot.subsystems.Lift.LiftSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
@@ -29,8 +30,8 @@ public class RobotContainer {
 
     public final DriveSubsystem driveSubsystem;
     public final LedSubsystem ledSubsystem = new LedSubsystem();
-    public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward", .42);
-    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar", .60);
+    public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward", .42, false);
+    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar", .60, true);
 
     public final LiftSubsystem lift;
     public final CoralSubsystem coralSubsystem;
@@ -88,7 +89,7 @@ public class RobotContainer {
         baseController.y().whileTrue(choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.LEFT));
         baseController.a().whileTrue(choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER));
 
-        baseController.button(14).whileTrue(alignToApril(limelightBackwarSubsystem,AprilAlign.AprilPositions.CENTER));
+        baseController.button(14).whileTrue(choreo.alignToApril(limelightBackwarSubsystem, AprilAlign.AprilPositions.CENTER));
 
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));

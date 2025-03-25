@@ -59,7 +59,7 @@ public class AlgaeSubsystem extends SubsystemBase {
             isSafeToLower = true;
         } else {
             //isSafeToLower = false;
-            tiltToPreset(AlgaePresets.DEFAULT_DOWN);
+            tiltToPreset(AlgaePresets.MINIMUM);
         }
     }
 
