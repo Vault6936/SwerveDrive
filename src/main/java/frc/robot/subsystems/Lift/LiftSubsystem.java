@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Lift;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import edu.wpi.first.math.MathUtil;
@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.ctre.phoenix6.hardware.TalonFX;
+import frc.robot.subsystems.Algae.AlgaeSubsystem;
+import frc.robot.subsystems.Coral.CoralSubsystem;
+import frc.robot.subsystems.Other.MotorDirection;
 
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;

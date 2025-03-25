@@ -1,8 +1,7 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Coral;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -12,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Other.MotorDirection;
 
 /**
  * This system handles the motors for the coral placer system.

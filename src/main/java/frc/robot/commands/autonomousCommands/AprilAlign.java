@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Other.LimelightSubsystem;
+import frc.robot.subsystems.Drive.DriveSubsystem;
 
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
@@ -25,9 +25,9 @@ public class AprilAlign extends Command {
 
     public enum AprilPositions
     {
-        LEFT(-22.5),
+        LEFT(22.5),
         CENTER(0),
-        RIGHT(22.5);
+        RIGHT(-22.5);
         public final double position;
         AprilPositions(double pos)
         {

@@ -1,9 +1,7 @@
 package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.LiftSubsystem;
-import frc.robot.subsystems.MotorDirection;
+import frc.robot.subsystems.Lift.LiftSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;

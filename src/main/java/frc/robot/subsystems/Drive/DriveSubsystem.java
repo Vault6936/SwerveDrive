@@ -1,7 +1,6 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drive;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,7 +13,6 @@ import frc.robot.swerve.PIDGains;
 import frc.robot.swerve.SwerveChassis;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.Vector2d;
-import frc.robot.webdashboard.DashboardLayout;
 
 import java.util.ArrayList;
 

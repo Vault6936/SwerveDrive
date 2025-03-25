@@ -3,8 +3,8 @@ package frc.robot.commands.autonomousCommands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.CoralSubsystem;
-import frc.robot.subsystems.MotorDirection;
+import frc.robot.subsystems.Coral.CoralSubsystem;
+import frc.robot.subsystems.Other.MotorDirection;
 
 public class AutoCoralIntake extends Command {
     CoralSubsystem coralSubsystem;

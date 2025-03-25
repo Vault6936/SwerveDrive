@@ -2,7 +2,6 @@ package frc.robot.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import frc.robot.subsystems.LiftSubsystem;
 
 import java.util.ArrayList;
 
