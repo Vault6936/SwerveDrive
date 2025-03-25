@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Coral;
 
 public enum CoralPresets {
     CENTER_POS(0),

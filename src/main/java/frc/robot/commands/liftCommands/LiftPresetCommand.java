@@ -1,8 +1,8 @@
 package frc.robot.commands.liftCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LiftPresets;
-import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.Lift.LiftPresets;
+import frc.robot.subsystems.Lift.LiftSubsystem;
 
 public class LiftPresetCommand  extends Command {
 

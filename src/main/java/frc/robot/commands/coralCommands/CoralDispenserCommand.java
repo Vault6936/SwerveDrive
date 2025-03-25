@@ -1,8 +1,8 @@
 package frc.robot.commands.coralCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralSubsystem;
-import frc.robot.subsystems.MotorDirection;
+import frc.robot.subsystems.Coral.CoralSubsystem;
+import frc.robot.subsystems.Other.MotorDirection;
 
 public class CoralDispenserCommand extends Command {
     /*

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Lift;
 
 public enum LiftPresets {
     BOTTOM(0),

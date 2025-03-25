@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Autonomous;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
@@ -15,6 +15,15 @@ import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralHozPresetCommand;
 import frc.robot.commands.liftCommands.LiftPresetCommand;
 import frc.robot.control.CommandSwitchController;
+import frc.robot.subsystems.Algae.AlgaePresets;
+import frc.robot.subsystems.Algae.AlgaeSubsystem;
+import frc.robot.subsystems.Coral.CoralPresets;
+import frc.robot.subsystems.Coral.CoralSubsystem;
+import frc.robot.subsystems.Drive.DriveSubsystem;
+import frc.robot.subsystems.Lift.LiftPresets;
+import frc.robot.subsystems.Lift.LiftSubsystem;
+import frc.robot.subsystems.Other.LimelightSubsystem;
+import frc.robot.subsystems.Other.MotorDirection;
 
 public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
@@ -25,19 +34,11 @@ public class ChoreoSubsystem extends SubsystemBase {
     private final LiftSubsystem lift;
     private final AlgaeSubsystem algaeSubsystem;
 
-    private final CommandSwitchController autoController;
     private final PIDController xController = new PIDController(1.0, 0.1, 0.0);
     private final PIDController yController = new PIDController(1.0, 0.1, 0.0);
     private final PIDController headingController = new PIDController(1.0, 0.0, 0.0);
 
-    private String source;
-    private String reefFace;
-    private AprilAlign.AprilPositions placerLoc;
-    private LiftPresets liftLoc;
-    private AlgaePresets algaeLoc;
-    private AprilAlign.AprilPositions aprilOffset;
-
-    public ChoreoSubsystem(RobotContainer robotContainer, CommandSwitchController autoController) {
+    public ChoreoSubsystem(RobotContainer robotContainer) {
         this.driveSubsystem = robotContainer.driveSubsystem;
         this.limelightBackwar = robotContainer.limelightBackwarSubsystem;
         this.limelightForward = robotContainer.limelightForwardSubsystem;
@@ -45,7 +46,6 @@ public class ChoreoSubsystem extends SubsystemBase {
         this.algaeSubsystem = robotContainer.algaeSubsystem;
         this.lift = robotContainer.lift;
 
-        this.autoController = autoController;
         autoFactory = new AutoFactory(() -> driveSubsystem.currentPose, driveSubsystem::poseReset, this::followTrajectory,
                 false, driveSubsystem);
         xController.setIntegratorRange(-50, 50);
@@ -94,10 +94,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 //    }
 
 
-    public Command liftToPos(LiftPresets liftPreset) {
-        return new LiftPresetCommand(lift, liftPreset);
-    }
-
+    // CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL
     public Command shootCoral() {
         return new CoralDispCommand(coralSubsystem, MotorDirection.REVERSE, 1);
     }
@@ -106,118 +103,87 @@ public class ChoreoSubsystem extends SubsystemBase {
         return new AutoCoralIntake(coralSubsystem);
     }
 
-    public Command coralToPos(CoralPresets preset) {
-        return new CoralHozPresetCommand(coralSubsystem, preset);
+    public Command coralToPos(RobotGoal robotGoal) {
+        return new CoralHozPresetCommand(coralSubsystem, robotGoal.getCoral());
     }
 
-    public Command goTo(String startLoc, String endLoc) {
+    // LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT
+    public Command liftToPos(RobotGoal robotGoal) {
+        return new LiftPresetCommand(lift, robotGoal.getLift());
+    }
+
+    // MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT
+    public Command goTo(RobotGoal robotGoal) {
         return new ParallelCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                new InstantCommand(() -> SmartDashboard.putString("TargetPath", startLoc + endLoc)),
-                selectTrajectory(startLoc + endLoc),
-                new ToggleStop(driveSubsystem, true));
+                new InstantCommand(() -> SmartDashboard.putString("TargetPath", robotGoal.getPathname())),
+                selectTrajectory(robotGoal.getPathname())
+        );
+                //new ToggleStop(driveSubsystem, true)); TODO CONFIRM IF THIS IS WANTED BEHAVIOR
     }
 
-    public Command setRobotAt(String startLoc, String endLoc, LiftPresets liftLoc, CoralPresets coralLoc) {
+    public Command goBack(RobotGoal robotGoal) {
+        String start = robotGoal.getStart();
+        String end = robotGoal.getEnd();
+        return goTo(robotGoal.copy().setEnd(start).setStart(end));
+    }
+
+    public Command setRobotAt(RobotGoal robotGoal) {
         return new ParallelCommandGroup(
-                liftToPos(liftLoc),
-                coralToPos(coralLoc),
-                goTo(startLoc, endLoc)
+                liftToPos(robotGoal),
+                coralToPos(robotGoal),
+                goTo(robotGoal)
         );
     }
 
-    public Command alignToApril(LimelightSubsystem limelightSubsystem, AprilAlign.AprilPositions aprilOffset) {
+    public Command alignToApril(LimelightSubsystem limelight, AprilAlign.AprilPositions aprilOffset) {
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem, limelightSubsystem, .42, aprilOffset),
+                new AprilAlign(driveSubsystem, limelight, .42, aprilOffset),
                 new WaitCommand(.2)
         );
     }
 
-    public Command goToAndPlace(String startLoc, String endLoc, LiftPresets liftLoc, CoralPresets coralLoc, AprilAlign.AprilPositions aprilOffset) {
-        return new SequentialCommandGroup(
-                setRobotAt(startLoc, endLoc, liftLoc, coralLoc),
-                alignToApril(limelightForward, aprilOffset),
-                resetOdometry(endLoc + "SourceN"), //TODO DO BETTER
-                shootCoral());
+    public Command alignToApril(LimelightSubsystem limelight, RobotGoal robotGoal) {
+        return alignToApril(limelight, robotGoal.getOffset());
     }
+
+    public Command goToAndPlace(RobotGoal robotGoal) {
+        return new SequentialCommandGroup(
+                setRobotAt(robotGoal),
+                alignToApril(limelightForward, robotGoal),
+                resetOdometry(robotGoal.getEnd() + "SourceN"), //TODO DO BETTER
+                shootCoral()
+        );
+    }
+
+    //AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS//
 
     public SequentialCommandGroup getBargeNAuto() {
+        RobotGoal robotGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNE")
+                .setLift(LiftPresets.BOTTOM_REEF)
+                .setCoral(CoralPresets.CENTER_POS)
+                .setOffset(AprilAlign.AprilPositions.CENTER);
+
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-//                choreo.resetOdometry("FieldRun"),
-//                choreo.selectTrajectory("FieldRun"));
-                resetOdometry("BargeNReefNE"),
-                goToAndPlace("BargeN", "ReefNE", LiftPresets.BOTTOM_REEF, CoralPresets.CENTER_POS, AprilAlign.AprilPositions.CENTER),
-                setRobotAt("ReefNE", "SourceN", LiftPresets.BOTTOM, CoralPresets.CENTER_POS));
+                resetOdometry(robotGoal.getPathname()),
+                goToAndPlace(robotGoal),
+                setRobotAt(robotGoal.setLift(LiftPresets.BOTTOM).setCoral(CoralPresets.CENTER_POS)));
 
     }
 
-    public void updateTeleAuto() {
-        updateSource();
-        updateLift();
-        updateAlgae();
-        updatePlacer();
-        updateReefFace();
-    }
+    //TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO//
 
-    public void updateSource() {
-        String[] sourceLocs = {"SourceN", "SourceS"};
-        for (int i = 1; i <= 2; i++) {
-            if (autoController.button(i).getAsBoolean()) {
-                this.source = sourceLocs[i];
-            }
-        }
-    }
-
-    public void updateReefFace() {
-        String[] reefLocs = {"ReefW", "ReefNW", "ReefNE", "ReefE", "ReefSE", "ReefSW"};
-        for (int i = 1; i <= 6; i++) {
-            if (autoController.button(i + 2).getAsBoolean()) {
-                this.reefFace = reefLocs[i-1];
-            }
-        }
-    }
-
-    public void updateLift() {
-        LiftPresets[] liftPos = {LiftPresets.BOTTOM, LiftPresets.BOTTOM_REEF, LiftPresets.MIDDLE_REEF, LiftPresets.TOP_REEF, LiftPresets.ALGAE_LOW, LiftPresets.ALGAE_HIGH};
-        for (int i = 1; i <= 6; i++) {
-            if (autoController.button(i + 8).getAsBoolean()) {
-                liftLoc = liftPos[i-1];
-            }
-        }
-    }
-
-    public void updatePlacer() {
-        AprilAlign.AprilPositions[] aprilOffsets = {AprilAlign.AprilPositions.LEFT, AprilAlign.AprilPositions.CENTER, AprilAlign.AprilPositions.CENTER};
-        for (int i = 1; i <= 3; i++) {
-            if (autoController.button(i + 14).getAsBoolean()) {
-                placerLoc = aprilOffsets[i-1];
-            }
-        }
-    }
-
-    public void updateAlgae() {
-        AlgaePresets[] algaeLocs = {AlgaePresets.MINIMUM, AlgaePresets.MAXIMUM, AlgaePresets.GRAB};
-        for (int i = 1; i <= 3; i++) {
-            if (autoController.button(i + 20).getAsBoolean()){
-                algaeLoc = algaeLocs[i-1];
-            }
-        }
-    }
-
-
-    public SequentialCommandGroup runTeleAuto() {
+    public SequentialCommandGroup runTeleAuto(RobotGoal teleGoal) {
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                resetOdometry(source + reefFace),
-                goToAndPlace(source, reefFace, liftLoc, CoralPresets.CENTER_POS, placerLoc),
-                setRobotAt(reefFace, source, LiftPresets.BOTTOM, CoralPresets.CENTER_POS),
-                alignToApril(limelightBackwar, AprilAlign.AprilPositions.CENTER));
+                resetOdometry(teleGoal.getPathname()),
+                goToAndPlace(teleGoal),
+                setRobotAt(teleGoal)
+                );
     }
 
     @Override
     public void periodic() {
-        updateTeleAuto();
-        new InstantCommand(() -> {updateAlgae();updateTeleAuto();});
     }
 }

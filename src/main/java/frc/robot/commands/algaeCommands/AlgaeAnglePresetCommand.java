@@ -2,8 +2,8 @@ package frc.robot.commands.algaeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.AlgaePresets;
-import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.Algae.AlgaePresets;
+import frc.robot.subsystems.Algae.AlgaeSubsystem;
 
 public class AlgaeAnglePresetCommand extends Command {
     /*

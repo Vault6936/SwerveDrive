@@ -9,14 +9,22 @@ import frc.robot.commands.coralCommands.CoralDispenserCommand;
 import frc.robot.commands.coralCommands.CoralHozPidControl;
 import frc.robot.commands.liftCommands.LiftPidControl;
 import frc.robot.control.CommandSwitchController;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Algae.AlgaeSubsystem;
+import frc.robot.subsystems.Autonomous.ChoreoSubsystem;
+import frc.robot.subsystems.Autonomous.RobotGoal;
+import frc.robot.subsystems.Coral.CoralSubsystem;
+import frc.robot.subsystems.Drive.DriveSubsystem;
+import frc.robot.subsystems.Lift.LiftPresets;
+import frc.robot.subsystems.Lift.LiftSubsystem;
+import frc.robot.subsystems.Other.LimelightSubsystem;
+import frc.robot.subsystems.Other.MotorDirection;
 
 
 public class RobotContainer {
 
     private final CommandSwitchController baseController = new CommandSwitchController(OperatorConstants.DRIVER_CONTROLLER_PORT);
     private final CommandSwitchController payloadController = new CommandSwitchController(OperatorConstants.PAYLOAD_CONTROLLER_PORT);
-    private final CommandSwitchController joystickController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLELR_PORT);
+    private final CommandSwitchController customController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLELR_PORT);
 
     public final DriveSubsystem driveSubsystem;
     public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward");
@@ -27,8 +35,10 @@ public class RobotContainer {
     public final AlgaeSubsystem algaeSubsystem;
     private final ChoreoSubsystem choreo;
     private final DriveDefaultCommand driveDefaultCommand;
+    public RobotGoal teleGoal = new RobotGoal();
 
     public RobotContainer() {
+
         driveSubsystem = DriveSubsystem.getInstance();
         driveDefaultCommand = new DriveDefaultCommand(() -> baseController.getLeftX(), () -> -baseController.getLeftY(), () -> -(-baseController.getRightX()));
 // THIS LINE ALLOWS D-PAD DRIVE BASE MOVEMENT driveDefaultCommand = new DriveDefaultCommand(() -> baseController.povRight().getAsBoolean() ? 0.5 :(baseController.povLeft().getAsBoolean() ? -0.5 : 0.),() -> baseController.povUp().getAsBoolean() ? 0.5 :(baseController.povDown().getAsBoolean() ? -0.5 : 0.),() -> 0);
@@ -39,7 +49,7 @@ public class RobotContainer {
         lift.setDefaultCommand(new LiftPidControl(lift, () -> -payloadController.getLeftY(),
                 payloadController.zl().and(payloadController.zr())));
 
-        choreo = new ChoreoSubsystem(this, joystickController);
+        choreo = new ChoreoSubsystem(this);
         configureBindings();
     }
 
@@ -79,29 +89,28 @@ public class RobotContainer {
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
 
-        /* TO ADD
-        Left "Start": Reset Gyro
-        Minus: Stop going to Pos
-        Plus: Go to next Pos
-        */
 
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
-        payloadController.a().whileTrue(choreo.liftToPos(LiftPresets.BOTTOM));
-        payloadController.x().whileTrue(choreo.liftToPos(LiftPresets.BOTTOM_REEF));
-        payloadController.y().whileTrue(choreo.liftToPos(LiftPresets.MIDDLE_REEF));
-        payloadController.b().whileTrue(choreo.liftToPos(LiftPresets.TOP_REEF));
-        payloadController.povDown().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_LOW));
-        payloadController.povUp().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_HIGH));
+        payloadController.a().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.BOTTOM)));
+        payloadController.x().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.BOTTOM_REEF)));
+        payloadController.y().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.MIDDLE_REEF)));
+        payloadController.b().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.TOP_REEF)));
+        payloadController.povDown().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.ALGAE_HIGH)));
+        payloadController.povUp().whileTrue(choreo.liftToPos(teleGoal.reset().setLift(LiftPresets.ALGAE_LOW)));
 
-        joystickController.button(1).whileTrue(new SequentialCommandGroup(
-                choreo.resetOdometry("SourceNReefE"),
-                choreo.selectTrajectory("SourceNReefE"),
-                choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER)));
-        joystickController.button(2).whileTrue(new SequentialCommandGroup(
-                choreo.resetOdometry("ReefESourceN"),
-                choreo.selectTrajectory("ReefESourceN"),
-                choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER)));
+
+        //TODO                  CUSTOM CONTROLLER
+        customController.button(1).onTrue(new SequentialCommandGroup()); //To be edited, use it for whatever
+        customController.button(2).onTrue(new InstantCommand());
+        customController.button(3).onTrue(new InstantCommand(() -> teleGoal = teleGoal.reset()));       //Reset pose
+        customController.button(4).whileTrue(choreo.alignToApril(limelightForwardSubsystem, teleGoal)); //April align
+        customController.button(5).whileTrue(choreo.runTeleAuto(teleGoal));                             //GO TO, PLACE, RETURN
+        customController.button(6).onTrue(new InstantCommand());
+
+        customController.button(7).onTrue(new InstantCommand(() -> teleGoal.setStart("SourceN")));
+        customController.button(8).onTrue(new InstantCommand(() -> teleGoal.setStart("SourceS")));
+
     }
 
 
