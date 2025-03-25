@@ -14,7 +14,6 @@ import frc.robot.commands.autonomousCommands.CoralDispCommand;
 import frc.robot.commands.autonomousCommands.ToggleStop;
 import frc.robot.commands.coralCommands.CoralHozPresetCommand;
 import frc.robot.commands.liftCommands.LiftPresetCommand;
-import frc.robot.control.CommandSwitchController;
 import frc.robot.subsystems.Algae.AlgaePresets;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
 import frc.robot.subsystems.Coral.CoralPresets;
@@ -24,8 +23,6 @@ import frc.robot.subsystems.Lift.LiftPresets;
 import frc.robot.subsystems.Lift.LiftSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
 import frc.robot.subsystems.Other.MotorDirection;
-
-import java.io.Console;
 
 public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
@@ -121,12 +118,20 @@ public class ChoreoSubsystem extends SubsystemBase {
     }
 
     public Command coralToPos(RobotGoal robotGoal) {
-        return new CoralHozPresetCommand(coralSubsystem, robotGoal.getCoral());
+        return coralToPos(robotGoal.getCoral());
+    }
+
+    public Command coralToPos(CoralPresets coralPos) {
+        return new CoralHozPresetCommand(coralSubsystem, coralPos);
     }
 
     // LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT //// LIFT
     public Command liftToPos(RobotGoal robotGoal) {
-        return new LiftPresetCommand(lift, robotGoal.getLift());
+        return liftToPos(robotGoal.getLift());
+    }
+
+    public Command liftToPos(LiftPresets liftPos){
+        return new LiftPresetCommand(lift, liftPos);
     }
 
 
@@ -150,7 +155,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
     public Command alignToApril(LimelightSubsystem limelight, AprilAlign.AprilPositions aprilOffset) {
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem, limelight, .42, aprilOffset),
+                new AprilAlign(driveSubsystem, limelight, limelight.flushOffset, aprilOffset),
                 new WaitCommand(.2)
         );
     }
@@ -189,11 +194,8 @@ public class ChoreoSubsystem extends SubsystemBase {
     public SequentialCommandGroup runTeleAuto(RobotGoal teleGoal) {
         RobotGoal returnGoal = new RobotGoal()
                 .setStart(teleGoal.getEnd())
-                .setEnd(teleGoal.getStart())
-                .setLift(LiftPresets.BOTTOM)
-                .setCoral(CoralPresets.CENTER_POS)
-                .setOffset(AprilAlign.AprilPositions.CENTER)
-                .setAlgae(AlgaePresets.SAVE_MOVE);
+                .setEnd(teleGoal.getStart());
+        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
 
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),

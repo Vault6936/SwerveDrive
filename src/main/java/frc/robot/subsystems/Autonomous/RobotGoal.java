@@ -6,12 +6,13 @@ import frc.robot.subsystems.Coral.CoralPresets;
 import frc.robot.subsystems.Lift.LiftPresets;
 
 public class RobotGoal {
-    private String start;
-    private String end;
-    private LiftPresets liftGoal;
-    private AlgaePresets algaeGoal;
-    private CoralPresets coralGoal;
-    private AprilAlign.AprilPositions aprilOffset;
+    // ROBOT GOAL DEFAULTS TO INTAKE POSITION, this excludes "start" and "end", which will need to be included
+    private String start = "";
+    private String end = "";
+    private LiftPresets liftGoal = LiftPresets.BOTTOM;
+    private AlgaePresets algaeGoal = AlgaePresets.SAFE_MOVE;
+    private CoralPresets coralGoal = CoralPresets.CENTER_POS;
+    private AprilAlign.AprilPositions aprilOffset = AprilAlign.AprilPositions.CENTER;
 
     public RobotGoal setStart(String startLoc){
         start = startLoc;
@@ -69,7 +70,7 @@ public class RobotGoal {
     public AlgaePresets getAlgae(){
         if (!checkNull(algaeGoal))
             return algaeGoal;
-        else return AlgaePresets.SAVE_MOVE;
+        else return AlgaePresets.SAFE_MOVE;
     }
 
     public CoralPresets getCoral(){
@@ -88,7 +89,13 @@ public class RobotGoal {
     }
 
     public RobotGoal reset(){
-        return new RobotGoal();
+        return this
+                .setStart("")
+                .setEnd("")
+                .setOffset(AprilAlign.AprilPositions.CENTER)
+                .setCoral(CoralPresets.CENTER_POS)
+                .setLift(LiftPresets.BOTTOM)
+                .setAlgae(AlgaePresets.SAFE_MOVE);
     }
 
     public RobotGoal copy(){

@@ -12,12 +12,14 @@ public class LimelightSubsystem extends SubsystemBase {
     public double ty;
     public double id;
     public double ry;
-    public String limelightName;
+    public final String limelightName;
+    public final double flushOffset;
 
     public Pose2d fieldLoc = new Pose2d();
 
-    public LimelightSubsystem(String limelightName){
+    public LimelightSubsystem(String limelightName, double flushOffset){
         this.limelightName = "limelight-" + limelightName;
+        this.flushOffset = flushOffset;
     }
 
     @Override

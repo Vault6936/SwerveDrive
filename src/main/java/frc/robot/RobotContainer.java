@@ -28,8 +28,8 @@ public class RobotContainer {
     private final CommandSwitchController customController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLELR_PORT);
 
     public final DriveSubsystem driveSubsystem;
-    public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward");
-    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar");
+    public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward", .42);
+    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar", .60);
 
     public final LiftSubsystem lift;
     public final CoralSubsystem coralSubsystem;
@@ -93,12 +93,12 @@ public class RobotContainer {
 
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
-        payloadController.a().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.BOTTOM)));
-        payloadController.x().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.BOTTOM_REEF)));
-        payloadController.y().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.MIDDLE_REEF)));
-        payloadController.b().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.TOP_REEF)));
-        payloadController.povDown().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.ALGAE_HIGH)));
-        payloadController.povUp().whileTrue(choreo.liftToPos(teleGoal.copy().setLift(LiftPresets.ALGAE_LOW)));
+        payloadController.a().whileTrue(choreo.liftToPos(LiftPresets.BOTTOM));
+        payloadController.x().whileTrue(choreo.liftToPos(LiftPresets.BOTTOM_REEF));
+        payloadController.y().whileTrue(choreo.liftToPos(LiftPresets.MIDDLE_REEF));
+        payloadController.b().whileTrue(choreo.liftToPos(LiftPresets.TOP_REEF));
+        payloadController.povDown().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_HIGH));
+        payloadController.povUp().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_LOW));
 
 
         //TODO                  CUSTOM CONTROLLER
@@ -132,24 +132,24 @@ public class RobotContainer {
         //Place on reef location
         customController.button(17).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.BOTTOM_REEF)
                 .setOffset(AprilAlign.AprilPositions.LEFT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
         customController.button(18).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.MIDDLE_REEF)
                 .setOffset(AprilAlign.AprilPositions.LEFT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
         customController.button(19).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.TOP_REEF)
                 .setOffset(AprilAlign.AprilPositions.LEFT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
         customController.button(20).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.BOTTOM_REEF)
                 .setOffset(AprilAlign.AprilPositions.RIGHT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
         customController.button(21).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.MIDDLE_REEF)
                 .setOffset(AprilAlign.AprilPositions.RIGHT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
         customController.button(22).onTrue(new InstantCommand(() -> teleGoal.setLift(LiftPresets.TOP_REEF)
                 .setOffset(AprilAlign.AprilPositions.RIGHT)
-                .setAlgae(AlgaePresets.SAVE_MOVE)));
+                .setAlgae(AlgaePresets.SAFE_MOVE)));
 
-        //Will be go to net
+        //Will go to net
         customController.button(23).onTrue(new InstantCommand());
 
         //Grab algae at
