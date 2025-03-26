@@ -36,7 +36,7 @@ public class RobotContainer {
     public final LiftSubsystem lift;
     public final CoralSubsystem coralSubsystem;
     public final AlgaeSubsystem algaeSubsystem;
-    private final ChoreoSubsystem choreo;
+    public final ChoreoSubsystem choreo;
     private final DriveDefaultCommand driveDefaultCommand;
     public RobotGoal teleGoal = new RobotGoal();
 
