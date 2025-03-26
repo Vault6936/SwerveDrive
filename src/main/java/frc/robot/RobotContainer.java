@@ -57,6 +57,12 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        configBase();
+        configPayload();
+        configCustom();
+    }
+
+    private void configBase(){
         //TODO                             BASE CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
         // FIELD CENTRIC
@@ -87,14 +93,19 @@ public class RobotContainer {
 
         // APRIL TAG ALIGN
         baseController.y().whileTrue(choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.LEFT));
-        baseController.a().whileTrue(choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER));
+        baseController.a().whileTrue(choreo.runTeleAuto(new RobotGoal()
+                .setStart("SourceN")
+                .setEnd("ReefNW")
+                .setLift(LiftPresets.ALGAE_LOW)
+        ));
 
         baseController.button(14).whileTrue(choreo.alignToApril(limelightBackwarSubsystem, AprilAlign.AprilPositions.CENTER));
 
         // READY TO INTAKE
         //baseController.a().whileTrue(new LiftPresetCommand(lift, LiftPresets.POSITION_0));
+    }
 
-
+    private void configPayload(){
         //TODO                  PAYLOAD CONTROLLER:    https://www.canva.com/design/DAGgzEn4UfA/D4Ydez6DajIAjL2_aeNujQ/edit
 
         payloadController.a().whileTrue(choreo.liftToPos(LiftPresets.BOTTOM));
@@ -103,8 +114,9 @@ public class RobotContainer {
         payloadController.b().whileTrue(choreo.liftToPos(LiftPresets.TOP_REEF));
         payloadController.povDown().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_HIGH));
         payloadController.povUp().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_LOW));
+    }
 
-
+    private void configCustom(){
         //TODO                  CUSTOM CONTROLLER
         customController.button(1).onTrue(new SequentialCommandGroup()); //To be edited, use it for whatever
         customController.button(2).onTrue(new InstantCommand());

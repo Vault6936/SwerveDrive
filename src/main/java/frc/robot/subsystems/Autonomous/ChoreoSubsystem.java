@@ -2,6 +2,7 @@ package frc.robot.subsystems.Autonomous;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,12 +33,14 @@ public class ChoreoSubsystem extends SubsystemBase {
     private final CoralSubsystem coralSubsystem;
     private final LiftSubsystem lift;
     private final AlgaeSubsystem algaeSubsystem;
+    private final RobotContainer robotContainer;
 
     private final PIDController xController = new PIDController(1.0, 0.1, 0.0);
     private final PIDController yController = new PIDController(1.0, 0.1, 0.0);
     private final PIDController headingController = new PIDController(1.0, 0.0, 0.0);
 
     public ChoreoSubsystem(RobotContainer robotContainer) {
+        this.robotContainer = robotContainer;
         this.driveSubsystem = robotContainer.driveSubsystem;
         this.limelightBackwar = robotContainer.limelightBackwarSubsystem;
         this.limelightForward = robotContainer.limelightForwardSubsystem;
@@ -208,5 +211,6 @@ public class ChoreoSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putString("TeleGoal", robotContainer.teleGoal.toString());
     }
 }

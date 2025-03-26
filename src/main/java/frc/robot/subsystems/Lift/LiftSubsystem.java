@@ -11,6 +11,7 @@ import frc.robot.subsystems.Algae.AlgaeSubsystem;
 import frc.robot.subsystems.Coral.CoralSubsystem;
 import frc.robot.subsystems.Other.MotorDirection;
 
+import java.util.Objects;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
@@ -55,7 +56,7 @@ public class LiftSubsystem extends SubsystemBase {
      * Used to alter the speed of the robot based on the lift's vertical position based on a logistic function
      */
     public double getDriveSpeedMultiplier(){
-        return .8 / (1 + Math.pow(Math.E,.457799 * (getCurrentPosition() - 237.6))) + .2;
+        return .8 / (1 + Math.pow(Math.E, 0.0245 * (getCurrentPosition() - 199.107))) + .4;
     }
 
     /***
@@ -97,14 +98,8 @@ public class LiftSubsystem extends SubsystemBase {
      */
     public void setExtend(MotorDirection dir) {
         stopMoveToPos();
-        switch (dir) {
-            case STOP :
-            {
-                extendLeft.set(0);
-            }
-            //If we need them:
-            case FORWARD:{}
-            case REVERSE:{}
+        if (Objects.requireNonNull(dir) == MotorDirection.STOP) {
+            extendLeft.set(0);
         }
     }
 
@@ -116,38 +111,18 @@ public class LiftSubsystem extends SubsystemBase {
         double outputPower = pid.calculate(getCurrentPosition(), currentTargetPos) * Constants.SpeedConstants.LIFT_SPEED_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -Constants.SpeedConstants.LIFT_SPEED, Constants.SpeedConstants.LIFT_SPEED) * Constants.REMOVE_THIS_CLASS_PLEASE.slowDriveMultiplier;
 
-//        if(Math.abs(encoderRight.getAsDouble()) > 400 || Math.abs(encoderLeft.getAsDouble()) > 400)
-//        {
-//            extendRight.set(0);
-//            extendLeft.set(0);
-//            return;
-//        }
-
-        // If the (lift is low enough) and (algaeAngle and coralHoz will collide with something)
-        if (currentTargetPos > -150 && !canLowerFully) {
-            move_components_safe_pos();
-        }
-
-
-        else {
-            extendLeft.set(outputPower);
-            extendRight.set(-outputPower);
-        }
+        extendLeft.set(outputPower);
+        extendRight.set(-outputPower);
     }
 
     /***
      * Moves algaeAngle and coralHoz into safe place so the lift can lower.
      */
-    private void move_components_safe_pos(){
-        coralSubsystem.setSafePos();
-        algaeSubsystem.setSafePos();
-    }
 
 
     @Override
     public void periodic()
     {
-        //canLowerFully = coralSubsystem.isSafeToLower && algaeSubsystem.isSafeToLower;
         setSpeedMultiplier.accept(getDriveSpeedMultiplier());
         if (Constants.DebugInfo.debugLift) {
             SmartDashboard.putNumber("Lift speed multiplier", getDriveSpeedMultiplier());

@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
 import frc.robot.commands.autonomousCommands.ToggleStop;
-import frc.robot.vision.Limelight;
 import frc.robot.webdashboard.WebdashboardServer;
 
 
@@ -26,10 +25,6 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
 
     public static RobotContainer robotContainer;
-
-    public static WebdashboardServer socket = WebdashboardServer.getInstance(5800);
-
-    Limelight limelight = Limelight.getInstance();
 
     private Command[] initializationCommands;
 
@@ -81,8 +76,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // TODO: fix limelight
-        limelight.update();
         CommandScheduler.getInstance().run();
     }
 

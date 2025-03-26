@@ -107,4 +107,14 @@ public class RobotGoal {
                 .setLift(liftGoal)
                 .setAlgae(algaeGoal);
     }
+
+    public String toString(){
+        return ("start: " + start +
+                " - end: " + end +
+                " - aprilOffset: " + aprilOffset +
+                " - coralGoal: " + coralGoal +
+                " - liftGoal: " + liftGoal +
+                " - algaeGoal: " + algaeGoal
+        );
+    }
 }

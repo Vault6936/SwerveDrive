@@ -57,7 +57,7 @@ public final class Constants {
     }
 
     public static class Swerve {
-        public static final double driveMultiplier = 0.5;
+        public static final double driveMultiplier = 0.92;
         public static final double driveRampRate = 100.0;
         public static final double rotMultiplier = 0.5;
         public static final double rotRampRate = 75.0;

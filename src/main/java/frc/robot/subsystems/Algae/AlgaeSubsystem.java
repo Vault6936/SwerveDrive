@@ -19,7 +19,6 @@ public class AlgaeSubsystem extends SubsystemBase {
     SparkMax algaePush = new SparkMax(Constants.CANIds.algaePusher, SparkLowLevel.MotorType.kBrushless);
 
     RelativeEncoder angleEncoder;
-    //AnalogInput angleValue = new AnalogInput(Constants.AnalogueSensorsIds.algaeAnglePot);
     double angleTargetPos;
 
 
@@ -27,9 +26,6 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     double maxPosition = 1.8;
     double minPosition = 0;
-    double algae_hit_lift_pos = .5; //TODO This value may not be correct
-
-    boolean isSafeToLower = true;
 
     public AlgaeSubsystem(){
         angleEncoder = algaeAngle.getEncoder();
@@ -51,27 +47,10 @@ public class AlgaeSubsystem extends SubsystemBase {
         }
     }
 
-    public void setSafePos()
-    {
-        if ((Math.abs(getAngle() - angleTargetPos) <  Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD) &&
-                (Math.abs(angleTargetPos) < Constants.ThresholdConstants.ALGAE_PRESET_THRESHOLD ))   //TODO SET TOLERANCE
-        {
-            isSafeToLower = true;
-        } else {
-            //isSafeToLower = false;
-            tiltToPreset(AlgaePresets.MINIMUM);
-        }
-    }
-
     public void updateAngleTarget(double change){
-        angleTargetPos = MathUtil.clamp(angleTargetPos + (change * .1), minPosition, maxPosition);
+        angleTargetPos = angleTargetPos + change * .1;
+        //angleTargetPos = MathUtil.clamp(angleTargetPos + (change * .1), minPosition, maxPosition);
     }
-
-    public double veryHardMath(double voltageValue){
-        return voltageValue / 5.0;
-    }
-
-
 
     public void tiltToPreset(AlgaePresets presets){
         angleTargetPos = presets.position;
@@ -103,7 +82,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        //doPositionControl();
+        //doPositionControl(); //TODO IF ENCODER IS ON THE ROBOT PERMANENTLY, UNCOMMENT
         if (Constants.DebugInfo.debugAlgae) {
             SmartDashboard.putNumber("Algae Position", getAngle());
             SmartDashboard.putNumber("Algae Target Position", angleTargetPos);

@@ -35,8 +35,6 @@ public class CoralSubsystem extends SubsystemBase {
     static final double maxPos = 24.7;
     static final double minPos = -24.7;
 
-    boolean isSafeToLower;
-
     public CoralSubsystem(){
         coralHoz.getAnalog();
         rightSwitch = coralHoz.getForwardLimitSwitch().isPressed();
@@ -98,16 +96,6 @@ public class CoralSubsystem extends SubsystemBase {
         }
     }
 
-    public void setSafePos(){
-        if ((Math.abs(hozEncoder.getPosition() - hozTargetPos) < 10) &&
-                (Math.abs(hozTargetPos - (minPos + maxPos) / 2.) < 10 ))  //TODO SET TOLERANCE
-        {
-            isSafeToLower = true;
-        } else {
-            isSafeToLower = false;
-            slideToPreset(CoralPresets.CENTER_POS);
-        }
-    }
 
     public boolean getGateBool(){
         return coralDispenser1.getForwardLimitSwitch().isPressed();
