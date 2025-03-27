@@ -8,6 +8,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveCalibrateCommand;
@@ -31,7 +33,18 @@ public class Robot extends TimedRobot {
     String[] reefLocs = {"ReefNW", "ReefNE", "ReefE", "ReefSE", "ReefSW", "ReefW"};
     String[] sourceLocs = {"SourceN", "SourceS"};
 
-    private String[] getAllChoreoLocs(){
+
+    /**
+     * This command loads a bunch of choreo commands into memory.
+     * This makes further access much faster (2.5s -> 0.05s for n=48), but risks OOM behavior.
+     * See the FRC Java Garbage Collection tutorial for information on how to handle that problem.
+     * In our case, we've set up a USB drive with 200MB swap file.
+     * @return
+     */
+    private String[] preloadChoreoCommands(){
+        Timer t = new Timer();
+        t.start();
+        double startTime = t.get();
         String[] allPaths = new String[48];
         int i = 0;
         for (String reefLoc : reefLocs){
@@ -40,8 +53,12 @@ public class Robot extends TimedRobot {
                 i++;
                 allPaths[i] = sourceLoc + reefLoc;
                 i++;
+                robotContainer.choreo.selectTrajectory(reefLoc, sourceLoc);
+                robotContainer.choreo.selectTrajectory(sourceLoc, reefLoc);
             }
         }
+        double endTime = t.get();
+        System.out.println("ReadPoseTime" + (startTime - endTime));
         return allPaths;
     }
     /**
@@ -55,15 +72,12 @@ public class Robot extends TimedRobot {
         robotContainer = new RobotContainer();
         robotContainer.driveSubsystem.poseReset(new Pose2d(0,0,new Rotation2d()));
 
-        Command murder;
-//        for (String pathName : getAllChoreoLocs()){
-//            murder = robotContainer.choreo.SelectTrajectory(pathName);
-//        }
+        initializationCommands = new Command[]{new SwerveCalibrateCommand()};
 
-                initializationCommands = new Command[]{new SwerveCalibrateCommand()};
         for (Command command : initializationCommands) {
             CommandScheduler.getInstance().schedule(command);
         }
+        preloadChoreoCommands();
     }
 
 
@@ -77,6 +91,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        SmartDashboard.putString("Current Pose:", robotContainer.driveSubsystem.currentPose.toString());
     }
 
 
@@ -121,6 +136,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
         robotContainer.driveSubsystem.poseReset(new Pose2d(0,0,new Rotation2d()));
+
 
         robotContainer.lift.stopMoveToPos();
         robotContainer.algaeSubsystem.setAngle(0);

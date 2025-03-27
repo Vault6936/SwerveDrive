@@ -141,7 +141,6 @@ public class DriveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("PoseX: ", turn_poseX);
             SmartDashboard.putNumber("PoseY: ", turn_poseY);
         }
-        SmartDashboard.putString("Current Pose:", currentPose.toString());
     }
 
 //    public void poseReset(){

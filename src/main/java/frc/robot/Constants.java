@@ -74,7 +74,7 @@ public final class Constants {
 
         public static final double CORAL_DISPENSER_SPEED = .25;
 
-        public static final double LIFT_SPEED = .65;
+        public static final double LIFT_SPEED = .9;
         public static final double LIFT_SPEED_MAGNIFIER = 1; // 0 - 1, directly multiplied to output power
 
         public static final double ALGAE_ANGLE_SPEED = 1;
