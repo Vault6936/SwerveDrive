@@ -26,12 +26,13 @@ public class RobotContainer {
 
     private final CommandSwitchController baseController = new CommandSwitchController(OperatorConstants.DRIVER_CONTROLLER_PORT);
     private final CommandSwitchController payloadController = new CommandSwitchController(OperatorConstants.PAYLOAD_CONTROLLER_PORT);
-    private final CommandSwitchController customController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLELR_PORT);
+    private final CommandSwitchController customController = new CommandSwitchController(OperatorConstants.CUSTOM_CONTROLLELR_PORT);
+    private final CommandSwitchController joystickController = new CommandSwitchController(OperatorConstants.JOYSTICK_CONTROLLER_PORT);
 
     public final DriveSubsystem driveSubsystem;
     public final LedSubsystem ledSubsystem = new LedSubsystem();
     public final LimelightSubsystem limelightForwardSubsystem = new LimelightSubsystem("forward", .42, false);
-    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar", .60, true);
+    public final LimelightSubsystem limelightBackwarSubsystem = new LimelightSubsystem("backwar", .34, true);
 
     public final LiftSubsystem lift;
     public final CoralSubsystem coralSubsystem;
@@ -59,7 +60,8 @@ public class RobotContainer {
     private void configureBindings() {
         configBase();
         configPayload();
-        configCustom();
+        //configCustom();
+        configJoystick();
     }
 
     private void configBase(){
@@ -203,9 +205,49 @@ public class RobotContainer {
         customController.button(45).onTrue(new InstantCommand()); //Climb down
     }
 
+    private void configJoystick(){
+        //NORTH REEF
+        joystickController.button(1).onTrue(new InstantCommand(() -> choreo.goTo(teleGoal)));
+        joystickController.button(11).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNW").setStart("SourceN")));
+        joystickController.button(12).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefW").setStart("SourceN")));
+        joystickController.button(13).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNE").setStart("SourceN")));
+
+        joystickController.button(16).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefSW").setStart("SourceS")));
+        joystickController.button(15).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefW").setStart("SourceS")));
+        joystickController.button(14).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefSE").setStart("SourceS")));
+
+        joystickController.button(5).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.TOP_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+        ));
+        joystickController.button(6).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.MIDDLE_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+        ));
+        joystickController.button(7).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.BOTTOM_REEF)
+                .setOffset(AprilAlign.AprilPositions.LEFT)
+        ));
+        joystickController.button(10).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.TOP_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+        ));
+        joystickController.button(9).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.MIDDLE_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+        ));
+        joystickController.button(8).onTrue(new InstantCommand(() -> teleGoal
+                .setLift(LiftPresets.BOTTOM_REEF)
+                .setOffset(AprilAlign.AprilPositions.RIGHT)
+        ));
+        joystickController.povUp().whileTrue(new InstantCommand(() -> choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER)));
+        joystickController.button(2).whileTrue(new InstantCommand(() -> choreo.alignToApril(limelightBackwarSubsystem, AprilAlign.AprilPositions.CENTER)));
+        joystickController.button(3).whileTrue(new InstantCommand(() -> choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.LEFT)));
+        joystickController.button(4).whileTrue(new InstantCommand(() -> choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.RIGHT)));
+    }
+
 
     public Command getAutonomousCommand() {
-        return choreo.getBargeNAuto();
-
+        return choreo.getBargeNReefNEAuto();
     }
 }

@@ -9,10 +9,12 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Other.LimelightSubsystem;
 import frc.robot.subsystems.Drive.DriveSubsystem;
 
+import java.util.ArrayList;
+
 public class AprilAlign extends Command {
     DriveSubsystem driveSubsystem;
     LimelightSubsystem limelightSubsystem;
-    PIDController pidHoz = new PIDController(0.1 * 1.2,0,0);
+    PIDController pidHoz = new PIDController(0.1 * .6,0,0);
     PIDController pidVert = new PIDController(0.1 * 140, 0, 0);
     PIDController pidRot = new PIDController(2,0,0);
     double aprilX;
@@ -98,6 +100,14 @@ public class AprilAlign extends Command {
     {
         driveSubsystem.drive(0,0,0);
     }
+
+    public class aprilDict{
+
+    }
+    public void resetOdometryAtTag(){
+        String[] redAprilLocations = {"SourceN", "SourceS", "", "", "", "ReefNW", "ReefW", "ReefSW", "ReefSE", "ReefE", "ReefNE"};
+    }
+
 
 
     @Override

@@ -12,7 +12,8 @@ public final class Constants {
     public static class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
         public static final int PAYLOAD_CONTROLLER_PORT = 1;
-        public static final int JOYSTICK_CONTROLLELR_PORT = 2;
+        public static final int CUSTOM_CONTROLLELR_PORT = 2;
+        public static final int JOYSTICK_CONTROLLER_PORT = 3;
     }
 
     public static final class SwerveModuleTest {
@@ -59,7 +60,7 @@ public final class Constants {
     public static class Swerve {
         public static final double driveMultiplier = 0.92;
         public static final double driveRampRate = 100.0;
-        public static final double rotMultiplier = 0.5;
+        public static final double rotMultiplier = 0.25;
         public static final double rotRampRate = 75.0;
         public static final double driveMotorTicksPerRev = 1;
         public static final double GEAR_RATIO = 6.75;

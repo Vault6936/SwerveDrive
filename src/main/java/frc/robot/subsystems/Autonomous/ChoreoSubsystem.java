@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.autonomousCommands.AprilAlign;
 import frc.robot.commands.autonomousCommands.AutoCoralIntake;
@@ -171,25 +172,64 @@ public class ChoreoSubsystem extends SubsystemBase {
         return new SequentialCommandGroup(
                 setRobotAt(robotGoal),
                 alignToApril(limelightForward, robotGoal),
-                resetOdometry(robotGoal.getEnd(), "SourceN"), //TODO DO BETTER
+                resetOdometry(robotGoal.getEnd(), "SourceN"),
                 shootCoral()
         );
     }
 
     //AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS//
 
-    public SequentialCommandGroup getBargeNAuto() {
-        RobotGoal robotGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNE")
+        public SequentialCommandGroup getBargeSReefNEAuto() {
+            RobotGoal placeGoal = new RobotGoal().setStart("BargeS").setEnd("ReefNE")
+                    .setLift(LiftPresets.BOTTOM_REEF)
+                    .setCoral(CoralPresets.CENTER_POS)
+                    .setOffset(AprilAlign.AprilPositions.RIGHT);
+
+            RobotGoal sourceGoal = new RobotGoal().setStart("ReefNE").setEnd("SourceN");
+            // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
+
+            return new SequentialCommandGroup(
+                    new ToggleStop(driveSubsystem, false),
+                    resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
+                    goToAndPlace(placeGoal),
+                    alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
+                    setRobotAt(sourceGoal));
+    }
+
+    public SequentialCommandGroup getBargeNReefNEAuto() {
+        RobotGoal placeGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNE")
                 .setLift(LiftPresets.BOTTOM_REEF)
                 .setCoral(CoralPresets.CENTER_POS)
-                .setOffset(AprilAlign.AprilPositions.CENTER);
+                .setOffset(AprilAlign.AprilPositions.RIGHT);
+
+        RobotGoal sourceGoal = new RobotGoal().setStart("ReefNE").setEnd("SourceN");
+        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
+
 
         return new SequentialCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                resetOdometry(robotGoal.getStart(), robotGoal.getEnd()),
-                goToAndPlace(robotGoal),
-                setRobotAt(robotGoal.setLift(LiftPresets.BOTTOM).setCoral(CoralPresets.CENTER_POS)));
+                resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
+                goToAndPlace(placeGoal),
+                alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
+                setRobotAt(sourceGoal));
+    }
 
+    public SequentialCommandGroup getBargeNReefNWAuto() {
+        RobotGoal placeGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNW")
+                .setLift(LiftPresets.BOTTOM_REEF)
+                .setCoral(CoralPresets.CENTER_POS)
+                .setOffset(AprilAlign.AprilPositions.RIGHT);
+
+        RobotGoal sourceGoal = new RobotGoal().setStart("ReefNW").setEnd("SourceN");
+        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
+
+
+        return new SequentialCommandGroup(
+                new ToggleStop(driveSubsystem, false),
+                resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
+                goToAndPlace(placeGoal),
+                alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
+                setRobotAt(sourceGoal));
     }
 
     //TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO//
