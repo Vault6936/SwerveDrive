@@ -36,7 +36,11 @@ public class DriveDefaultCommand extends Command {
         lastX = doAcceleration(currentX, lastX, ACCEL_LIMIT);
         lastY = doAcceleration(currentY, lastY, ACCEL_LIMIT);
         lastRot = doAcceleration(currentRot, lastRot, ROT_LIMIT);
-        subsystem.drive(lastX, lastY, lastRot, isFieldCentric);
+        if (isFieldCentric) {
+            subsystem.drive(-lastX, -lastY, lastRot, true);
+        } else {
+            subsystem.drive(lastX, lastY, lastRot, false);
+        }
         SmartDashboard.putBoolean("FieldCentric", isFieldCentric);
     }
 

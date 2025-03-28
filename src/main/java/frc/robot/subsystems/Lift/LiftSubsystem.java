@@ -56,7 +56,9 @@ public class LiftSubsystem extends SubsystemBase {
      * Used to alter the speed of the robot based on the lift's vertical position based on a logistic function
      */
     public double getDriveSpeedMultiplier(){
-        return .8 / (1 + Math.pow(Math.E, 0.0245 * (getCurrentPosition() - 199.107))) + .4;
+        double speedMult = 1 / (1 + Math.pow(Math.E, .0107 * (getCurrentPosition() - 114.363))) + .2;
+        SmartDashboard.putNumber("LiftSpeedMultiplier", speedMult);
+        return speedMult;
     }
 
     /***
@@ -127,6 +129,7 @@ public class LiftSubsystem extends SubsystemBase {
         if (Constants.DebugInfo.debugLift) {
             SmartDashboard.putNumber("Lift speed multiplier", getDriveSpeedMultiplier());
         }
+
         SmartDashboard.putNumber("LiftPosition", getCurrentPosition());
         SmartDashboard.putNumber("LiftTargetPosition", currentTargetPos);
     }

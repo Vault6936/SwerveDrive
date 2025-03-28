@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.commands.algaeCommands.AlgaeAnglePresetCommand;
 import frc.robot.commands.autonomousCommands.AprilAlign;
 import frc.robot.commands.autonomousCommands.AutoCoralIntake;
 import frc.robot.commands.autonomousCommands.CoralDispCommand;
@@ -104,13 +105,7 @@ public class ChoreoSubsystem extends SubsystemBase {
 
     public boolean checkPath(String str1, String str2){
         return str1.isEmpty() || str2.isEmpty();
-
     }
-
-//    public void scheduleAutoChooser(){
-//        robotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
-//    }
-
 
     // CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL //// CORAL
     public Command shootCoral() {
@@ -138,115 +133,112 @@ public class ChoreoSubsystem extends SubsystemBase {
         return new LiftPresetCommand(lift, liftPos);
     }
 
+    // ALGAE //// ALGAE //// ALGAE //// ALGAE //// ALGAE //// ALGAE //// ALGAE //// ALGAE
+    public Command algaeToPos(RobotGoal robotGoal){
+        return algaeToPos(robotGoal.getAlgae());
+    }
+    public Command algaeToPos(AlgaePresets algaePre){
+        return new AlgaeAnglePresetCommand(algaeSubsystem, algaePre);
+    }
+
 
     // MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT //// MOVEMENT
     public Command goTo(RobotGoal robotGoal) {
         return new ParallelCommandGroup(
                 new ToggleStop(driveSubsystem, false),
-                new InstantCommand(() -> SmartDashboard.putString("TargetPath", robotGoal.getPathname())),
                 selectTrajectory(robotGoal.getStart(), robotGoal.getEnd())
-        );
-                //new ToggleStop(driveSubsystem, true)); TODO CONFIRM IF THIS IS WANTED BEHAVIOR
-    }
-
-    public Command setRobotAt(RobotGoal robotGoal) {
-        return new ParallelCommandGroup(
-                liftToPos(robotGoal),
-                coralToPos(robotGoal),
-                goTo(robotGoal)
         );
     }
 
     public Command alignToApril(LimelightSubsystem limelight, AprilAlign.AprilPositions aprilOffset) {
         return new SequentialCommandGroup(
-                new AprilAlign(driveSubsystem, limelight, limelight.flushOffset, aprilOffset),
+                new AprilAlign(driveSubsystem, limelight, limelight.flushOffset, aprilOffset, this),
                 new WaitCommand(.2)
         );
+    }
+
+    public Command setRobotAt(RobotGoal robotGoal){
+        Command needsLower = new InstantCommand();
+        if (lift.getCurrentPosition() > LiftPresets.MIDDLE_REEF.position) {
+            needsLower = liftToPos(LiftPresets.MIDDLE_REEF);
+        }
+
+        return new SequentialCommandGroup(
+                needsLower,
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> SmartDashboard.putString("TargetPath", robotGoal.getPathname())),
+                    goTo(robotGoal),
+                    liftToPos(robotGoal),
+                    coralToPos(robotGoal)));
     }
 
     public Command alignToApril(LimelightSubsystem limelight, RobotGoal robotGoal) {
         return alignToApril(limelight, robotGoal.getOffset());
     }
 
-    public Command goToAndPlace(RobotGoal robotGoal) {
-        return new SequentialCommandGroup(
-                setRobotAt(robotGoal),
-                alignToApril(limelightForward, robotGoal),
-                resetOdometry(robotGoal.getEnd(), "SourceN"),
-                shootCoral()
+    public Command manualPlace(LiftPresets liftPre, CoralPresets coralPre, AprilAlign.AprilPositions aprilOffset){
+        return new ParallelCommandGroup(
+                liftToPos(liftPre),
+                coralToPos(coralPre),
+                alignToApril(limelightForward, aprilOffset)
         );
     }
 
     //AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS//
+    public SequentialCommandGroup runAuto(String startLoc, String endLoc, String source){
+        RobotGoal placeGoal = new RobotGoal().setStart(startLoc).setEnd(endLoc)
+                .setLift(LiftPresets.TOP_REEF)
+                .setCoral(CoralPresets.CENTER_POS)
+                .setOffset(AprilAlign.AprilPositions.RIGHT);
 
-        public SequentialCommandGroup getBargeSReefNEAuto() {
-            RobotGoal placeGoal = new RobotGoal().setStart("BargeS").setEnd("ReefNE")
-                    .setLift(LiftPresets.BOTTOM_REEF)
-                    .setCoral(CoralPresets.CENTER_POS)
-                    .setOffset(AprilAlign.AprilPositions.RIGHT);
+        // Defaults to a "return" position. Lift down, Coral Center, April Center
+        RobotGoal sourceGoal = new RobotGoal().setStart(endLoc).setEnd(source);
 
-            RobotGoal sourceGoal = new RobotGoal().setStart("ReefNE").setEnd("SourceN");
-            // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
+        return goPlaceReturn(placeGoal, sourceGoal);
+    }
 
-            return new SequentialCommandGroup(
-                    new ToggleStop(driveSubsystem, false),
-                    resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
-                    goToAndPlace(placeGoal),
-                    alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
-                    setRobotAt(sourceGoal));
+    public SequentialCommandGroup goPlaceReturn(RobotGoal placeGoal, RobotGoal returnGoal){
+        return new SequentialCommandGroup(
+                new ToggleStop(driveSubsystem, false),
+                resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
+                setRobotAt(placeGoal),
+                alignToApril(limelightForward, placeGoal),
+                shootCoral(),
+                resetOdometry(returnGoal.getStart(), returnGoal.getEnd()),
+                alignToApril(limelightForward, returnGoal),
+                setRobotAt(returnGoal),
+                alignToApril(limelightBackwar, returnGoal));
     }
 
     public SequentialCommandGroup getBargeNReefNEAuto() {
-        RobotGoal placeGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNE")
-                .setLift(LiftPresets.BOTTOM_REEF)
-                .setCoral(CoralPresets.CENTER_POS)
-                .setOffset(AprilAlign.AprilPositions.RIGHT);
-
-        RobotGoal sourceGoal = new RobotGoal().setStart("ReefNE").setEnd("SourceN");
-        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
-
-
-        return new SequentialCommandGroup(
-                new ToggleStop(driveSubsystem, false),
-                resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
-                goToAndPlace(placeGoal),
-                alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
-                setRobotAt(sourceGoal));
+        return runAuto("BargeN", "ReefNE", "SourceN");
     }
 
-    public SequentialCommandGroup getBargeNReefNWAuto() {
-        RobotGoal placeGoal = new RobotGoal().setStart("BargeN").setEnd("ReefNW")
-                .setLift(LiftPresets.BOTTOM_REEF)
-                .setCoral(CoralPresets.CENTER_POS)
-                .setOffset(AprilAlign.AprilPositions.RIGHT);
+    public SequentialCommandGroup getBargeNReefNWAuto(){
+        return runAuto("BargeN", "ReefNW", "SourceN");
+    }
 
-        RobotGoal sourceGoal = new RobotGoal().setStart("ReefNW").setEnd("SourceN");
-        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
+    public SequentialCommandGroup getBargeMReefNWAuto(){
+        return runAuto("BargeM", "ReefNW", "SourceN");
+    }
 
+    public SequentialCommandGroup getBargeMReefSWAuto(){
+        return runAuto("BargeM", "ReefSW", "SourceS");
+    }
 
-        return new SequentialCommandGroup(
-                new ToggleStop(driveSubsystem, false),
-                resetOdometry(placeGoal.getStart(), placeGoal.getEnd()),
-                goToAndPlace(placeGoal),
-                alignToApril(limelightForward, AprilAlign.AprilPositions.CENTER),
-                setRobotAt(sourceGoal));
+    public SequentialCommandGroup getBargeSReefSEAuto() {
+        return runAuto("BargeS", "ReefSE", "SourceS");
+    }
+
+    public SequentialCommandGroup getBargeSReefSWAuto(){
+        return runAuto("BargeS", "ReefSW", "SourceS");
     }
 
     //TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO////TELEAUTO//
-
     public SequentialCommandGroup runTeleAuto(RobotGoal teleGoal) {
-        RobotGoal returnGoal = new RobotGoal()
-                .setStart(teleGoal.getEnd())
-                .setEnd(teleGoal.getStart());
-        // RobotGoal is at default trying to go to a "return" position. Lift down, Coral Center, April Center, etc.
-
-        return new SequentialCommandGroup(
-                new ToggleStop(driveSubsystem, false),
-                resetOdometry(teleGoal.getStart(), teleGoal.getEnd()),
-                goToAndPlace(teleGoal),
-                setRobotAt(returnGoal),
-                alignToApril(limelightBackwar, returnGoal)
-                );
+        // Defaults to a "return" position. Lift down, Coral Center, April Center
+        RobotGoal returnGoal = new RobotGoal().setStart(teleGoal.getEnd()).setEnd(teleGoal.getStart());
+        return goPlaceReturn(teleGoal, returnGoal);
     }
 
     @Override

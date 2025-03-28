@@ -23,8 +23,7 @@
     {"x":{"exp":"SourceS.x", "val":1.1}, "y":{"exp":"SourceS.y", "val":0.95}, "heading":{"exp":"SourceS.heading", "val":0.9506808435613112}, "intervals":47, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"rotReefW.x", "val":2.44}, "y":{"exp":"rotReefW.y", "val":4.025}, "heading":{"exp":"rotReefW.heading", "val":0.0}, "intervals":0, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"rotReefW.x", "val":2.44}, "y":{"exp":"rotReefW.y", "val":4.025}, "heading":{"exp":"rotReefW.heading", "val":0.0}, "intervals":13, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"ReefW.x", "val":2.74}, "y":{"exp":"ReefW.y", "val":4.025}, "heading":{"exp":"ReefW.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"1.9112399816513062 m", "val":1.9112399816513064}, "y":{"exp":"5.0358357429504395 m", "val":5.0358357429504395}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"ReefW.x", "val":2.74}, "y":{"exp":"ReefW.y", "val":4.025}, "heading":{"exp":"ReefW.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
