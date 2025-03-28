@@ -27,6 +27,8 @@ import frc.robot.subsystems.Lift.LiftSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
 import frc.robot.subsystems.Other.MotorDirection;
 
+import java.util.function.Supplier;
+
 public class ChoreoSubsystem extends SubsystemBase {
     private final AutoFactory autoFactory; //TODO add methods getPose and resetOdometry to the DriveSubsystem
     private final DriveSubsystem driveSubsystem;
@@ -158,18 +160,28 @@ public class ChoreoSubsystem extends SubsystemBase {
     }
 
     public Command setRobotAt(RobotGoal robotGoal){
-        Command needsLower = new InstantCommand();
+        Command needsLowerBef = new InstantCommand();
+
+        SmartDashboard.putString("RobotGoal", robotGoal.toString());
+
         if (lift.getCurrentPosition() > LiftPresets.MIDDLE_REEF.position) {
-            needsLower = liftToPos(LiftPresets.MIDDLE_REEF);
+            needsLowerBef = liftToPos(LiftPresets.MIDDLE_REEF);
         }
 
+        Command needsHigherAft = new InstantCommand();
+        if (robotGoal.getLift() == LiftPresets.TOP_REEF){
+            robotGoal.setLift(LiftPresets.MIDDLE_REEF);
+            needsHigherAft = new LiftPresetCommand(lift, LiftPresets.TOP_REEF);
+        }
+        SmartDashboard.putString("RobotGoalPost", robotGoal.toString());
         return new SequentialCommandGroup(
-                needsLower,
+                needsLowerBef,
                 new ParallelCommandGroup(
                     new InstantCommand(() -> SmartDashboard.putString("TargetPath", robotGoal.getPathname())),
                     goTo(robotGoal),
                     liftToPos(robotGoal),
-                    coralToPos(robotGoal)));
+                    coralToPos(robotGoal)),
+                needsHigherAft);
     }
 
     public Command alignToApril(LimelightSubsystem limelight, RobotGoal robotGoal) {
@@ -187,7 +199,7 @@ public class ChoreoSubsystem extends SubsystemBase {
     //AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS////AUTONOMOUS//
     public SequentialCommandGroup runAuto(String startLoc, String endLoc, String source){
         RobotGoal placeGoal = new RobotGoal().setStart(startLoc).setEnd(endLoc)
-                .setLift(LiftPresets.TOP_REEF)
+                .setLift(LiftPresets.BOTTOM_REEF)
                 .setCoral(CoralPresets.CENTER_POS)
                 .setOffset(AprilAlign.AprilPositions.RIGHT);
 

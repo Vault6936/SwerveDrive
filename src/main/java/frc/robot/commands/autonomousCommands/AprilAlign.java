@@ -162,7 +162,7 @@ public class AprilAlign extends Command {
         {
             successes++;
             if(successes > 50) {
-                resetBasedOnLoc((int) limelightSubsystem.id);
+                //resetBasedOnLoc((int) limelightSubsystem.id);
                 return true;
             }
         }

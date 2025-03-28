@@ -163,13 +163,13 @@ public class SwerveModule<T extends MotorController> {
         double currentAngle = getAngleRadians();
 
         // err is how many radians the robot is off from its target angle
-        if(speed > 0.05)
-        {
-            lastAngle = targetAngle;
-        }
-        else{
-           targetAngle = lastAngle;
-        }
+//        if(speed > 0.000001)
+//        {
+//            lastAngle = targetAngle;
+//        }
+//        else{
+//           targetAngle = lastAngle;
+//        }
 
         double err = getError(targetAngle, currentAngle);
         double polarity = 1;

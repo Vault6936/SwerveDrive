@@ -14,6 +14,7 @@ import frc.robot.subsystems.Algae.AlgaePresets;
 import frc.robot.subsystems.Algae.AlgaeSubsystem;
 import frc.robot.subsystems.Autonomous.ChoreoSubsystem;
 import frc.robot.subsystems.Autonomous.RobotGoal;
+import frc.robot.subsystems.Autonomous.SelectTeleAuto;
 import frc.robot.subsystems.Coral.CoralPresets;
 import frc.robot.subsystems.Coral.CoralSubsystem;
 import frc.robot.subsystems.Drive.DriveSubsystem;
@@ -22,6 +23,8 @@ import frc.robot.subsystems.Lift.LiftPresets;
 import frc.robot.subsystems.Lift.LiftSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
 import frc.robot.subsystems.Other.MotorDirection;
+
+import java.util.function.Supplier;
 
 
 public class RobotContainer {
@@ -42,6 +45,7 @@ public class RobotContainer {
     public final ChoreoSubsystem choreo;
     private final DriveDefaultCommand driveDefaultCommand;
     public RobotGoal teleGoal = new RobotGoal();
+    public Command lastAssistCommand = new InstantCommand();
 
     public RobotContainer() {
 
@@ -203,9 +207,16 @@ public class RobotContainer {
         customController.button(45).onTrue(new InstantCommand()); //Climb down
     }
 
-    private void configJoystick(){
+    private void assignChoreoTeleAuto()
+    {
+        choreo.runTeleAuto(teleGoal);
+    }
+
+    private void configJoystick() {
         //NORTH REEF
-        joystickController.button(1).whileTrue(new InstantCommand(() -> choreo.runTeleAuto(teleGoal)));
+
+        joystickController.button(1).whileTrue(new SelectTeleAuto(() -> teleGoal, choreo, driveSubsystem));
+        joystickController.button(1).whileTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(choreo.runTeleAuto(teleGoal))));
         joystickController.button(11).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNW").setStart("SourceN")));
         joystickController.button(12).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefW").setStart("SourceN")));
         joystickController.button(13).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNE").setStart("SourceN")));
@@ -244,10 +255,15 @@ public class RobotContainer {
         joystickController.button(4).whileTrue(new InstantCommand(() -> choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.RIGHT)));
     }
 
+
     public Command getAutonomousCommand() {
         String barge = SmartDashboard.getString("Barge Location", "BargeN");
-        String reef = SmartDashboard.getString("Reef Location", "ReefNE");
+        String reef = SmartDashboard.getString("Reef Location", "ReefNW");
         String source = SmartDashboard.getString("Source Location", "SourceN");
+        SmartDashboard.putString("Barge Location", barge);
+        SmartDashboard.putString("Reef Location", reef);
+        SmartDashboard.putString("Source Location", source);
+
         return choreo.runAuto(barge, reef, source);
     }
 }
