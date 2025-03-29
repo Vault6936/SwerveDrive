@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
     String[] reefLocs = {"ReefNW", "ReefNE", "ReefE", "ReefSE", "ReefSW", "ReefW"};
     String[] sourceLocs = {"SourceN", "SourceS"};
 
+    Field2d field2d;
 
     /**
      * This command loads a bunch of choreo commands into memory.
@@ -67,6 +69,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        field2d = new Field2d();
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
@@ -92,6 +95,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         SmartDashboard.putString("Current Pose:", robotContainer.driveSubsystem.currentPose.toString());
+        field2d.setRobotPose(robotContainer.driveSubsystem.currentPose);
+        SmartDashboard.putData("Field", field2d);
     }
 
 
