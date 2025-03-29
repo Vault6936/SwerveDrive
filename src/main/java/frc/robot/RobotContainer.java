@@ -80,6 +80,9 @@ public class RobotContainer {
         baseController.r().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.FORWARD));
         baseController.l().whileTrue(new CoralDispenserCommand(coralSubsystem, MotorDirection.REVERSE));
 
+        // Reset odometry
+        baseController.plus().whileTrue(new ResetGyro(driveSubsystem));
+
         // CORAL HORIZONTAL
         baseController.povRight().whileTrue(new CoralHozPidControl(coralSubsystem, () -> 0.5));
         baseController.povLeft().whileTrue(new CoralHozPidControl(coralSubsystem, () -> -0.5));
@@ -89,19 +92,17 @@ public class RobotContainer {
         baseController.zl().whileTrue(new AlgaePushCommand(algaeSubsystem,MotorDirection.REVERSE));
 
         // ALGAE ANGLE
-        baseController.x().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.FORWARD)));
-        baseController.x().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
+        baseController.x().whileTrue(new RunCommand(() -> algaeSubsystem.updateAngleTarget(1)));
 
-        baseController.b().whileTrue(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.REVERSE)));
-        baseController.b().onFalse(new InstantCommand(()->algaeSubsystem.setAngleAlgae(MotorDirection.STOP)));
+        baseController.b().whileTrue(new RunCommand(()->algaeSubsystem.updateAngleTarget(-1)));
 
         // LIFT CONTROL
         baseController.povUp().whileTrue(new LiftPidControl(lift,() -> .5, () -> true));
         baseController.povDown().whileTrue(new LiftPidControl(lift,() -> -.5,  () -> true));
 
         // APRIL TAG ALIGN
-        baseController.y().whileTrue(choreo.manualPlace(LiftPresets.MIDDLE_REEF, CoralPresets.CENTER_POS, AprilAlign.AprilPositions.LEFT));
-        baseController.a().whileTrue(choreo.manualPlace(LiftPresets.MIDDLE_REEF, CoralPresets.CENTER_POS, AprilAlign.AprilPositions.RIGHT));
+        baseController.y().whileTrue(choreo.manualPlace(LiftPresets.BOTTOM_REEF, CoralPresets.CENTER_POS, AprilAlign.AprilPositions.LEFT));
+        baseController.a().whileTrue(choreo.manualPlace(LiftPresets.BOTTOM_REEF, CoralPresets.CENTER_POS, AprilAlign.AprilPositions.RIGHT));
         baseController.minus().whileTrue(choreo.alignToApril(limelightForwardSubsystem, AprilAlign.AprilPositions.CENTER));
         baseController.button(14).whileTrue(choreo.alignToApril(limelightBackwarSubsystem, AprilAlign.AprilPositions.CENTER));
 
@@ -118,6 +119,8 @@ public class RobotContainer {
         payloadController.b().whileTrue(choreo.liftToPos(LiftPresets.TOP_REEF));
         payloadController.povDown().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_HIGH));
         payloadController.povUp().whileTrue(choreo.liftToPos(LiftPresets.ALGAE_LOW));
+        payloadController.povLeft().whileTrue(choreo.algaeToPos(AlgaePresets.SAFE_MOVE));
+        //payloadController.povLeft().whileTrue(choreo.algaeToPos(AlgaePresets.M));
     }
 
     private void configCustom(){
@@ -216,7 +219,7 @@ public class RobotContainer {
         //NORTH REEF
 
         joystickController.button(1).whileTrue(new SelectTeleAuto(() -> teleGoal, choreo, driveSubsystem));
-        joystickController.button(1).whileTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(choreo.runTeleAuto(teleGoal))));
+        //joystickController.button(1).whileTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(choreo.runTeleAuto(teleGoal))));
         joystickController.button(11).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNW").setStart("SourceN")));
         joystickController.button(12).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefW").setStart("SourceN")));
         joystickController.button(13).onTrue(new InstantCommand(() -> teleGoal.setEnd("ReefNE").setStart("SourceN")));

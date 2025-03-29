@@ -22,9 +22,9 @@ public class AlgaeSubsystem extends SubsystemBase {
     double angleTargetPos;
 
 
-    PIDController pid = new PIDController(0.03, 0, 0); //TODO SET P VALUE CORRECTLY
+    PIDController pid = new PIDController(30, 0, 0); //TODO SET P VALUE CORRECTLY
 
-    double maxPosition = 1.8;
+    double maxPosition = .66;
     double minPosition = 0;
 
     public AlgaeSubsystem(){
@@ -48,7 +48,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     }
 
     public void updateAngleTarget(double change){
-        angleTargetPos = angleTargetPos + change * .1;
+        angleTargetPos =angleTargetPos + change * .0035;
         //angleTargetPos = MathUtil.clamp(angleTargetPos + (change * .1), minPosition, maxPosition);
     }
 
@@ -63,10 +63,10 @@ public class AlgaeSubsystem extends SubsystemBase {
     public void doPositionControl(){
         double outputPower = pid.calculate(getAngle(), angleTargetPos) * Constants.SpeedConstants.ALGAE_ANGLE_SPEED_MAGNIFIER;
         outputPower = MathUtil.clamp(outputPower, -1, 1);
-        if (Constants.DebugInfo.debugAlgae)
-        {
+        //if (Constants.DebugInfo.debugAlgae)
+        //{
             SmartDashboard.putNumber("Algae Power", outputPower);
-        }
+        //}
 
         algaeAngle.set(outputPower);
     }
@@ -82,11 +82,11 @@ public class AlgaeSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        //doPositionControl(); //TODO IF ENCODER IS ON THE ROBOT PERMANENTLY, UNCOMMENT
-        if (Constants.DebugInfo.debugAlgae) {
+        doPositionControl();
+        //if (Constants.DebugInfo.debugAlgae) {
             SmartDashboard.putNumber("Algae Position", getAngle());
             SmartDashboard.putNumber("Algae Target Position", angleTargetPos);
-        }
+        //}
 
     }
 

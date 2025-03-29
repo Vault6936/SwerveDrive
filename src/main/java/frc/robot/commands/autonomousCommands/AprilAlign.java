@@ -5,6 +5,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Autonomous.ChoreoSubsystem;
 import frc.robot.subsystems.Other.LimelightSubsystem;
@@ -30,9 +32,9 @@ public class AprilAlign extends Command {
     ChoreoSubsystem choreo;
     public enum AprilPositions
     {
-        LEFT(22.5),
+        LEFT(22),
         CENTER(0),
-        RIGHT(-22.5);
+        RIGHT(-24.5);
         public final double position;
         AprilPositions(double pos)
         {
@@ -141,16 +143,17 @@ public class AprilAlign extends Command {
         }
     }
 
-    public void resetBasedOnLoc(int ID){
+    public Command resetBasedOnLoc(int ID){
         AprilDict aprilDict = new AprilDict();
         String loc = aprilDict.getLocation(ID);
         if (!loc.isEmpty()){
             if (loc.contains("Reef")) {
-                choreo.resetOdometry(loc, "SourceN");
+                return choreo.resetOdometry(loc, "SourceN");
             } else {
-                choreo.resetOdometry(loc, "ReefN");
+                return choreo.resetOdometry(loc, "ReefN");
             }
         }
+        return new InstantCommand();
     }
 
     @Override
@@ -162,7 +165,7 @@ public class AprilAlign extends Command {
         {
             successes++;
             if(successes > 50) {
-                //resetBasedOnLoc((int) limelightSubsystem.id);
+                //CommandScheduler.getInstance().schedule(resetBasedOnLoc((int) limelightSubsystem.id));
                 return true;
             }
         }

@@ -159,7 +159,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void resetGyro(){
-        poseReset(new Pose2d(currentPose.getX(), currentPose.getY(), new Rotation2d(0,1)));
+        poseReset(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(180)));
     }
 
     public void calibrateGyro() {
